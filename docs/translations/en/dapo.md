@@ -7,13 +7,13 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-dapo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-dapo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/dapo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
-> - Shared training entry point: [experiments/dapo/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py)
+> - Complete code: [datawhalechina/agentic-rl-lab/experiments/dapo](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/dapo)
+> - Shared training entry point: [experiments/dapo/train.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py)
 > - Paper: [DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://arxiv.org/abs/2503.14476)
 > - Official project page: [dapo-sia.github.io](https://dapo-sia.github.io/)
 > - Official implementation: [BytedTsinghua-SIA/DAPO](https://github.com/BytedTsinghua-SIA/DAPO)
@@ -23,12 +23,12 @@ This is the sixth chapter in my series reproducing ten reinforcement learning al
 
 Previous chapters cover:
 
-- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
-- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
-- [Chapter 4: OPSD for the price of a meal](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
-- [Chapter 5: ReTool for the price of two coffees](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/readme.md)
+- [Chapter 0: RL loss functions](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [Chapter 1: GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [Chapter 2: OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [Chapter 3: Search-R1 for the price of a drink](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [Chapter 4: OPSD for the price of a meal](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
+- [Chapter 5: ReTool for the price of two coffees](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/readme.md)
 
 I originally planned the familiar route: explain the algorithm, finish training and organize the results.
 
@@ -67,7 +67,7 @@ This overview compares the four changes with GRPO:
 
 ![](./images/01 · DAPO vs GRPO Overview.png)
 
-The implementation keeps two presets in the same [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py):
+The implementation keeps two presets in the same [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py):
 
 | Item | GRPO | DAPO |
 | --- | --- | --- |
@@ -181,7 +181,7 @@ The project requires Python `>=3.13`. PyTRIO performs sampling and LoRA training
 Clone the project and enter the DAPO directory:
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -233,10 +233,10 @@ With the code running, we can examine the implementation.
 
 Four files contain the main implementation:
 
-- [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/prepare_data.py): download, clean and pin the dataset.
-- [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/rollout.py): group rollouts, advantages and Dynamic Sampling.
-- [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/reward.py): mathematical answer checking and Soft Overlong Punishment.
-- [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py): shared GRPO/DAPO PPO updates.
+- [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/prepare_data.py): download, clean and pin the dataset.
+- [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/rollout.py): group rollouts, advantages and Dynamic Sampling.
+- [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/reward.py): mathematical answer checking and Soft Overlong Punishment.
+- [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py): shared GRPO/DAPO PPO updates.
 
 ### Data
 
@@ -470,5 +470,5 @@ Implementing DAPO from scratch changed how I diagnose slow training. With transf
 
 ### This implementation and experiment
 
-1. [Complete DAPO PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
+1. [Complete DAPO PyTRIO code](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/dapo)
 2. [PyTRIO documentation](https://docs.pytrio.com/docs)

@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-gspo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-gspo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/gspo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/gspo)
+> - Complete code: [datawhalechina/agentic-rl-lab/experiments/gspo](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/gspo)
 > - GSPO paper: [Group Sequence Policy Optimization](https://arxiv.org/abs/2507.18071)
 > - SwanLab: [Complete 100-step training record](https://swanlab.cn/@kmno4/llm-agent-rl-lab-gspo/runs/o83z2ghp/chart)
 > - PyTRIO documentation: [https://docs.pytrio.com/docs](https://docs.pytrio.com/docs)
@@ -194,7 +194,7 @@ A GRPO control with the same model, data and training budget is still missing, s
 The project requires Python `>=3.13`. Install dependencies and log in to PyTRIO and SwanLab:
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 trio login
@@ -230,13 +230,13 @@ This diagram outlines the pipeline using the current default of 4 prompt groups.
 
 ### 1. Prepare and pin the mathematical data
 
-[`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) downloads a pinned revision of DAPO-Math-17K, cleans prompts, deduplicates examples and creates train/dev splits. It separately downloads and validates the 30 AIME25 questions.
+[`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) downloads a pinned revision of DAPO-Math-17K, cleans prompts, deduplicates examples and creates train/dev splits. It separately downloads and validates the 30 AIME25 questions.
 
-[`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/data.py) reads training JSONL, shuffles with a fixed seed and uses a wrapping `ExampleCursor` to select questions per step. The current implementation has no Dynamic Sampling: it takes a fixed batch of prompts and samples them once.
+[`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/data.py) reads training JSONL, shuffles with a fixed seed and uses a wrapping `ExampleCursor` to select questions per step. The current implementation has no Dynamic Sampling: it takes a fixed batch of prompts and samples them once.
 
 ### 2. Group rollouts, binary rewards and advantages
 
-[`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) builds prompts with the Qwen chat template, then concurrently samples 8 responses per question using a PyTRIO sampler for the current LoRA weights. Each response retains:
+[`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) builds prompts with the Qwen chat template, then concurrently samples 8 responses per question using a PyTRIO sampler for the current LoRA weights. Each response retains:
 
 ```text
 completion tokens
@@ -248,13 +248,13 @@ advantage
 
 Token and sampling-logprob lengths are strictly checked because the sequence ratio requires token-by-token alignment.
 
-[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/reward.py) extracts the final complete `\boxed{}` answer and uses `math_verify` to check equivalence with the reference answer. Correct answers receive 1; incorrect answers and missing answer formats receive 0. There is no length penalty or additional format reward.
+[`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/reward.py) extracts the final complete `\boxed{}` answer and uses `math_verify` to check equivalence with the reference answer. Correct answers receive 1; incorrect answers and missing answer formats receive 0. There is no length penalty or additional format reward.
 
 After rollout, the 8 rewards for each question provide a group mean and sample standard deviation, producing a sequence advantage shared by every token in each response. All-correct and all-incorrect groups have zero advantage and are omitted from remote gradient computation.
 
 ### 3. Build the Datum and calculate the GSPO loss locally
 
-[`loss.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/loss.py) is the core of this reproduction.
+[`loss.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/loss.py) is the core of this reproduction.
 
 `build_datum()` applies the autoregressive shift to the prompt and completion:
 
@@ -279,7 +279,7 @@ Sequences contribute with equal weight, and their sum is divided by the original
 
 ### 4. One update per rollout batch
 
-[`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/train.py) connects the modules:
+[`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/train.py) connects the modules:
 
 ```text
 加载并打乱数据
@@ -296,22 +296,22 @@ The application does not split the rollout into additional mini-batches. Each ro
 
 ### 5. Evaluate and plot the results
 
-[`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/eval.py) evaluates either the base model or any checkpoint identified by `trio://` sampler weights. It saves all 12 responses per question and aggregates Average@12, Pass@12, Format and mean completion length.
+[`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/eval.py) evaluates either the base model or any checkpoint identified by `trio://` sampler weights. It saves all 12 responses per question and aggregates Average@12, Pass@12, Format and mean completion length.
 
-[`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) reads summaries from `eval-results/`, sorts them by checkpoint and generates the 1×2 AIME25 result figure used here.
+[`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) reads summaries from `eval-results/`, sorts them by checkpoint and generates the 1×2 AIME25 result figure used here.
 
 The eight code files have these responsibilities:
 
 | File | Responsibility |
 | --- | --- |
-| [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) | Download, clean, deduplicate and pin DAPO-Math and AIME25 |
-| [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/data.py) | Read training questions, shuffle with a fixed seed and sample cyclically |
-| [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/reward.py) | Extract `\boxed{}`, check mathematical equivalence and assign binary rewards |
-| [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) | Prompts, concurrent group rollouts, token/logprob alignment and advantages |
-| [`loss.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/loss.py) | Datum construction, GSPO metadata, sequence ratios and clipped loss |
-| [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/train.py) | Main loop, PyTRIO calls, SwanLab and checkpoints |
-| [`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/eval.py) | Base/LoRA AIME25 evaluation and JSONL results |
-| [`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) | Aggregate checkpoint metrics and plot results |
+| [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) | Download, clean, deduplicate and pin DAPO-Math and AIME25 |
+| [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/data.py) | Read training questions, shuffle with a fixed seed and sample cyclically |
+| [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/reward.py) | Extract `\boxed{}`, check mathematical equivalence and assign binary rewards |
+| [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) | Prompts, concurrent group rollouts, token/logprob alignment and advantages |
+| [`loss.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/loss.py) | Datum construction, GSPO metadata, sequence ratios and clipped loss |
+| [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/train.py) | Main loop, PyTRIO calls, SwanLab and checkpoints |
+| [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/eval.py) | Base/LoRA AIME25 evaluation and JSONL results |
+| [`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) | Aggregate checkpoint metrics and plot results |
 
 ## Summary
 

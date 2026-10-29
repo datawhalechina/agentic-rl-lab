@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-gspo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-gspo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/gspo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/gspo)  
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/gspo](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/gspo)  
 > - GSPO 论文：[Group Sequence Policy Optimization](https://arxiv.org/abs/2507.18071)
 > - SwanLab：[100-step 完整训练记录](https://swanlab.cn/@kmno4/llm-agent-rl-lab-gspo/runs/o83z2ghp/chart)
 > - PyTRIO 文档：[https://docs.pytrio.com/docs](https://docs.pytrio.com/docs)
@@ -194,7 +194,7 @@ max_tokens = 8192
 项目要求 Python `>=3.13`。先安装依赖并登录 PyTRIO、SwanLab：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 trio login
@@ -230,13 +230,13 @@ uv run python train.py \
 
 ### 1. 准备并固定数学数据
 
-[`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) 下载固定 revision 的 DAPO-Math-17K，清洗 prompt、去重并切分 train/dev，同时单独下载并校验 30 道 AIME25。
+[`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) 下载固定 revision 的 DAPO-Math-17K，清洗 prompt、去重并切分 train/dev，同时单独下载并校验 30 道 AIME25。
 
-[`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/data.py) 负责读取训练 JSONL、按 seed 打乱，以及用可回绕的 `ExampleCursor` 按 step 取题。当前实现没有 Dynamic Sampling，所以每个 step 固定取一批 prompt，一次采齐。
+[`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/data.py) 负责读取训练 JSONL、按 seed 打乱，以及用可回绕的 `ExampleCursor` 按 step 取题。当前实现没有 Dynamic Sampling，所以每个 step 固定取一批 prompt，一次采齐。
 
 ### 2. Group rollout、0/1 reward 与 advantage
 
-[`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) 先用 Qwen chat template 构造 prompt，再通过当前 LoRA 权重对应的 PyTRIO sampler 为每道题并发采样 8 条回答。每条回答都会保存：
+[`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) 先用 Qwen chat template 构造 prompt，再通过当前 LoRA 权重对应的 PyTRIO sampler 为每道题并发采样 8 条回答。每条回答都会保存：
 
 ```text
 completion tokens
@@ -248,13 +248,13 @@ advantage
 
 token 与 sampling logprob 的长度会被严格校验，因为它们稍后需要逐 token 对齐计算 sequence ratio。
 
-[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/reward.py) 从回答中提取最后一个完整的 `\boxed{}`，再用 `math_verify` 判断它与参考答案是否等价。答对得 1，答错或格式缺失得 0。它没有长度惩罚，也没有额外的 format reward。
+[`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/reward.py) 从回答中提取最后一个完整的 `\boxed{}`，再用 `math_verify` 判断它与参考答案是否等价。答对得 1，答错或格式缺失得 0。它没有长度惩罚，也没有额外的 format reward。
 
 rollout 完成后，同一道题的 8 个 reward 会计算组内均值和样本标准差，得到每条回答共享的 sequence advantage。全对或全错的组 advantage 为 0，不会发到远端做无效计算。
 
 ### 3. 构造 Datum，并在本地计算 GSPO loss
 
-[`loss.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/loss.py) 是这次复现的核心。
+[`loss.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/loss.py) 是这次复现的核心。
 
 `build_datum()` 把 prompt 和 completion 做自回归右移：
 
@@ -279,7 +279,7 @@ one sequence-level clipping decision
 
 ### 4. 一个 rollout batch 对应一次更新
 
-[`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/train.py) 把上面的模块串起来：
+[`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/train.py) 把上面的模块串起来：
 
 ```text
 加载并打乱数据
@@ -296,22 +296,22 @@ one sequence-level clipping decision
 
 ### 5. 评测并生成结果图
 
-[`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/eval.py) 可以评测 Base Model，也可以读取 `trio://` sampler weights 评测任意 checkpoint。它会保存每道题的 12 条完整回答，并聚合 Average@12、Pass@12、Format 和平均 completion tokens。
+[`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/eval.py) 可以评测 Base Model，也可以读取 `trio://` sampler weights 评测任意 checkpoint。它会保存每道题的 12 条完整回答，并聚合 Average@12、Pass@12、Format 和平均 completion tokens。
 
-[`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) 自动读取 `eval-results/` 中的 summary，按 checkpoint 排序，生成本文使用的 1×2 AIME25 结果图。
+[`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) 自动读取 `eval-results/` 中的 summary，按 checkpoint 排序，生成本文使用的 1×2 AIME25 结果图。
 
 八个代码文件的职责可以汇总为：
 
 | 文件 | 模块职责 |
 | --- | --- |
-| [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) | 下载、清洗、去重并固定 DAPO-Math 与 AIME25 |
-| [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/data.py) | 读取训练题、固定 seed 打乱、循环取样 |
-| [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/reward.py) | 提取 `\boxed{}`、数学等价判断、0/1 reward |
-| [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) | Prompt、并发 group rollout、token/logprob 对齐、advantage |
-| [`loss.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/loss.py) | Datum、GSPO 元数据、sequence ratio 与 clipping loss |
-| [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/train.py) | 训练主循环、PyTRIO 调用、SwanLab 与 checkpoint |
-| [`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/eval.py) | Base/LoRA AIME25 评测与 JSONL 结果 |
-| [`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) | 汇总 checkpoint 指标并绘制结果图 |
+| [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/prepare_data.py) | 下载、清洗、去重并固定 DAPO-Math 与 AIME25 |
+| [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/data.py) | 读取训练题、固定 seed 打乱、循环取样 |
+| [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/reward.py) | 提取 `\boxed{}`、数学等价判断、0/1 reward |
+| [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/rollout.py) | Prompt、并发 group rollout、token/logprob 对齐、advantage |
+| [`loss.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/loss.py) | Datum、GSPO 元数据、sequence ratio 与 clipping loss |
+| [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/train.py) | 训练主循环、PyTRIO 调用、SwanLab 与 checkpoint |
+| [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/eval.py) | Base/LoRA AIME25 评测与 JSONL 结果 |
+| [`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/gspo/analyse.py) | 汇总 checkpoint 指标并绘制结果图 |
 
 ## 总结
 

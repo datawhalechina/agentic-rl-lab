@@ -5,16 +5,16 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/vision-grpo"><img alt="Code" src="https://img.shields.io/badge/Code-09--vision--grpo-2563eb?style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/vision-grpo"><img alt="Code" src="https://img.shields.io/badge/Code-09--vision--grpo-2563eb?style=flat"></a>
   <a href="https://huggingface.co/datasets/hz2475/geoQA"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-GeoQA-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.7-d94a45?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.vision-grpo"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.vision-grpo"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 完整代码：[`experiments/vision-grpo`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/vision-grpo)
+> - 完整代码：[`experiments/vision-grpo`](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/vision-grpo)
 > - 快速启动：[`start.md`](./start.md)
 > - 数据集：[`hz2475/geoQA`](https://huggingface.co/datasets/hz2475/geoQA)
 > - GRPO 来源：[DeepSeekMath](https://arxiv.org/abs/2402.03300)

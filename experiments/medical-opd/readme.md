@@ -7,18 +7,18 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-medical-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-medical-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 开源仓库：[KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab)
+> - 开源仓库：[datawhalechina/agentic-rl-lab](https://github.com/datawhalechina/agentic-rl-lab)
 > - PyTRIO 官网与注册入口：[https://pytrio.cn/](https://pytrio.cn/)（远程训练、采样与权重保存）
 > - SwanLab 注册入口：[https://swanlab.cn/login](https://swanlab.cn/login)（训练过程与实验指标记录）
 > - Medical SFT 数据集：[FreedomIntelligence/medical-o1-reasoning-SFT](https://huggingface.co/datasets/FreedomIntelligence/medical-o1-reasoning-SFT)
 > - MedQA-zh 评测数据：[bigbio/med_qa](https://huggingface.co/datasets/bigbio/med_qa)
 > - C-Eval 数据集：[ceval/ceval-exam](https://huggingface.co/datasets/ceval/ceval-exam)
-> - 前置阅读：[通用 OPD 入门教程](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)
+> - 前置阅读：[通用 OPD 入门教程](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)
 > - PyTRIO Skill：[SwanHubX/pytrio-skill](https://github.com/SwanHubX/pytrio-skill)
 > - SwanLab Skill：[SwanHubX/swanlab-skill](https://github.com/SwanHubX/swanlab-skill)
 
@@ -38,7 +38,7 @@
 
 OPD 的训练信号不一样。它不要求每个问题都有标准答案，也不需要先写一个 reward function。Student 先生成自己的回答，Teacher 再沿着 Student 真正走过的 token 轨迹逐个打分，然后把 Student 拉向 Teacher 更认可的分布。
 
-DeepMath-103K 的版本已经整理成了一份 [通用 OPD 入门教程](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)，把最小训练闭环完整跑通了。但只把算法跑起来还不太够，我更想知道它能不能解决一个真实一点的问题。
+DeepMath-103K 的版本已经整理成了一份 [通用 OPD 入门教程](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)，把最小训练闭环完整跑通了。但只把算法跑起来还不太够，我更想知道它能不能解决一个真实一点的问题。
 
 经好朋友推荐，这次我选择的是中文医疗能力增强。
 
@@ -57,7 +57,7 @@ DeepMath-103K 的版本已经整理成了一份 [通用 OPD 入门教程](https:
 
 > 说明一下：SAR-OPD 和 IDT-OPD 是我为了描述这两套实验方案使用的名字，并不是已有论文里的标准算法名称。本文复现的是 OPD 的核心训练机制，再在这个基础上探索医疗能力与通用能力的平衡方法。
 
-代码都在这里：<https://github.com/KMnO4-zx/agentic-rl-lab>
+代码都在这里：<https://github.com/datawhalechina/agentic-rl-lab>
 
 ## 先看最终结果
 
@@ -153,7 +153,7 @@ OPD:  advantage 来自 Teacher 与 Student 的 token logprob 差
 
 OPD 代码里也有 `group_size`，但它只是让一个 prompt 产生更多 Student 轨迹。它不会像 GRPO 一样在组内计算相对 reward，每条 completion 都独立接受 Teacher 的逐 token 监督。
 
-如果你第一次接触 OPD，建议先看 [通用 OPD 入门教程](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)。那篇会更详细地解释 reverse KL、自回归右移、Datum 对齐和同步/异步训练。本文重点放在两套 Medical OPD 实验为什么这样设计，以及它们最后得到了什么结果。
+如果你第一次接触 OPD，建议先看 [通用 OPD 入门教程](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)。那篇会更详细地解释 reverse KL、自回归右移、Datum 对齐和同步/异步训练。本文重点放在两套 Medical OPD 实验为什么这样设计，以及它们最后得到了什么结果。
 
 ## 数据是怎么准备的？
 
@@ -585,7 +585,7 @@ IDT-OPD 的意义更多在结构上。今天可以是一个 Medical Teacher 和�
 如果直接 clone 仓库，先安装依赖并登录 PyTRIO：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -809,6 +809,6 @@ IDT-OPD 则把两个 Teacher 放进同一个训练循环。它没有产生一个
 
 ### 实现与实验工具
 
-1. 本文完整代码：[KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/medical-opd)
+1. 本文完整代码：[datawhalechina/agentic-rl-lab](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/medical-opd)
 2. PyTRIO 文档：[快速开始](https://docs.pytrio.cn/docs) · [Compute Logprobs](https://docs.pytrio.cn/docs/advanced/compute_logprobs) · [自定义 Loss Function](https://docs.pytrio.cn/docs/guide/loss_fn)
 3. SwanLab 文档：[快速开始](https://docs.swanlab.cn/guide_cloud/general/quick-start.html)

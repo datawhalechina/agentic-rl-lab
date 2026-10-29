@@ -12,7 +12,7 @@ For a map of the experiments, read the [PyTRIO tutorials](./pytrio.html). Reader
 ## Get the code and install dependencies
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 ```

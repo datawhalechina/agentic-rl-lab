@@ -7,13 +7,13 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-retool&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-retool&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/retool](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/retool)
-> - ReTool 训练脚本：[experiments/retool/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/train.py)
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/retool](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/retool)
+> - ReTool 训练脚本：[experiments/retool/train.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/train.py)
 > - SwanLab 训练记录：[查看完整实验曲线](https://swanlab.cn/@kmno4/llm-agent-rl-lab-retool/overview)
 > - ReTool 论文：[ReTool: Reinforcement Learning for Strategic Tool Use in LLMs](https://arxiv.org/abs/2504.11536)
 > - PyTRIO 文档：[https://docs.pytrio.com/docs](https://docs.pytrio.com/docs)
@@ -24,11 +24,11 @@
 
 前面几篇分别讲了：
 
-- [第 0 篇：强化学习基础——损失函数](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [第 1 篇：GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [第 2 篇：OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
-- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
-- [第 4 篇：一顿疯狂星期四，搞定 OPSD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
+- [第 0 篇：强化学习基础——损失函数](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [第 1 篇：GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [第 2 篇：OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [第 4 篇：一顿疯狂星期四，搞定 OPSD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
 
 这一次的工具更“硬”一些：**ReTool，让模型在做数学题的 long CoT 里，自己决定什么时候写一段 Python 来算、算什么**。
 
@@ -115,9 +115,9 @@ ReTool 的思路是：既然人做数学题会用计算器，那就让模型在�
 
 复现只保留论文最核心的算法结构，工程实现围绕三件事展开：
 
-- **工具协议**（[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py)）：把代码解释器声明成模型的原生工具，定义 system prompt 和 `<tool_call>` 解析；
-- **本地执行沙箱**（[`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/sandbox.py)）：每段代码起一个全新 Python 进程执行，带超时和资源约束；
-- **结果奖励**（[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/reward.py)）：只看最终 `\boxed{}` 答案的数学等价判定，对 +1 / 错 −1。
+- **工具协议**（[`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/protocol.py)）：把代码解释器声明成模型的原生工具，定义 system prompt 和 `<tool_call>` 解析；
+- **本地执行沙箱**（[`sandbox.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/sandbox.py)）：每段代码起一个全新 Python 进程执行，带超时和资源约束；
+- **结果奖励**（[`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/reward.py)）：只看最终 `\boxed{}` 答案的数学等价判定，对 +1 / 错 −1。
 
 在此之上，多轮工具轨迹的 rollout 状态机、GRPO 组内 advantage 和 PyTRIO 训练循环，沿用的是这个系列前几篇已经验证过的骨架。
 
@@ -205,7 +205,7 @@ Format 没有到 100% 的主要原因不是模型学不会，而是预算：AIME
 
 ### 第一步：准备可验证答案的数学题
 
-数据脚本是 [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/prepare_data.py)，跟随官方 recipe 使用 [`BytedTsinghua-SIA/DAPO-Math-17k`](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)，整理成 `question + answer` 的 JSONL：
+数据脚本是 [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/prepare_data.py)，跟随官方 recipe 使用 [`BytedTsinghua-SIA/DAPO-Math-17k`](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)，整理成 `question + answer` 的 JSONL：
 
 ```json
 {"id": "40f50547-...", "question": "The points $P,$ $Q,$ and $R$ are represented by ...", "answer": "3", "data_source": "math_dapo"}
@@ -215,7 +215,7 @@ Format 没有到 100% 的主要原因不是模型学不会，而是预算：AIME
 
 ### 第二步：把代码解释器声明成模型原生工具
 
-[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py) 在 chat template 的 `tools` 里声明唯一一个工具：
+[`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/protocol.py) 在 chat template 的 `tools` 里声明唯一一个工具：
 
 ```python
 "name": "code_interpreter",
@@ -226,13 +226,13 @@ system prompt 直接讲清楚三件事：要做什么任务、有哪些工具可
 
 ### 第三步：一组轨迹的分叉与续写
 
-[`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/rollout.py) 的多轮轨迹状态机：首轮每道题用 `num_samples=group_size` 一次分叉出 8 条轨迹，之后每条轨迹单独采样；模型生成到 `<tool_call>` 就暂停，等沙箱返回后用 [`build_next_prompt`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py#L127) 把真实采样 token 拼上 assistant 结束符和 tool observation，继续生成。
+[`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/rollout.py) 的多轮轨迹状态机：首轮每道题用 `num_samples=group_size` 一次分叉出 8 条轨迹，之后每条轨迹单独采样；模型生成到 `<tool_call>` 就暂停，等沙箱返回后用 [`build_next_prompt`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/protocol.py#L127) 把真实采样 token 拼上 assistant 结束符和 tool observation，继续生成。
 
 这里是 token-in token-out：续写用的是真实采样出来的 token 序列，不做 text↔token 重编码。官方实测重编码不可逆会导致约 100 步后性能崩塌、grad_norm NaN，这个坑我们直接绕开。
 
 ### 第四步：本地沙箱执行代码
 
-[`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/sandbox.py) 用本地 subprocess 代替论文的 SandboxFusion 云沙箱，零成本零运维：
+[`sandbox.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/sandbox.py) 用本地 subprocess 代替论文的 SandboxFusion 云沙箱，零成本零运维：
 
 ```text
 python -B -c <code>   # 每次调用起全新进程
@@ -246,7 +246,7 @@ stdout/stderr 截断     # 单次回包最多 512 tokens
 
 ### 第五步：只看最终答案的 reward
 
-[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/reward.py) 实现纯结果奖励，和官方 `compute_score(strict_box_verify=True)` 一致：
+[`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/reward.py) 实现纯结果奖励，和官方 `compute_score(strict_box_verify=True)` 一致：
 
 ```text
 取回答最后 300 个字符 → 提取最后一个 \boxed{} → math_verify 数学等价
@@ -257,7 +257,7 @@ stdout/stderr 截断     # 单次回包最多 512 tokens
 
 ### 第六步：observation token 保留在上下文，但不参与 loss
 
-沙箱返回的 stdout/stderr 会留在轨迹里（模型需要看到执行结果），但这些 token 不是模型生成的，不能进 loss。[`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/train.py) 构造 Datum 时，observation 区间的 advantage 直接置零：
+沙箱返回的 stdout/stderr 会留在轨迹里（模型需要看到执行结果），但这些 token 不是模型生成的，不能进 loss。[`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/train.py) 构造 Datum 时，observation 区间的 advantage 直接置零：
 
 ```python
 advantages_by_token.extend([0.0] * len(delta_observation))
@@ -270,7 +270,7 @@ advantages_by_token.extend(
 
 ### 第七步：组内中心化 advantage，一次 ppo 更新
 
-同一道题的 8 条轨迹算完 reward 后，在题内做 GRPO 组内中心化（[`assign_group_advantages`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/rollout.py#L273)），整组 reward 全同的 degenerate group 单独统计——8 题/步的 batch 下没有出现零梯度灾难。然后把整批 Datum 提交一次训练更新：
+同一道题的 8 条轨迹算完 reward 后，在题内做 GRPO 组内中心化（[`assign_group_advantages`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/rollout.py#L273)），整组 reward 全同的 degenerate group 单独统计——8 题/步的 batch 下没有出现零梯度灾难。然后把整批 Datum 提交一次训练更新：
 
 ```python
 loss_fn="ppo",
@@ -328,7 +328,7 @@ sandbox/latency:       0.36s → 1.4s  # 代码变复杂，执行时间自然变
 ### 1. 安装项目并登录
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -447,7 +447,7 @@ ReTool 是这个系列里“工程上最省事、味道上最不同”的一篇�
 
 ### 本文实现
 
-1. [ReTool PyTRIO 完整代码](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/retool)
+1. [ReTool PyTRIO 完整代码](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/retool)
 2. [PyTRIO 文档](https://docs.pytrio.com/docs)
 3. [PyTRIO 是什么？——知乎介绍](https://zhuanlan.zhihu.com/p/2063265307226019219)
 4. [本文的 SwanLab 训练记录](https://swanlab.cn/@kmno4/llm-agent-rl-lab-retool/overview)

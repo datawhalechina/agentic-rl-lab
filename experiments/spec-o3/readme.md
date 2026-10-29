@@ -1,24 +1,24 @@
 # 接下来我将复现 10 篇强化学习算法：第 9.4 篇，Spec-o3：我用 GRPO 找天上的星星 🌟
 
-> **快速开始：** 环境准备、数据下载、SFT、RL、评测与绘图的运行命令，见 [start.md](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/start.md)。
+> **快速开始：** 环境准备、数据下载、SFT、RL、评测与绘图的运行命令，见 [start.md](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/start.md)。
 
 <div align="center">
   <img src="./images/封面.png" alt="Spec-o3：我用 GRPO 找天上的星星" width="100%">
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="Code" src="https://img.shields.io/badge/Code-agentic--rl--lab-2563eb?style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="Code" src="https://img.shields.io/badge/Code-agentic--rl--lab-2563eb?style=flat"></a>
   <a href="https://arxiv.org/abs/2601.06498"><img alt="Paper" src="https://img.shields.io/badge/Paper-Spec--o3-d94a45?style=flat"></a>
   <a href="https://huggingface.co/datasets/Maxwell-Jia/SpecVI-Bench"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-SpecVI--Bench-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.9-7c3aed?style=flat"></a>
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.spec-o3"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.spec-o3"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本章实现：[SFT](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) / [GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) / [评测](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) / [绘图](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py)
+> - 本章实现：[SFT](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) / [GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) / [评测](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) / [绘图](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py)
 > - 论文：[Spec-o3: A Tool-Augmented Vision-Language Agent for Rare Celestial Object Candidate Vetting via Automated Spectral Inspection](https://arxiv.org/abs/2601.06498)
 > - 作者代码：[Maxwell-Jia/spec-o3](https://github.com/Maxwell-Jia/spec-o3)
 > - 公开数据：[Cold-start SFT](https://huggingface.co/datasets/Maxwell-Jia/Spec-o3-ColdStartSFT) / [SpecVI-Bench](https://huggingface.co/datasets/Maxwell-Jia/SpecVI-Bench)
@@ -27,7 +27,7 @@
 
 这是“接下来我将复现 10 篇强化学习算法”系列的第 9.4 篇。
 
-[Vision GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/vision-grpo/readme.md) 里，我们让模型看几何图做题；[ReTool](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/readme.md) 里，我们让模型在解题过程中调用 Python。这次我想把两件事接起来：**模型一边看图、一边推理，还能主动调用工具，拿到一张新的图片继续分析。**
+[Vision GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/vision-grpo/readme.md) 里，我们让模型看几何图做题；[ReTool](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/readme.md) 里，我们让模型在解题过程中调用 Python。这次我想把两件事接起来：**模型一边看图、一边推理，还能主动调用工具，拿到一张新的图片继续分析。**
 
 任务换到了天文学。给模型一张完整光谱，它需要判断这个天体是否属于某个目标类别。如果全图里的细节看不清，模型可以指定一个波长区间，让工具重新画出局部光谱，再根据新证据继续判断。
 
@@ -118,7 +118,7 @@ Spec-o3 将这种过程称为 iMCoT，即 Interleaved Multimodal Chain-of-Though
 想先动手的读者，安装好 UV 后，可以直接执行下面的命令。首次使用时，按终端提示完成 PyTRIO 和 SwanLab 登录：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab/experiments/spec-o3
 uv sync --locked
 
@@ -131,13 +131,13 @@ uv run python train_sft.py --epochs 2
 
 这会将 SFT 数据和图片下载到 `datasets/sft/`，然后使用默认的 Qwen3.5-4B LoRA 配置启动 2 个 epoch 的冷启动训练。每轮结束后，终端会打印继续训练用的 `state_path` 和推理评测用的 `sampler_path`。
 
-接下来可以继续阅读实现细节。数据划分、完整训练参数、如何接上 RL，以及评测和绘图命令，都放在[第 8 节：如何运行这次实验](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md#8-如何运行这次实验)。
+接下来可以继续阅读实现细节。数据划分、完整训练参数、如何接上 RL，以及评测和绘图命令，都放在[第 8 节：如何运行这次实验](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md#8-如何运行这次实验)。
 
 ## 3. 图片和工具调用怎样进入 PyTRIO？
 
 ### 3.1 在 Qwen3.5 的原生模板上改什么？
 
-Qwen3.5 原生模板已经包含思考、工具调用和图片格式，也会保留同一条工具交互链中的 reasoning。我们以[固定版本的官方模板](https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/chat_template.jinja)为底稿，整理成 [qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja)，主要做两件事：
+Qwen3.5 原生模板已经包含思考、工具调用和图片格式，也会保留同一条工具交互链中的 reasoning。我们以[固定版本的官方模板](https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/chat_template.jinja)为底稿，整理成 [qwen3_5_spec_o3.jinja](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja)，主要做两件事：
 
 - 始终保留各轮 assistant 的 `reasoning_content`，包括跨新 user 问题的早期 reasoning，供完整轨迹监督使用。
 - 用 `{% generation %}` 标出 assistant 需要学习的范围，让 tokenizer 返回对应的监督 mask。
@@ -164,7 +164,7 @@ Hα region
 
 ### 3.2 图片通过 ImageChunk 进入上下文
 
-[protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) 先渲染消息，再把每个 `<|image_pad|>` 替换为真实图片 chunk。整个输入保持文本、图片、文本的原始顺序。下面省略具体编码过程，只展示结构：
+[protocol.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) 先渲染消息，再把每个 `<|image_pad|>` 替换为真实图片 chunk。整个输入保持文本、图片、文本的原始顺序。下面省略具体编码过程，只展示结构：
 
 ```python
 prompt = trio.ModelInput(
@@ -188,7 +188,7 @@ prompt = trio.ModelInput(
 
 工具使用的是公开 Parquet 中附带的光谱数值。`prepare_data.py` 将它们提取到 `datasets/rl/spectra/*.npz`，其中保存 `wavelength`、`flux` 和 `redshift`。初始图片单独保存在 `datasets/rl/images/`。
 
-[tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) 的核心计算很短：
+[tools.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) 的核心计算很短：
 
 ```python
 wavelength = np.asarray(wavelength) / (1 + redshift)
@@ -227,7 +227,7 @@ Cold-start 数据已经包含“思考、工具调用、图片观察、最终回
 
 完整示范轨迹把这些环节连在一起：`<think>` 中写分析，`<tool_call>` 中指定工具和波长区间，工具观察回填后开启下一轮思考，最后用 `<answer>` 包住结论与解释。SFT 对各轮 assistant 的输出进行监督，让模型学习如何按这套协议组织分析和动作，为后续 GRPO 的多轮探索打下基础。
 
-训练由 [train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) 异步执行，使用 `cross_entropy`，只监督 assistant 生成的内容。下面保留首轮 4B SFT 的训练记录：batch size 4、学习率 `2e-5`、LoRA rank 32、2 个 epoch，共 **424 个训练 step**。每轮结束后计算验证 loss，并保存供后续训练和评测使用的权重。
+训练由 [train_sft.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) 异步执行，使用 `cross_entropy`，只监督 assistant 生成的内容。下面保留首轮 4B SFT 的训练记录：batch size 4、学习率 `2e-5`、LoRA rank 32、2 个 epoch，共 **424 个训练 step**。每轮结束后计算验证 loss，并保存供后续训练和评测使用的权重。
 
 ![Spec-o3 cold-start SFT：训练 loss 与每批 assistant 监督 token 数](./images/swanlab-sft.png)
 
@@ -291,7 +291,7 @@ $$
 
 ### 5.4 只更新实际生成的 assistant token
 
-[rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) 每轮直接保存服务返回的 token 和 logprob。续写时保留实际生成的历史，仅编码新增的工具观察与下一轮前缀，避免重新渲染 assistant 文本后改变 token 序列。
+[rollout.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) 每轮直接保存服务返回的 token 和 logprob。续写时保留实际生成的历史，仅编码新增的工具观察与下一轮前缀，避免重新渲染 assistant 文本后改变 token 序列。
 
 一条轨迹中的 assistant token 共享该轨迹的 advantage。问题、图片、工具观察和程序补入的分隔符只作为上下文，对应的 advantage 为零。随后整批 Datum 交给 PyTRIO 内置 `ppo` loss，裁剪范围为 `[0.8, 1.2]`，每批更新一次。
 
@@ -344,7 +344,7 @@ PyTRIO 最有价值的地方，在与**缩短了从“我想试试这个方法�
 在已安装 UV 的机器上，先获取项目并安装锁定依赖：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync --locked
 cd experiments/spec-o3
@@ -519,12 +519,12 @@ uv run python analysis.py
 
 | 文件 | 职责 |
 | --- | --- |
-| [prepare_data.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/prepare_data.py) | 下载、清理和划分数据，保存图片与光谱数组 |
-| [templates/qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja) | 渲染多轮图文消息，标出 assistant 监督区间 |
-| [protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) | 构造图片 chunk、SFT/RL Datum，解析动作 |
-| [tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) | 按波长区间重绘局部光谱 |
-| [rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) | 执行一条完整工具轨迹，保存实际 token 与 logprob |
-| [train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) | 异步 SFT、验证和两份权重保存 |
-| [train_rl.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) | 组采样、奖励、advantage、PPO 更新与 checkpoint |
-| [eval.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) | 独立评测，保存分类指标、轨迹和工具图片 |
-| [analysis.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py) | 绘制本文的固定结果 |
+| [prepare_data.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/prepare_data.py) | 下载、清理和划分数据，保存图片与光谱数组 |
+| [templates/qwen3_5_spec_o3.jinja](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja) | 渲染多轮图文消息，标出 assistant 监督区间 |
+| [protocol.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) | 构造图片 chunk、SFT/RL Datum，解析动作 |
+| [tools.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) | 按波长区间重绘局部光谱 |
+| [rollout.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) | 执行一条完整工具轨迹，保存实际 token 与 logprob |
+| [train_sft.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) | 异步 SFT、验证和两份权重保存 |
+| [train_rl.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) | 组采样、奖励、advantage、PPO 更新与 checkpoint |
+| [eval.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) | 独立评测，保存分类指标、轨迹和工具图片 |
+| [analysis.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py) | 绘制本文的固定结果 |

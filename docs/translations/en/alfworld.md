@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-alfworld&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-alfworld&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/alfworld](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/alfworld)
+> - Complete code: [datawhalechina/agentic-rl-lab/experiments/alfworld](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/alfworld)
 > - Paper: [ALFWorld: Aligning Text and Embodied Environments for Interactive Learning](https://arxiv.org/abs/2010.03768)
 > - Official implementation: [alfworld/alfworld](https://github.com/alfworld/alfworld)
 > - SwanLab: [Complete ALFWorld training records](https://swanlab.cn/@kmno4/llm-agent-rl-lab-alfworld/runs)
@@ -87,7 +87,7 @@ The code uses six ALFWorld task types:
 | `pick_cool_then_place_in_recep` | Cool an object before placing it in the specified receptacle |
 | `pick_two_obj_and_place` | Find two objects of the same kind and place them in the specified receptacle |
 
-Following [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py), only `game.tw-pddl` files marked `solvable=true` and belonging to these six task types are retained. The downloaded data yields:
+Following [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py), only `game.tw-pddl` files marked `solvable=true` and belonging to these six task types are retained. The downloaded data yields:
 
 | Split | Available games | Meaning |
 | --- | ---: | --- |
@@ -164,7 +164,7 @@ The project requires Python `>=3.13`. ALFWorld is an optional dependency, so oth
 ### Install dependencies and download ALFWorld data
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync --extra alfworld
@@ -467,28 +467,28 @@ Eight Python files make up the implementation. The pipeline is:
 
 ### 1. `data.py`: discover games and fix their order
 
-[`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py) discovers `game.tw-pddl` under `datasets/alfworld/json_2.1.1`, reads adjacent `traj_data.json`, filters task types and solvability, then builds `GameExample` records.
+[`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py) discovers `game.tw-pddl` under `datasets/alfworld/json_2.1.1`, reads adjacent `traj_data.json`, filters task types and solvability, then builds `GameExample` records.
 
 Games are shuffled with a fixed seed before training. `take_batch()` supports wrapping, so training continues when `--max-steps` exceeds one pass through the data.
 
-Entry point: [`discover_games()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py#L80).
+Entry point: [`discover_games()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py#L80).
 
 ### 2. `protocol.py`: one tool and complete multi-turn context
 
-[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) defines `alfworld_step(action)`, the system prompt, tool-call parsing and observation formatting.
+[`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) defines `alfworld_step(action)`, the system prompt, tool-call parsing and observation formatting.
 
-The key function is [`build_next_prompt()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L263). It appends assistant closing markers and tool observations directly to the prior actual prompt and returned completion tokens, without retokenizing historical assistant text.
+The key function is [`build_next_prompt()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L263). It appends assistant closing markers and tool observations directly to the prior actual prompt and returned completion tokens, without retokenizing historical assistant text.
 
 This ensures:
 
 1. The next prompt strictly extends the previous actual token sequence.
 2. Rollout old log probabilities remain aligned with the assistant tokens used for training.
 
-Tool-call parser: [`parse_assistant()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L100).
+Tool-call parser: [`parse_assistant()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L100).
 
 ### 3. `environment.py`: K independent environments for one game
 
-[`environment.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) creates K independent TextWorld instances from one `game.tw-pddl`. `reset()` verifies identical initial observations and game files across branches so group comparisons really concern the same task.
+[`environment.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) creates K independent TextWorld instances from one `game.tw-pddl`. `reset()` verifies identical initial observations and game files across branches so group comparisons really concern the same task.
 
 `step()` receives K actions, advances the environment group and returns:
 
@@ -502,11 +502,11 @@ action 是否 admissible
 
 This file also handles CPython 3.13+ compatibility for TextWorld 1.7.0's dynamic variable scope and safe shutdown of asynchronous workers. The project can consequently run under Python 3.14.
 
-Core class: [`ALFWorldGroup`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py#L168).
+Core class: [`ALFWorldGroup`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py#L168).
 
 ### 4. `rollout.py`: advance long trajectories concurrently
 
-[`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) implements the agent state machine.
+[`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) implements the agent state machine.
 
 The first turn's K trajectories share one prompt, so one request uses `num_samples=K`. Environment states then diverge. Each unfinished branch requests one candidate, with `sample_async` concurrency across trajectories and strict causal ordering within each trajectory.
 
@@ -523,21 +523,21 @@ admissible / done / won
 
 After all trajectories finish, `rollout_batch()` counts invalid actions, computes episode rewards and calls the advantage module.
 
-Entry point: [`rollout_batch()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L469).
+Entry point: [`rollout_batch()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L469).
 
 ### 5. `advantages.py`: relative trajectory advantages within a game
 
-[`advantages.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) groups trajectories by `group_id` and calculates `reward - group_mean`.
+[`advantages.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) groups trajectories by `group_id` and calculates `reward - group_mean`.
 
 It also records degenerate groups with identical rewards. Their trajectories have zero advantage and skip ineffective backward computation.
 
-Entry point: [`assign_advantages()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py#L18).
+Entry point: [`assign_advantages()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py#L18).
 
 ### 6. `train.py`: Datums, PPO and checkpoints
 
-[`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py) connects rollouts to PyTRIO.
+[`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py) connects rollouts to PyTRIO.
 
-[`build_trajectory_datum()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L249) applies one autoregressive shift to the complete multi-turn trajectory:
+[`build_trajectory_datum()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L249) applies one autoregressive shift to the complete multi-turn trajectory:
 
 ```text
 model_input   = full_tokens[:-1]
@@ -551,13 +551,13 @@ It then constructs per-token old log probabilities and advantages:
 assistant token:  使用 rollout old_logprob 与 trajectory advantage
 ```
 
-Each update in [`main()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L489) obtains the latest LoRA sampler, performs rollouts, filters zero-advantage trajectories, makes one PPO backward call and one optimizer step, then logs to SwanLab.
+Each update in [`main()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L489) obtains the latest LoRA sampler, performs rollouts, filters zero-advantage trajectories, makes one PPO backward call and one optimizer step, then logs to SwanLab.
 
 `save_checkpoint()` saves both state and sampler weights. Training trajectories remain in process memory and are not written separately to disk.
 
 ### 7. `eval.py`: concurrent evaluation with complete trajectory records
 
-[`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) shares training's prompt, protocol, environments and rollout implementation.
+[`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) shares training's prompt, protocol, environments and rollout implementation.
 
 Base evaluation leaves `model_path` empty; checkpoints use `trio://.../sampler_weights/...`. Evaluation runs `games-per-batch` games concurrently with one trajectory each, then separately aggregates `valid_seen` and `valid_unseen` metrics:
 
@@ -572,11 +572,11 @@ admissible action rate
 六类任务成功率
 ```
 
-Unlike training, evaluation uses [`trajectory_record()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L585) to write every complete game to JSONL for later review.
+Unlike training, evaluation uses [`trajectory_record()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L585) to write every complete game to JSONL for later review.
 
 ### 8. `analysis.py`: plot results from JSONL
 
-[`analysis.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) reads the final `type=summary` records from three evaluation JSONL files, checks model names and game counts, and generates the 1×2 checkpoint figure.
+[`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) reads the final `type=summary` records from three evaluation JSONL files, checks model names and game counts, and generates the 1×2 checkpoint figure.
 
 The left panel compares `valid_seen / valid_unseen` success. The right combines overall success with mean invalid actions.
 
@@ -584,14 +584,14 @@ The eight files can be summarized as follows:
 
 | File | Responsibility |
 | --- | --- |
-| [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py) | Discover, filter, shuffle and cycle through games |
-| [`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) | Tool protocol, full history, parsing and token-prefix extension |
-| [`environment.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) | K game branches, state transitions, compatibility and cleanup |
-| [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) | Asynchronous sampling, interaction, trajectory state, rewards and JSONL |
-| [`advantages.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) | Same-game relative trajectory advantages |
-| [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py) | Datums, token masks, PPO, optimizer, SwanLab and checkpoints |
-| [`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint evaluation, aggregated metrics and trajectory JSONL |
-| [`analysis.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | Read summaries and plot checkpoint comparisons |
+| [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py) | Discover, filter, shuffle and cycle through games |
+| [`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) | Tool protocol, full history, parsing and token-prefix extension |
+| [`environment.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) | K game branches, state transitions, compatibility and cleanup |
+| [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) | Asynchronous sampling, interaction, trajectory state, rewards and JSONL |
+| [`advantages.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) | Same-game relative trajectory advantages |
+| [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py) | Datums, token masks, PPO, optimizer, SwanLab and checkpoints |
+| [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint evaluation, aggregated metrics and trajectory JSONL |
+| [`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | Read summaries and plot checkpoint comparisons |
 
 Together these files connect game discovery, online interaction, relative credit assignment and independent evaluation.
 

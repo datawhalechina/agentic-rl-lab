@@ -12,7 +12,7 @@ description: 安装 PyTRIO 实验依赖、登录训练服务与 SwanLab，并在
 ## 获取代码与安装依赖
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 ```

@@ -34,7 +34,7 @@ The GSPO note distinguishes its core-loss implementation from a complete trainin
 
 ## Five places to find in PyTRIO training code
 
-In this repository's [synchronous GRPO script](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py), trace:
+In this repository's [synchronous GRPO script](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py), trace:
 
 1. `ServiceClient` and `create_lora_training_client`: base-model selection and the training session.
 2. `save_weights_and_get_sampling_client`: a sampler from the current training weights, followed by group sampling.

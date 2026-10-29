@@ -25,7 +25,7 @@ const tilt = (i) => `${tilts[i % tilts.length]}deg`
           <a class="lab-button primary" :href="withBase(path('/guide/quickstart.html'))">{{ t('开始第一个实验', 'Run your first experiment') }} <LabIcon name="arrow" :size="17" /></a>
           <a class="lab-button secondary" :href="withBase(path('/experiments/'))">{{ t('浏览实验手册', 'Browse experiments') }} <LabIcon name="book" :size="17" /></a>
         </div>
-        <div class="hero-quickstart"><code>git clone KMnO4-zx/agentic-rl-lab && uv sync</code><a :href="withBase(path('/guide/quickstart.html'))">{{ t('安装与入门', 'Quickstart') }} <LabIcon name="arrow" :size="13" /></a></div>
+        <div class="hero-quickstart"><code>git clone datawhalechina/agentic-rl-lab && uv sync</code><a :href="withBase(path('/guide/quickstart.html'))">{{ t('安装与入门', 'Quickstart') }} <LabIcon name="arrow" :size="13" /></a></div>
       </div>
       <TrainingLoop />
     </section>

@@ -2,14 +2,14 @@
 
 Follow this order: environment setup → download data → SFT cold start → GRPO → evaluation.
 
-See the [Spec-o3 article](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) for the method and results, and [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs) for public training curves.
+See the [Spec-o3 article](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) for the method and results, and [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs) for public training curves.
 
 ## 1. Get the project, install dependencies and log in
 
 Install uv first, then run:
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab/experiments/spec-o3
 uv sync --locked
 

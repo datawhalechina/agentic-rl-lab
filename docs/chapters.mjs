@@ -25,7 +25,7 @@ export const chapters = [
   { id: 'spec-o3', number: '15', title: 'Spec-o3', subtitle: '用强化学习寻找天上的星星', group: 'frontiers', source: 'experiments/spec-o3/readme.md', start: 'experiments/spec-o3/start.md', description: '从 SFT 到 GRPO，让模型边看光谱、边思考、边调用工具完成天体候选审核。', tags: ['光谱分析', '多模态工具'] },
 ]
 
-export const repoUrl = 'https://github.com/KMnO4-zx/agentic-rl-lab'
+export const repoUrl = 'https://github.com/datawhalechina/agentic-rl-lab'
 export const chapterLink = (chapter, locale = 'zh') => `${locale === 'en' ? '/en' : ''}/experiments/${chapter.id}/`
 export const localizedChapters = (locale = 'zh') => chapters.map(c => ({ ...c, ...metadata[c.id], ...(locale === 'en' ? metadata[c.id].en : {}) }))
 export const localizedGroups = (locale = 'zh') => groups.map(g => ({ ...g, ...(locale === 'en' ? englishGroups[g.id] : {}) }))

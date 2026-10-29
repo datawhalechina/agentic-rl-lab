@@ -67,7 +67,7 @@ function navigation(locale: 'zh' | 'en') {  const en = locale === 'en'
     editLink: {
       pattern: ({ frontmatter, relativePath }) => {
         // VitePress serializes this function for the browser; keep it self-contained.
-        const repository = 'https://github.com/KMnO4-zx/agentic-rl-lab'
+        const repository = 'https://github.com/datawhalechina/agentic-rl-lab'
         return frontmatter.translationSource
           ? `${repository}/edit/doc/${frontmatter.translationSource}`
           : frontmatter.source ? `${repository}/edit/main/${frontmatter.source}` : `${repository}/edit/doc/docs/content/${relativePath}`

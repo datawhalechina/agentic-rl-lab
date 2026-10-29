@@ -2,14 +2,14 @@
 
 按顺序完成：安装环境 → 下载数据 → SFT 冷启动 → GRPO → 评测。
 
-原理与实验结果见 [Spec-o3 Blog](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md)，公开训练曲线见 [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs)。
+原理与实验结果见 [Spec-o3 Blog](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md)，公开训练曲线见 [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs)。
 
 ## 1. 获取项目、安装环境并登录
 
 先安装好 UV，再执行：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab/experiments/spec-o3
 uv sync --locked
 

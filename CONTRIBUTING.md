@@ -77,7 +77,7 @@ experiments/algorithm-name/
 
 ## 交流
 
-- 微信交流群：见 [Issue #13](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13)
+- 微信交流群：见 [Issue #13](https://github.com/datawhalechina/agentic-rl-lab/issues/13)
 - 不确定选题是否合适？直接开 Issue 问，或者在群里聊，不用等有完整方案再开口。
 
 &emsp;&emsp;期待你的贡献，一起把 Agentic RL 的门槛降下来！

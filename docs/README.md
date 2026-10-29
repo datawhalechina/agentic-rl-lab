@@ -36,7 +36,7 @@ npm run docs:preview
 
 当前隔离开发分支为 `doc`。`.github/workflows/docs.yml` 在推送该分支后构建、校验并部署；PR 仅构建和校验。部署前需在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**，并允许 `doc` 分支使用 `github-pages` environment。
 
-部署后的地址为 `https://kmno4-zx.github.io/agentic-rl-lab/`。
+部署后的地址为 `https://datawhalechina.github.io/agentic-rl-lab/`。
 
 后续 `main` 增加或修改正文后，先在 `doc` 合并最新 `main`，验证构建再推送。建议网站稳定后把网站源码合回 `main`，同时将 workflow 的 `push.branches` 和部署条件改为 `main`、手写网页的编辑链接改为 `edit/main`。这样正文变更会直接触发部署，避免长期维护两条内容分支。
 

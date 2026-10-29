@@ -7,18 +7,18 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-medical-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-medical-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and reproduction resources**
 >
-> - Open-source repository: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab)
+> - Open-source repository: [datawhalechina/agentic-rl-lab](https://github.com/datawhalechina/agentic-rl-lab)
 > - PyTRIO website and registration: [https://pytrio.cn/](https://pytrio.cn/) (remote training, sampling and weight saving)
 > - SwanLab registration: [https://swanlab.cn/login](https://swanlab.cn/login) (training logs and experiment metrics)
 > - Medical SFT dataset: [FreedomIntelligence/medical-o1-reasoning-SFT](https://huggingface.co/datasets/FreedomIntelligence/medical-o1-reasoning-SFT)
 > - MedQA-zh evaluation data: [bigbio/med_qa](https://huggingface.co/datasets/bigbio/med_qa)
 > - C-Eval dataset: [ceval/ceval-exam](https://huggingface.co/datasets/ceval/ceval-exam)
-> - Prerequisite: [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)
+> - Prerequisite: [General OPD tutorial](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)
 > - PyTRIO Skill：[SwanHubX/pytrio-skill](https://github.com/SwanHubX/pytrio-skill)
 > - SwanLab Skill：[SwanHubX/swanlab-skill](https://github.com/SwanHubX/swanlab-skill)
 
@@ -38,7 +38,7 @@ In the previous GRPO chapter, reward supplied the training signal. We sampled se
 
 OPD uses a different signal. It does not require a reference answer for every prompt or a hand-written reward function. The student generates its own response, and the teacher scores each token along that actual trajectory. The update then moves the student toward the distribution preferred by the teacher.
 
-The DeepMath-103K version is available as a [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md), covering the minimal training loop. Here I wanted to find out whether that mechanism could solve a more practical problem.
+The DeepMath-103K version is available as a [General OPD tutorial](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md), covering the minimal training loop. Here I wanted to find out whether that mechanism could solve a more practical problem.
 
 A friend's suggestion led me to Chinese medical capability enhancement.
 
@@ -57,7 +57,7 @@ The main result: in this experiment, the final SAR-OPD checkpoint reached `84.33
 
 > SAR-OPD and IDT-OPD are names I use for these two experimental designs. They are not established algorithm names from earlier papers. This chapter implements the core OPD mechanism and explores how it can balance medical and general capabilities.
 
-All code is here: <https://github.com/KMnO4-zx/agentic-rl-lab>
+All code is here: <https://github.com/datawhalechina/agentic-rl-lab>
 
 ## Results First
 
@@ -153,7 +153,7 @@ OPD:  advantage 来自 Teacher 与 Student 的 token logprob 差
 
 OPD also has a `group_size`, which simply samples more student trajectories per prompt. It does not compute group-relative rewards as GRPO does; each completion independently receives token-level teacher supervision.
 
-If OPD is new to you, start with the [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md). It explains reverse KL, autoregressive shifting, Datum alignment, and synchronous and asynchronous training in more detail. This chapter focuses on the design and results of the two medical experiments.
+If OPD is new to you, start with the [General OPD tutorial](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/readme.md). It explains reverse KL, autoregressive shifting, Datum alignment, and synchronous and asynchronous training in more detail. This chapter focuses on the design and results of the two medical experiments.
 
 ## Preparing the Data
 
@@ -585,7 +585,7 @@ More teachers also introduce complexity: their tokenizers must be compatible, ta
 After cloning the repository, install dependencies and log in to PyTRIO:
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -809,6 +809,6 @@ That is what I find most interesting about OPD. Its uses extend beyond compressi
 
 ### Implementation and experiment tools
 
-1. Complete code for this chapter: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/medical-opd)
+1. Complete code for this chapter: [datawhalechina/agentic-rl-lab](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/medical-opd)
 2. PyTRIO documentation: [Quick start](https://docs.pytrio.cn/docs) · [Compute Logprobs](https://docs.pytrio.cn/docs/advanced/compute_logprobs) · [Custom Loss Functions](https://docs.pytrio.cn/docs/guide/loss_fn)
 3. SwanLab documentation: [Quick start](https://docs.swanlab.cn/guide_cloud/general/quick-start.html)

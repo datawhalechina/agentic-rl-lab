@@ -9,7 +9,7 @@ description: Agentic RL Lab 的贡献指南：如何提议新的算法复现章�
 
 借助 [PyTRIO](https://pytrio.com)，仓库里的每一篇复现都做到了：一杯奶茶的钱、二十个 step、一张消费级显卡都不需要，就能看到真实的训练效果。我们相信，算法研究的价值在于理解算法本身，而不是先被基础设施绊倒三个月。你的每一篇贡献，都是在帮更多和我们一样的人跨过这道门槛。
 
-本页是 [贡献指南](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING.md) 的在线版（[English](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md)）。
+本页是 [贡献指南](https://github.com/datawhalechina/agentic-rl-lab/blob/main/CONTRIBUTING.md) 的在线版（[English](https://github.com/datawhalechina/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md)）。
 
 ## 贡献方式
 
@@ -21,7 +21,7 @@ description: Agentic RL Lab 的贡献指南：如何提议新的算法复现章�
 
 ## 新增算法章节的完整流程
 
-1. **开 Issue 提案**。使用[「算法复现提案」模板](https://github.com/KMnO4-zx/agentic-rl-lab/issues/new/choose)，写清楚：
+1. **开 Issue 提案**。使用[「算法复现提案」模板](https://github.com/datawhalechina/agentic-rl-lab/issues/new/choose)，写清楚：
    - 复现哪篇论文 / 哪个算法（附论文链接）
    - 打算在什么数据集、什么基座模型上复现
    - 训练闭环的 reward / advantage / loss 设计思路
@@ -74,7 +74,7 @@ experiments/algorithm-name/
 
 ## 交流
 
-- 微信交流群：见 [Issue #13](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13)
+- 微信交流群：见 [Issue #13](https://github.com/datawhalechina/agentic-rl-lab/issues/13)
 - 不确定选题是否合适？直接开 Issue 问，或者在群里聊，不用等有完整方案再开口。
 
 期待你的贡献，一起把 Agentic RL 的门槛降下来！

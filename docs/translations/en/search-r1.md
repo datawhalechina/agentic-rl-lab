@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-search-r1&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-search-r1&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/search-r1](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/search-r1)
+> - Complete code: [datawhalechina/agentic-rl-lab/experiments/search-r1](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/search-r1)
 > - SwanLab, current official DeepSeek Search run: [30-step training record](https://swanlab.cn/@kmno4/agentic-rl-lab-search-r1/runs/2rxzhig0/chart)
 > - SwanLab, legacy DeepSeek Evidence run: [historical 20-step record](https://swanlab.cn/@kmno4/llm-agent-rl-lab-search-r1/runs/06e4gw6a/chart)
 > - Paper: [Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning](https://arxiv.org/abs/2503.09516)
@@ -23,9 +23,9 @@ This is the third chapter in my series reproducing ten reinforcement learning al
 
 The earlier chapters cover:
 
-- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [Chapter 0: RL loss functions](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [Chapter 1: GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [Chapter 2: OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
 
 This time I finally tried an Agentic RL problem I had wanted to explore: learning when to search, what query to write, whether to search again after reading results, and when to give a final answer.
 
@@ -235,7 +235,7 @@ training_client.forward_backward(
 training_client.optim_step(adam_params).result()
 ```
 
-See the complete loop in [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
+See the complete loop in [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
 
 This keeps rollout and training responsibilities clear while using remote compute. For a task with long generation and tool interaction but relatively short backward computation, that separation is useful.
 
@@ -290,7 +290,7 @@ The 20-step results show an early optimization signal with stable search. They r
 
 ## The Search-R1 training loop in detail
 
-The core idea is now established. Runnable code is in the [GitHub repository](https://github.com/KMnO4-zx/agentic-rl-lab).
+The core idea is now established. Runnable code is in the [GitHub repository](https://github.com/datawhalechina/agentic-rl-lab).
 
 The following sections follow an actual training step. The directory contains:
 
@@ -311,7 +311,7 @@ experiments/search-r1/
 
 Data comes from the official [`PeterJinGo/nq_hotpotqa_train`](https://huggingface.co/datasets/PeterJinGo/nq_hotpotqa_train), downloaded at a fixed version through a ModelScope mirror.
 
-The preparation script is [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/prepare_data.py).
+The preparation script is [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/prepare_data.py).
 
 Training data contains:
 
@@ -340,7 +340,7 @@ The distinction is:
 
 ## Step 2: declare search as a model tool
 
-The protocol is in [`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/protocol.py).
+The protocol is in [`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/protocol.py).
 
 The search schema is short:
 
@@ -378,7 +378,7 @@ prompt_tokens = tokenizer.apply_chat_template(
 
 The model emits structured `<tool_call>` output, which `protocol.py` parses into a query. After real search, the result returns in a `role="tool"` observation; no guessed stop word is needed to infer search intent.
 
-Search backends are implemented in [`search.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/search.py). Training and evaluation use the same client factory:
+Search backends are implemented in [`search.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/search.py). Training and evaluation use the same client factory:
 
 ```python
 search_client = create_search_client(
@@ -418,7 +418,7 @@ One shared prompt with `num_samples=8` no longer represents those branches. Each
 
 ![](<./images/Group Rollout · Shared Root and Diverged Contexts.png>)
 
-The state machine is in [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py):
+The state machine is in [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py):
 
 ```text
 第一轮：
@@ -446,7 +446,7 @@ The following figure preserves an early MuSiQue evaluation trajectory, showing s
 
 ## Step 4: calculate reward from the final answer
 
-Reward is implemented in [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/reward.py).
+Reward is implemented in [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/reward.py).
 
 The model must leave exactly one nonempty final answer:
 
@@ -488,7 +488,7 @@ The 8 trajectories produce 8 final rewards. Calculate:
 A_i = r_i - \frac{1}{8}\sum_{j=1}^{8} r_j
 ```
 
-See [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py):
+See [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py):
 
 ```python
 mean_reward = sum(item.reward for item in group) / len(group)
@@ -538,7 +538,7 @@ system / user / tool observation: advantage = 0
 assistant tool call / final answer: advantage = trajectory_advantage
 ```
 
-See `build_datum()` in [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
+See `build_datum()` in [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
 
 The core logic is:
 
@@ -597,7 +597,7 @@ PyTRIO `0.2.9` supports automatic gradient accumulation. The SDK splits physical
 
 Zero-advantage trajectories remain in the full batch so the SDK normalizes using the complete rollout denominator. A batch with no training signal skips the update. Each effective training step makes one `forward_backward` call and one `optim_step` call.
 
-See `build_datum()` and the training loop in [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
+See `build_datum()` and the training loop in [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
 
 ## Running a 20-step experiment
 
@@ -606,7 +606,7 @@ The following path runs the full Search-R1 pipeline with a small training budget
 ### 1. Install and log in
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -737,7 +737,7 @@ For Wikipedia, use `--search-backend wikipedia --search-concurrency 3 --search-t
 
 For an initial pipeline check, add `--limit 20` before running the fixed 70-question evaluation.
 
-[`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/eval.py) uses the same tokenizer, tool protocol, search environment, trajectory limits and EM rules for Base and checkpoint.
+[`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/eval.py) uses the same tokenizer, tool protocol, search environment, trajectory limits and EM rules for Base and checkpoint.
 
 ### 6. Plot evaluation results
 
@@ -755,7 +755,7 @@ Plot the historical DeepSeek Evidence Base / Step 20 comparison:
 uv run python analyse.py --preset deepseek
 ```
 
-[`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/analyse.py) reads each JSONL's final `summary.metrics` and checks the fixed 70 questions, matching search API or model, excerpt field and search settings before combining results.
+[`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/analyse.py) reads each JSONL's final `summary.metrics` and checks the fixed 70 questions, matching search API or model, excerpt field and search settings before combining results.
 
 ## Which training metrics matter?
 
@@ -835,6 +835,6 @@ I had not yet chosen the next chapter when writing this note—perhaps GSPO, OPS
 
 ### This implementation
 
-1. [Complete Search-R1 PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/search-r1)
+1. [Complete Search-R1 PyTRIO code](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/search-r1)
 2. [PyTRIO documentation](https://docs.pytrio.cn/)
 3. [SwanLab documentation](https://docs.swanlab.cn/)

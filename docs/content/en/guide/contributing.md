@@ -9,7 +9,7 @@ This repo has a single goal: **to let more people reproduce Agentic RL algorithm
 
 Thanks to [PyTRIO](https://pytrio.com), every reproduction in this repo achieves this: for the price of a cup of bubble tea, in about twenty training steps, without owning a single consumer GPU, you can see real training progress. We believe the value of algorithm research lies in understanding the algorithm itself, not in spending three months wrestling with infrastructure first. Every chapter you contribute helps more people like us cross that threshold.
 
-This page mirrors the [Contributing Guide](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md) on GitHub.
+This page mirrors the [Contributing Guide](https://github.com/datawhalechina/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md) on GitHub.
 
 ## Ways to Contribute
 
@@ -21,7 +21,7 @@ This page mirrors the [Contributing Guide](https://github.com/KMnO4-zx/agentic-r
 
 ## Full Process for a New Algorithm Chapter
 
-1. **Open an Issue proposal**. Use the [Algorithm Proposal template](https://github.com/KMnO4-zx/agentic-rl-lab/issues/new/choose) and include:
+1. **Open an Issue proposal**. Use the [Algorithm Proposal template](https://github.com/datawhalechina/agentic-rl-lab/issues/new/choose) and include:
    - Which paper / algorithm you want to reproduce (with a link to the paper)
    - Which dataset and base model you plan to use
    - Your design for the reward / advantage / loss training loop
@@ -74,7 +74,7 @@ Chapter text is primarily in Chinese (consistent with existing chapters); if an 
 
 ## Community
 
-- WeChat group: see [Issue #13](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13)
+- WeChat group: see [Issue #13](https://github.com/datawhalechina/agentic-rl-lab/issues/13)
 - Not sure whether a topic fits? Open an Issue and ask, or chat in the group — you don't need a complete plan before reaching out.
 
 Looking forward to your contribution — let's lower the barrier to Agentic RL together!

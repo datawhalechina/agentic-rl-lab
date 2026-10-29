@@ -39,6 +39,6 @@ Experiments use [SwanLab](https://swanlab.cn/) for tracking. Relevant public rec
 
 ## Improve the experiments together
 
-Use [GitHub Issues](https://github.com/KMnO4-zx/agentic-rl-lab/issues) to share reproduction notes, report problems or propose experiments. Include the model name, command, dependency versions and relevant logs to make a report easier to investigate.
+Use [GitHub Issues](https://github.com/datawhalechina/agentic-rl-lab/issues) to share reproduction notes, report problems or propose experiments. Include the model name, command, dependency versions and relevant logs to make a report easier to investigate.
 
-See the [GitHub repository](https://github.com/KMnO4-zx/agentic-rl-lab) for source code and license information. The WeChat community entry is in [this issue](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13).
+See the [GitHub repository](https://github.com/datawhalechina/agentic-rl-lab) for source code and license information. The WeChat community entry is in [this issue](https://github.com/datawhalechina/agentic-rl-lab/issues/13).

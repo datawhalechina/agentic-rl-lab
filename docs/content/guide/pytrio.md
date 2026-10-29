@@ -34,7 +34,7 @@ GSPO 笔记会区分核心 loss 实现与完整训练复现；其他章节也保
 
 ## 读 PyTRIO 训练代码时，先找这五个位置
 
-以仓库的 [GRPO 同步脚本](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py)为例：
+以仓库的 [GRPO 同步脚本](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py)为例：
 
 1. `ServiceClient` 与 `create_lora_training_client`：选择基模并创建训练会话。
 2. `save_weights_and_get_sampling_client`：从当前训练权重取得 sampler，再做组采样。

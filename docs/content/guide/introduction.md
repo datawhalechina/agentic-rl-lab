@@ -39,6 +39,6 @@ description: 一个从论文、代码和真实实验出发的 Agent 强化学习
 
 ## 一起把实验做好
 
-欢迎在 [GitHub Issues](https://github.com/KMnO4-zx/agentic-rl-lab/issues) 分享复现记录、报告问题或提出新的实验想法。提交问题时，附上模型名称、运行命令、依赖版本与必要日志，会更容易定位。
+欢迎在 [GitHub Issues](https://github.com/datawhalechina/agentic-rl-lab/issues) 分享复现记录、报告问题或提出新的实验想法。提交问题时，附上模型名称、运行命令、依赖版本与必要日志，会更容易定位。
 
-完整源代码与许可说明见 [GitHub 仓库](https://github.com/KMnO4-zx/agentic-rl-lab)。微信交流群入口在[这个 Issue](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13)。
+完整源代码与许可说明见 [GitHub 仓库](https://github.com/datawhalechina/agentic-rl-lab)。微信交流群入口在[这个 Issue](https://github.com/datawhalechina/agentic-rl-lab/issues/13)。

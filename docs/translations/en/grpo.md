@@ -9,7 +9,7 @@ In my previous post, I discussed the intuition behind several common loss functi
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-grpo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-grpo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 The next chapter will discuss OPD, or On-Policy Distillation. It's quite similar to GRPO; both methods continue training using trajectories sampled from the current policy. The key difference is that GRPO uses the reward signal, while OPD uses the teacher's evaluation of the student's trajectories. We will explain this in more detail in the next chapter.
@@ -58,7 +58,7 @@ This demo, in order to maintain clarity, only utilizes `reward - mean_reward`. F
 
 ## What does this reproduction cover?
 
-Code: https://github.com/KMnO4-zx/agentic-rl-lab
+Code: https://github.com/datawhalechina/agentic-rl-lab
 
 Create PyTRIO and SwanLab accounts to run the experiment.
 

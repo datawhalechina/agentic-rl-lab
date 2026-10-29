@@ -5,14 +5,14 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-general-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-general-opd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **Code and Resources**
 
-- Open-source repository: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab)
-- Synchronous code: [01-demo-sync.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/01-demo-sync.py)
-- Asynchronous code: [02-demo-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/02-demo-async.py)
+- Open-source repository: [datawhalechina/agentic-rl-lab](https://github.com/datawhalechina/agentic-rl-lab)
+- Synchronous code: [01-demo-sync.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/01-demo-sync.py)
+- Asynchronous code: [02-demo-async.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/general-opd/02-demo-async.py)
 - PyTRIO website and registration: [https://pytrio.cn/](https://pytrio.cn/) (for remote training, sampling, and weight saving)
 - SwanLab registration: [https://swanlab.cn/login](https://swanlab.cn/login) (for tracking training progress and experimental metrics)
 - DeepMath-103K dataset: [AI-ModelScope/DeepMath-103K](https://modelscope.cn/datasets/AI-ModelScope/DeepMath-103K)

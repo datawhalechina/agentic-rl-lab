@@ -7,13 +7,13 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-opsd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-opsd&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/opsd](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/opsd)
-> - 异步 OPSD 训练脚本：[01-opsd-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/opsd](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/opsd)
+> - 异步 OPSD 训练脚本：[01-opsd-async.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
 > - SwanLab 训练记录：[查看完整实验曲线](https://swanlab.cn/@kmno4/llm-agent-rl-lab-opsd/runs/pxsnuza4/chart)
 > - OPSD 论文：[Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models](https://arxiv.org/abs/2601.18734)
 > - OPSD 官方实现：[siyan-zhao/OPSD](https://github.com/siyan-zhao/OPSD)
@@ -25,10 +25,10 @@
 
 前面几篇分别讲了：
 
-- [第 0 篇：强化学习基础——损失函数](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [第 1 篇：GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [第 2 篇：OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
-- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [第 0 篇：强化学习基础——损失函数](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [第 1 篇：GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [第 2 篇：OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
 
 这次想做的是一篇刚刚放出来不久、思路又特别漂亮的工作：**OPSD，On-Policy Self-Distillation**。
 
@@ -206,7 +206,7 @@ Here is a reference solution to this problem:
 请理解上面的推理，但不要直接复制；用自己的方式推导同一个答案。
 ```
 
-真实实现位于 [`build_student_prompt_ids()` 和 `build_teacher_prompt_ids()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L279-L305)。
+真实实现位于 [`build_student_prompt_ids()` 和 `build_teacher_prompt_ids()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L279-L305)。
 
 参考解答并不是让 Teacher 输出一份新的标准答案，而是作为 privileged information 改变 Teacher 对“下一个 token”的判断。
 
@@ -262,7 +262,7 @@ reverse_kl = np.asarray(student_lps) - np.asarray(teacher_lps)
 advantages = -args.kl_penalty_coef * reverse_kl
 ```
 
-完整位置见 [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468)。
+完整位置见 [`run_prompt_rollout_async()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468)。
 
 如果 Teacher 比 Student 更认可这个 token，那么 `log p_T - log p_S` 为正，这个 token 会被鼓励；如果 Teacher 更不认可，它就会被压低。
 
@@ -346,7 +346,7 @@ prompt 区间为什么必须 mask？
 
 完整异步脚本在：
 
-> [`experiments/opsd/01-opsd-async.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
+> [`experiments/opsd/01-opsd-async.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
 
 一次训练 step 可以压缩成下面这段伪代码：
 
@@ -370,7 +370,7 @@ for step in range(total_steps):
 
 ## 第一步：准备 `problem + solution` 数据
 
-数据下载脚本是 [`00-datasets.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/00-datasets.py)。
+数据下载脚本是 [`00-datasets.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/00-datasets.py)。
 
 训练集使用论文作者公开的 [`siyanzhao/Openthoughts_math_30k_opsd`](https://huggingface.co/datasets/siyanzhao/Openthoughts_math_30k_opsd)，固定 revision 后一共 `29,434` 条，每条至少包含：
 
@@ -385,7 +385,7 @@ solution  # 只有 Teacher 能看到
 
 ## 第二步：创建可训练 Student 和固定 Teacher
 
-对应代码在 [`train()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L558-L616)：
+对应代码在 [`train()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L558-L616)：
 
 ```python
 training_client = await service_client.create_lora_training_client_async(
@@ -447,7 +447,7 @@ Student 生成完成后，Teacher 收到的是：
 teacher_prompt_ids + student_completion_ids
 ```
 
-代码位于 [`teacher_completion_logprobs_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L308-L330)：
+代码位于 [`teacher_completion_logprobs_async()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L308-L330)：
 
 ```python
 all_ids = teacher_prompt_ids + completion_ids
@@ -499,7 +499,7 @@ old logprobs
 advantages
 ```
 
-对应实现见 [`build_opd_datum()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L333-L371)。
+对应实现见 [`build_opd_datum()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L333-L371)。
 
 核心逻辑如下：
 
@@ -536,7 +536,7 @@ rollouts = await asyncio.gather(
 
 同时使用一个 `asyncio.Semaphore(32)` 统一限制 Student sampling 和 Teacher scoring 的总并发，避免一次提交过多请求。
 
-完整逻辑见 [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468) 和 [`train()` 中的 batch gather](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L623-L666)。
+完整逻辑见 [`run_prompt_rollout_async()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468) 和 [`train()` 中的 batch gather](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L623-L666)。
 
 这里的并发不会破坏 on-policy：当前 batch 的所有 rollout 都基于同一个 Student checkpoint，全部完成后才进行一次 optimizer update。
 
@@ -555,7 +555,7 @@ await fwd_bwd_future
 await optim_future
 ```
 
-完整位置见 [`01-opsd-async.py#L670-L699`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L670-L699)。
+完整位置见 [`01-opsd-async.py#L670-L699`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L670-L699)。
 
 PyTRIO 负责远端的 forward、backward、梯度累积与 LoRA optimizer；本地代码仍然完全控制 rollout、advantage、batch 边界和更新时机。
 
@@ -596,7 +596,7 @@ advantage = -(student_logprob - teacher_logprob)
 ### 1. 安装项目并登录
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -720,7 +720,7 @@ Student 先闭卷写出自己真正会写的东西；Teacher 再拿着参考答�
 
 ### 本文实现
 
-1. [OPSD PyTRIO 完整代码](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/opsd)
+1. [OPSD PyTRIO 完整代码](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/opsd)
 2. [PyTRIO 文档](https://docs.pytrio.com/docs)
 3. [PyTRIO 是什么？——知乎介绍](https://zhuanlan.zhihu.com/p/2063265307226019219)
 4. [PyTRIO On-Policy Distillation 示例](https://docs.pytrio.com/docs/example/opd)
