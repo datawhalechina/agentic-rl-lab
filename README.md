@@ -123,9 +123,23 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
   <img src="./images/star-history-2026826.png" alt="GitHub Star History" width="700" />
 </div>
 
-## Contributor
+## 🙏 致谢
+
+### 核心贡献者
+
+- [宋志学-项目负责人](https://github.com/KMnO4-zx)（Datawhale 成员）
+
+### 贡献者
 
 &emsp;&emsp;想为这个仓库贡献内容？欢迎！请先阅读 [贡献指南](./CONTRIBUTING.md)：新增算法章节请先开 Issue 提案，修复和文档改进可以直接提 PR。
+
+### 特别感谢
+
+- 感谢 [@Sm1les](https://github.com/Sm1les) 对本项目的帮助与支持
+- 感谢 [Kimi 全球大使计划](https://www.kimi.com/zh-cn/lp/kimi-ambassador) 对项目作者的支持
+- 感谢 [OpenAI Codex for Open Source 计划](https://developers.openai.com/community/codex-for-oss) 为项目作者提供的 ChatGPT Pro 订阅支持
+- 感谢 [火山 Hero 计划](https://www.volcengine.com/) 对项目作者的支持
+- 感谢所有为本项目做出贡献的开发者们 ❤️
 
 <div align=center style="margin-top: 30px;">
   <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
