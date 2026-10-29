@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        欢迎贡献！提交前请先阅读 [贡献指南](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING.md)（[English](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md)）。提案通过后，维护者会统一分配章节编号，然后你就可以 Fork 开发并提 PR 了。
+        欢迎贡献！提交前请先阅读 [贡献指南](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING.md)（[English](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING_EN.md)）。提案通过后，维护者会确认选题和 `experiments/<algorithm-name>/` 目录名称，然后你就可以 Fork 开发并提 PR 了。
 
   - type: input
     id: paper
@@ -58,5 +58,5 @@ body:
       options:
         - label: 我已阅读贡献指南，了解章节结构与质量要求
           required: true
-        - label: 我理解章节编号由维护者统一分配，不会自行编号
+        - label: 我理解新算法放在 experiments/ 下，目录使用小写英文与连字符，不加章节编号
           required: true

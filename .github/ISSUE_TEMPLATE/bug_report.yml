@@ -13,7 +13,7 @@ body:
     attributes:
       label: 相关章节
       description: 问题发生在哪个章节目录？
-      placeholder: 例如 03-search-r1
+      placeholder: 例如 experiments/search-r1
     validations:
       required: true
 
