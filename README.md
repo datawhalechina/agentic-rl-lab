@@ -117,11 +117,11 @@ uv add \
 uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ```
 
-## Star History
+## 用户故事
 
-<div align="center">
-  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
-</div>
+&emsp;&emsp;前几天在小红书分享记忆张量（MemTensor）的论文，评论区有位朋友说，他已经入职这家公司，面试时简历里写的就是本仓库的 [AgentOPSD](./experiments/agentopsd/readme.md)！加上好友才发现，刚入门时耐心帮他答疑的 Datawhale 思语，也是我的好朋友。哈哈，世界真小。看来学会 Agentic RL 是真能找到工作啊🤔。目前确实没有其他更好 Agentic RL 教程，Only datawhale can do！
+
+&emsp;&emsp;顺便安利一下他们开源的原生记忆模型 [MemT-1.0](https://github.com/MemTensor/MemT-1.0)，欢迎[下载体验](https://huggingface.co/collections/MemTensor/memt-1)～
 
 ## 🙏 致谢
 
@@ -146,6 +146,12 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
   <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=datawhalechina/agentic-rl-lab" />
   </a>
+</div>
+
+## Star History
+
+<div align="center">
+  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
 </div>
 
 ## License
