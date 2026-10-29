@@ -117,11 +117,11 @@ The ALFWorld optional extra corresponds to:
 uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ```
 
-## Star History
+## User Stories
 
-<div align="center">
-  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
-</div>
+A few days ago, I shared a MemTensor paper on Xiaohongshu. A reader commented that they'd joined the company, and [AgentOPSD](./experiments/agentopsd/readme.md) from this repo was the project on their interview résumé! After we connected, we discovered that Siyu from Datawhale, who had patiently helped them get started, is also a good friend of mine. Haha, small world! Looks like learning Agentic RL really can help you land a job 🤔. There really isn't a better Agentic RL tutorial out there right now. Only Datawhale can do it!
+
+A quick shout-out to their open-source native-memory model, [MemT-1.0](https://github.com/MemTensor/MemT-1.0): [download it and give it a try](https://huggingface.co/collections/MemTensor/memt-1)!
 
 ## 🙏 Acknowledgments
 
@@ -146,6 +146,12 @@ Want to contribute to this repo? Welcome! Please read the [Contributing Guide](.
   <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=datawhalechina/agentic-rl-lab" />
   </a>
+</div>
+
+## Star History
+
+<div align="center">
+  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
 </div>
 
 ## License
