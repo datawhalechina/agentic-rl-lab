@@ -1,6 +1,6 @@
 # Run commands
 
-Run all commands below from the `09-pytrio-jev/` directory, after `cd 09-pytrio-jev`:
+Run all commands below from the `experiments/pytrio-jev/` directory, after `cd experiments/pytrio-jev`:
 
 ```bash
 # 1. 下载与切分数据（typed-decisions train + ToolACE 1200 + 五项评测集）

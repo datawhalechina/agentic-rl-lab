@@ -6,7 +6,7 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [`09-pytrio-jev`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-pytrio-jev) / Quick start: [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-pytrio-jev/start.md)
+> - Complete code: [`experiments/pytrio-jev`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/pytrio-jev) / Quick start: [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)
 > - Method references: [Intern-Decision](https://github.com/InternLM/Intern-Decision), [Jev's architecture unmasked](https://archerhume.com/posts/jevs-architecture-unmasked), [Datawhale AgentJev tutorial](https://mp.weixin.qq.com/s/F7i83rn8oDzQ-sg13MKwWA)
 > - Training data: [`LocalLLaMA/typed-decisions`](https://huggingface.co/datasets/LocalLLaMA/typed-decisions), [`Team-ACE/ToolACE`](https://huggingface.co/datasets/Team-ACE/ToolACE)
 > - SwanLab: [Public training logs for this experiment](https://swanlab.cn/@kmno4/agentic-rl-lab-pytrio-jev/v1/qt5fzd/runs/g4i73a65/chart)
@@ -63,7 +63,7 @@ Here is the full training and inference pipeline:
 
 Ordinary SFT teaches a model to write an answer token by token. Here, the assistant-side input is a **JSON skeleton containing placeholders**, with one marker token for each question field. Supervision is applied only at the position immediately before each marker, where the model should predict the symbol for the correct answer: A/B/C, Yes/No, or 1–5.
 
-The figure below shows a real training input after rendering the chat template. Highlighted positions contribute to the loss. To keep extra system-prompt text out of the decision input, we wrote a minimal [chat template](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-pytrio-jev/templates/qwen3_5_jev.jinja) containing only the conversation structure:
+The figure below shows a real training input after rendering the chat template. Highlighted positions contribute to the loss. To keep extra system-prompt text out of the decision input, we wrote a minimal [chat template](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/templates/qwen3_5_jev.jinja) containing only the conversation structure:
 
 ![Training input with marker supervision positions highlighted](./images/train-chat-template.png)
 
@@ -100,16 +100,16 @@ trio login       # PyTRIO 训练服务（必需）
 swanlab login    # SwanLab 训练曲线（可选，也可用 --swanlab-mode offline）
 
 # 1. 下载并切分全部数据（训练 2160 条 + 五项评测集）
-uv run python 09-pytrio-jev/00-prepare-data.py
+uv run python experiments/pytrio-jev/00-prepare-data.py
 
 # 2. 冒烟：64 条跑 1 个 epoch，确认 loss 下降、marker 对齐正常
-uv run python 09-pytrio-jev/train.py --max-samples 64 --epochs 1 --save-every 0 --swanlab-mode offline
+uv run python experiments/pytrio-jev/train.py --max-samples 64 --epochs 1 --save-every 0 --swanlab-mode offline
 
 # 3. 正式训练：2160 条 × 2 epoch ÷ 16 = 270 步
-uv run python 09-pytrio-jev/train.py --epochs 2 --batch-size 16 --save-every 60 --swanlab-mode online
+uv run python experiments/pytrio-jev/train.py --epochs 2 --batch-size 16 --save-every 60 --swanlab-mode online
 ```
 
-Training prints a weights path beginning with `trio://`. Next, fit the calibration temperature with `calibrate.py` (Section 5), then run the five benchmarks with `eval.py`. The complete inference, calibration, and evaluation commands are in [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-pytrio-jev/start.md).
+Training prints a weights path beginning with `trio://`. Next, fit the calibration temperature with `calibrate.py` (Section 5), then run the five benchmarks with `eval.py`. The complete inference, calibration, and evaluation commands are in [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md).
 
 ## 3. Data: 2,160 training records and the same evaluation sets as Intern-Decision
 
@@ -211,7 +211,7 @@ The model learns to spot keywords and make a quick decision on short cases. Appl
 ## 7. File structure
 
 ```text
-09-pytrio-jev/
+experiments/pytrio-jev/
 ├── 00-prepare-data.py    # 下载 typed-decisions / ToolACE / Jevbench，完成切分与防污染
 ├── templates/
 │   └── qwen3_5_jev.jinja # 钉死的 chat template，训练/推理共用
@@ -225,7 +225,7 @@ The model learns to spot keywords and make a quick decision on short cases. Appl
 └── images/
 ```
 
-The complete command list is in [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-pytrio-jev/start.md).
+The complete command list is in [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md).
 
 ## Summary
 

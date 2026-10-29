@@ -21,7 +21,7 @@ This table maps reading routes. Check the actual arguments against each SDK.
 
 | Training stage | Tinker documentation entry point | PyTRIO implementation in this lab |
 | --- | --- | --- |
-| Create a training session | Quickstart: `ServiceClient` and a LoRA training client | Client initialization in the [synchronous GRPO script](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/01-demo-sync.py) |
+| Create a training session | Quickstart: `ServiceClient` and a LoRA training client | Client initialization in the [synchronous GRPO script](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py) |
 | Generate responses with the current policy | Quickstart: sampling and sampler checkpoints | The current-weight sampler, grouped completions and old-policy logprobs in [GRPO](/en/experiments/grpo/) |
 | Convert feedback into learning signals | [RL Cookbook](https://tinker-docs.thinkingmachines.ai/cookbook/rl/): rollouts, rewards and advantages | Training data construction in [Loss Functions](/en/experiments/loss-functions/) and [GRPO](/en/experiments/grpo/) |
 | Compute gradients and update the policy | `forward_backward` and `optim_step` | GRPO's built-in loss, plus custom objectives in [DAPO](/en/experiments/dapo/) and [GSPO](/en/experiments/gspo/) |

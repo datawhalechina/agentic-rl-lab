@@ -11,15 +11,15 @@ swanlab login
 Evaluation uses TRIO's OpenAI-compatible API. If the configuration file does not yet exist, run:
 
 ```bash
-cp 02-opd/.env.example 02-opd/.env
+cp experiments/medical-opd/.env.example experiments/medical-opd/.env
 ```
 
-Then fill in `PYTRIO_API_KEY` in `02-opd/.env`.
+Then fill in `PYTRIO_API_KEY` in `experiments/medical-opd/.env`.
 
 ## 1. Download the data
 
 ```bash
-uv run python 02-opd/00-download-dataset.py
+uv run python experiments/medical-opd/00-download-dataset.py
 ```
 
 This prepares the Medical SFT, MedQA-zh and C-Eval data.
@@ -29,7 +29,7 @@ This prepares the Medical SFT, MedQA-zh and C-Eval data.
 First train the Medical SFT teacher:
 
 ```bash
-uv run python 02-opd/02-medical-sft.py \
+uv run python experiments/medical-opd/02-medical-sft.py \
     --num-epochs 3 \
     --batch-size 16 \
     --max-length 2048 \
@@ -39,7 +39,7 @@ uv run python 02-opd/02-medical-sft.py \
 Record the SFT `sampler_weights` path printed at the end, then start Medical OPD:
 
 ```bash
-uv run python 02-opd/03-medical-opd-async.py \
+uv run python experiments/medical-opd/03-medical-opd-async.py \
     --teacher-model-path 'trio://RUN_ID/sampler_weights/SFT_WEIGHTS_NAME' \
     --steps 300 \
     --batch-size 4 \
@@ -58,15 +58,15 @@ Replace `RUN_ID` and `SFT_WEIGHTS_NAME` with the actual values from the previous
 Replace the model path below with the sampler weights path printed by OPD training:
 
 ```bash
-uv run python 02-opd/01-eval-medical.py \
+uv run python experiments/medical-opd/01-eval-medical.py \
     --model 'trio://RUN_ID/sampler_weights/OPD_WEIGHTS_NAME' \
     --max-tokens 1024 \
     --concurrency 16
 
-uv run python 02-opd/01-eval-ceval.py \
+uv run python experiments/medical-opd/01-eval-ceval.py \
     --model 'trio://RUN_ID/sampler_weights/OPD_WEIGHTS_NAME' \
     --max-tokens 8192 \
     --concurrency 16
 ```
 
-Per-question results and aggregate metrics are written to `02-opd/eval-results/`.
+Per-question results and aggregate metrics are written to `experiments/medical-opd/eval-results/`.

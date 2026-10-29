@@ -13,7 +13,7 @@ PyTRIO runs model training and sampling remotely while local scripts organize da
 
 1. Follow the [setup and first-run guide](./quickstart.html) to get the repository, install its locked dependencies, and log in to PyTRIO and SwanLab.
 2. Read the [GRPO walkthrough](/en/experiments/grpo/) and locate prompts, groups, rewards and advantages in the code.
-3. Use the [GRPO quick start](/en/experiments/grpo/run.html) for a small GSM8K run. The current guide uses the synchronous `01-grpo/01-demo-sync.py` entry point.
+3. Use the [GRPO quick start](/en/experiments/grpo/run.html) for a small GSM8K run. The current guide uses the synchronous `experiments/grpo/01-demo-sync.py` entry point.
 4. Inspect reward, the fraction of degenerate groups, completion length and training token counts. Keep the sampler weights path printed by the script.
 
 The repository currently pins `pytrio==0.2.9` and requires Python 3.13 or later. Use the locked environment for reproduction; check APIs and experimental results separately when trying another SDK version.
@@ -34,7 +34,7 @@ The GSPO note distinguishes its core-loss implementation from a complete trainin
 
 ## Five places to find in PyTRIO training code
 
-In this repository's [synchronous GRPO script](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/01-demo-sync.py), trace:
+In this repository's [synchronous GRPO script](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py), trace:
 
 1. `ServiceClient` and `create_lora_training_client`: base-model selection and the training session.
 2. `save_weights_and_get_sampling_client`: a sampler from the current training weights, followed by group sampling.

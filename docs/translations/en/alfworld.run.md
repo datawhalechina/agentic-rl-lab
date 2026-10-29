@@ -22,7 +22,7 @@ swanlab login
 
 ```bash
 uv run --extra alfworld alfworld-download \
-    --data-dir "$PWD/08-alfworld/datasets/alfworld"
+    --data-dir "$PWD/experiments/alfworld/datasets/alfworld"
 ```
 
 Training and evaluation read this directory by default; no additional `--data-root` is needed.
@@ -32,7 +32,7 @@ Training and evaluation read this directory by default; no additional `--data-ro
 Use one game and 8 trajectories to check data, environments, sampling, rewards, PPO and checkpointing:
 
 ```bash
-uv run --extra alfworld python 08-alfworld/train.py \
+uv run --extra alfworld python experiments/alfworld/train.py \
     --max-steps 1 \
     --games-per-batch 1 \
     --group-size 8 \
@@ -47,7 +47,7 @@ uv run --extra alfworld python 08-alfworld/train.py \
 ## 4. Launch the full 80-step run
 
 ```bash
-uv run --extra alfworld python 08-alfworld/train.py \
+uv run --extra alfworld python experiments/alfworld/train.py \
     --base-model Qwen/Qwen3.5-4B \
     --max-steps 80 \
     --games-per-batch 8 \
@@ -77,13 +77,13 @@ Use `Saved sampler weights` for checkpoint evaluation, not the state path.
 Full evaluation covers `valid_seen=140` and `valid_unseen=134`, for 274 games in total:
 
 ```bash
-uv run --extra alfworld python 08-alfworld/eval.py \
+uv run --extra alfworld python experiments/alfworld/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 08-alfworld/eval_results/base-qwen35-4b-eval.jsonl \
+    --output experiments/alfworld/eval_results/base-qwen35-4b-eval.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -92,14 +92,14 @@ uv run --extra alfworld python 08-alfworld/eval.py \
 Replace `--model-path` with the sampler weights path from the training log. This example uses Step 80:
 
 ```bash
-uv run --extra alfworld python 08-alfworld/eval.py \
+uv run --extra alfworld python experiments/alfworld/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://RUN_ID/sampler_weights/WEIGHTS_NAME' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 08-alfworld/eval_results/checkpoint-80steps.jsonl \
+    --output experiments/alfworld/eval_results/checkpoint-80steps.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -114,19 +114,19 @@ By default, `eval.py` refuses to overwrite an existing JSONL. To rerun evaluatio
 By default, `analysis.py` reads these three files:
 
 ```text
-08-alfworld/eval_results/base-qwen35-4b-eval.jsonl
-08-alfworld/eval_results/checkpoint-40steps.jsonl
-08-alfworld/eval_results/checkpoint-80steps.jsonl
+experiments/alfworld/eval_results/base-qwen35-4b-eval.jsonl
+experiments/alfworld/eval_results/checkpoint-40steps.jsonl
+experiments/alfworld/eval_results/checkpoint-80steps.jsonl
 ```
 
 Once all three files are ready, run:
 
 ```bash
-uv run python 08-alfworld/analysis.py
+uv run python experiments/alfworld/analysis.py
 ```
 
 Figures are saved to:
 
 ```text
-08-alfworld/images/alfworld_checkpoint_evaluation.png
+experiments/alfworld/images/alfworld_checkpoint_evaluation.png
 ```

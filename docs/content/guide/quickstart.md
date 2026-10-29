@@ -30,7 +30,7 @@ PyTRIO 负责训练与采样，SwanLab 用来记录训练指标。服务账户�
 
 ## 运行 GRPO
 
-从 [GRPO 快速启动](/experiments/grpo/run) 开始。该页面直接来自仓库的 `01-grpo/start.md`，包含当前推荐入口、采样参数和指标说明。
+从 [GRPO 快速启动](/experiments/grpo/run) 开始。该页面直接来自仓库的 `experiments/grpo/start.md`，包含当前推荐入口、采样参数和指标说明。
 
 ::: tip 先认识整个循环
 配合阅读 [GRPO 算法拆解](/experiments/grpo/)，对照「准备 prompt → 组采样 → 奖励与 advantage → 更新策略」四个步骤。训练调用会消耗远程服务资源，先按快速指南的小规模配置运行。

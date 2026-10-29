@@ -17,7 +17,7 @@ No separate download command is needed. The first training run downloads the `op
 With the current dependencies, use the synchronous entry point:
 
 ```bash
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
     --steps 10 \
     --batch-size 4 \
     --group-size 8 \

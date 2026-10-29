@@ -11,7 +11,7 @@ swanlab login
 ## 1. Download the data
 
 ```bash
-uv run python 06-dapo/prepare_data.py
+uv run python experiments/dapo/prepare_data.py
 ```
 
 This prepares the DAPO-Math training set and AIME25 evaluation set.
@@ -19,7 +19,7 @@ This prepares the DAPO-Math training set and AIME25 evaluation set.
 ## 2. Start training
 
 ```bash
-uv run python 06-dapo/train.py \
+uv run python experiments/dapo/train.py \
     --algorithm dapo \
     --max-steps 10 \
     --groups-per-step 4 \
@@ -38,13 +38,13 @@ The same entry point supports `--algorithm grpo` for a matched baseline.
 First evaluate the base model:
 
 ```bash
-uv run python 06-dapo/eval.py
+uv run python experiments/dapo/eval.py
 ```
 
 Then evaluate the trained sampler weights:
 
 ```bash
-uv run python 06-dapo/eval.py \
+uv run python experiments/dapo/eval.py \
     --model-path 'trio://RUN_ID/sampler_weights/DAPO_WEIGHTS_NAME' \
-    --output 06-dapo/eval-results/aime25-dapo-step10.jsonl
+    --output experiments/dapo/eval-results/aime25-dapo-step10.jsonl
 ```

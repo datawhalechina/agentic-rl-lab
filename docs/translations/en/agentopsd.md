@@ -7,7 +7,7 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-AgentOPSD"><img alt="Code" src="https://img.shields.io/badge/Code-09--AgentOPSD-2563eb?style=flat"></a>
+  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/agentopsd"><img alt="Code" src="https://img.shields.io/badge/Code-09--AgentOPSD-2563eb?style=flat"></a>
   <a href="https://arxiv.org/abs/2608.05987"><img alt="AgentOPSD" src="https://img.shields.io/badge/Paper-AgentOPSD-d94a45?style=flat"></a>
   <a href="https://arxiv.org/abs/2010.03768"><img alt="ALFWorld" src="https://img.shields.io/badge/Env-ALFWorld-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.8-7c3aed?style=flat"></a>
@@ -18,13 +18,13 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/09-AgentOPSD](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-AgentOPSD)
+> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/agentopsd](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/agentopsd)
 > - Paper: [Fine-Grained Agentic Reinforcement Learning via On-Policy Self-Distillation](https://arxiv.org/abs/2608.05987)
 > - Upstream implementation: [ZethWang/AgentOPSD](https://github.com/ZethWang/AgentOPSD/tree/0c478b2d7cdc201d9b1f076ec5b3dec7e88a161b)
 > - ALFWorld: [Paper](https://arxiv.org/abs/2010.03768) / [Official repository](https://github.com/alfworld/alfworld)
 > - PyTRIO documentation: [docs.pytrio.com](https://docs.pytrio.com/docs)
 
-This is chapter 9.3 in my series reproducing ten reinforcement learning algorithms. Chapter 9 has become a 9.x series: [9.1 Vision GRPO](../09-vision-grpo/readme.md) solves geometry problems from images, and [9.2 TEMPO](../09-tempo/readme.md) divides long trajectories into macro-steps. This chapter addresses credit assignment: when an agent succeeds after dozens of actions, which actions mattered? In AgentOPSD, the current agent first performs a real rollout without skills. The same parameter snapshot then reviews every turn with skills available. No additional critic is trained, and the teacher does not rewrite a reference trajectory. Final reward determines the trajectory's learning direction; the self-teacher identifies locally important actions. We completed 80 training steps with Qwen3.5-4B, PyTRIO and text-only ALFWorld.
+This is chapter 9.3 in my series reproducing ten reinforcement learning algorithms. Chapter 9 has become a 9.x series: [9.1 Vision GRPO](../vision-grpo/readme.md) solves geometry problems from images, and [9.2 TEMPO](../tempo/readme.md) divides long trajectories into macro-steps. This chapter addresses credit assignment: when an agent succeeds after dozens of actions, which actions mattered? In AgentOPSD, the current agent first performs a real rollout without skills. The same parameter snapshot then reviews every turn with skills available. No additional critic is trained, and the teacher does not rewrite a reference trajectory. Final reward determines the trajectory's learning direction; the self-teacher identifies locally important actions. We completed 80 training steps with Qwen3.5-4B, PyTRIO and text-only ALFWorld.
 
 I also see this as a possible early component of recursive self-improvement (RSI). Imagine a privately deployed model working through a harness such as Codex or Claude Code during the day and retaining its trajectories. At night, successes, failures and user corrections could be summarized into reusable skills. The same model could use those skills to reassess its original trajectories, assign turn credit with AgentOPSD, and update weights through infrastructure such as PyTRIO or Tinker. After evaluation without skills, the new model could return to work. In that proposed workflow, skills expose experience to the model, while training aims to incorporate it into the weights.
 
@@ -75,7 +75,7 @@ The loop has three roles. Both student and self-teacher use **the current model*
 
 The teacher **does not generate a better replacement trajectory**. It recomputes probabilities along the exact trajectory and action tokens produced by the student. The log-probability difference for a token under the two contexts supplies local evidence about whether knowing the skill would make that action more likely.
 
-This also differs from the [ordinary OPSD in chapter 4](../04-opsd/readme.md):
+This also differs from the [ordinary OPSD in chapter 4](../opsd/readme.md):
 
 | Method | Main supervision | Signal granularity | Teacher context |
 | --- | --- | --- | --- |
@@ -146,7 +146,7 @@ We first identified the method's core invariants, then connected them to chapter
 
 ### 3.1 Reuse a reliable environment layer
 
-From [08-alfworld](../08-alfworld/readme.md), we reuse independent branches for one game, strictly extending actual-token prefixes, and the causal sequence action → environment step → observation → next action.
+From [experiments/alfworld](../alfworld/readme.md), we reuse independent branches for one game, strictly extending actual-token prefixes, and the causal sequence action → environment step → observation → next action.
 
 These details determine whether teacher log probabilities really align. Rerendering history or silently truncating context would change the trajectory the teacher reviews relative to what the student saw.
 
@@ -199,7 +199,7 @@ trio login
 swanlab login
 
 uv run --extra alfworld alfworld-download \
-    --data-dir "$PWD/09-AgentOPSD/datasets/alfworld"
+    --data-dir "$PWD/experiments/agentopsd/datasets/alfworld"
 ```
 
 ### 4.2 Begin with a minimal smoke run
@@ -207,7 +207,7 @@ uv run --extra alfworld alfworld-download \
 This small command uses paid remote calls to verify the environment, student rollout, teacher scoring, PPO and checkpoint pipeline:
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/train.py \
+uv run --extra alfworld python experiments/agentopsd/train.py \
     --max-steps 1 \
     --tasks-per-update 1 \
     --group-size 4 \
@@ -222,7 +222,7 @@ All 4 trajectories for one game may succeed or fail together. Then sequence adva
 ### 4.3 Run the full 80-step experiment
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/train.py \
+uv run --extra alfworld python experiments/agentopsd/train.py \
     --base-model Qwen/Qwen3.5-4B \
     --max-steps 80 \
     --tasks-per-update 16 \
@@ -252,13 +252,13 @@ At Steps 40 and 80 and at training completion, two paths are saved:
 ### 4.4 Evaluate the base model
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/base-qwen35-4b-eval.jsonl \
+    --output experiments/agentopsd/eval_results/base-qwen35-4b-eval.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -267,24 +267,24 @@ uv run --extra alfworld python 09-AgentOPSD/eval.py \
 These commands use sampler weights from the documented experiment. For your own run, replace them with the path printed after `Saved sampler weights:`.
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://run_sschmbprfwg0/sampler_weights/agentopsd-alfworld-qwen35-4b-step-40-weights' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/checkpoint-eval-step40.jsonl \
+    --output experiments/agentopsd/eval_results/checkpoint-eval-step40.jsonl \
     --swanlab-mode disabled
 
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://run_sschmbprfwg0/sampler_weights/agentopsd-alfworld-qwen35-4b-step-80-weights' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/checkpoint-eval-step80.jsonl \
+    --output experiments/agentopsd/eval_results/checkpoint-eval-step80.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -293,13 +293,13 @@ Each JSONL contains 274 complete trajectories and a final unified summary. Prese
 ### 4.6 Generate the checkpoint comparison plot
 
 ```bash
-uv run python 09-AgentOPSD/analysis.py
+uv run python experiments/agentopsd/analysis.py
 ```
 
 The script reads Base, Step 40 and Step 80 summaries, verifies identical game IDs, then generates:
 
 ```text
-09-AgentOPSD/images/agentopsd_checkpoint_evaluation.png
+experiments/agentopsd/images/agentopsd_checkpoint_evaluation.png
 ```
 
 ## 5. What happened during training?
@@ -381,6 +381,6 @@ We completed the loop in 80 steps and 10,240 training rollouts. On the fixed 274
 | [`train.py`](./train.py) | Connect snapshot → rollout → teacher → credit → PPO → checkpoint |
 | [`eval.py`](./eval.py) | Evaluate Base/checkpoints without skills and save complete JSONL |
 | [`analysis.py`](./analysis.py) | Check evaluation consistency and plot checkpoint comparisons |
-| [`skills/alfworld/`](./skills/alfworld/) | Pinned general and task-specific skill assets |
+| [`skills/alfworld/`](./skills/alfworld) | Pinned general and task-specific skill assets |
 
 Start with the main loop in `train.py`, then follow `rollout.py → teacher.py → advantages.py → loss.py`. This is how a batch of student trajectories becomes a parameter update.

@@ -11,8 +11,8 @@
 > **Code and Resources**
 
 - Open-source repository: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab)
-- Synchronous code: [01-demo-sync.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/general-opd/01-demo-sync.py)
-- Asynchronous code: [02-demo-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/general-opd/02-demo-async.py)
+- Synchronous code: [01-demo-sync.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/01-demo-sync.py)
+- Asynchronous code: [02-demo-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/02-demo-async.py)
 - PyTRIO website and registration: [https://pytrio.cn/](https://pytrio.cn/) (for remote training, sampling, and weight saving)
 - SwanLab registration: [https://swanlab.cn/login](https://swanlab.cn/login) (for tracking training progress and experimental metrics)
 - DeepMath-103K dataset: [AI-ModelScope/DeepMath-103K](https://modelscope.cn/datasets/AI-ModelScope/DeepMath-103K)
@@ -318,7 +318,7 @@ trio login
 First, run a very small smoke test to confirm that authentication, models, and the data link are all functioning correctly.
 
 ```bash
-uv run python 02-opd/general-opd/01-demo-sync.py \
+uv run python experiments/general-opd/01-demo-sync.py \
   --steps 1 \
   --batch-size 1 \
   --group-size 1 \
@@ -330,7 +330,7 @@ uv run python 02-opd/general-opd/01-demo-sync.py \
 Once you're certain that the model weights are being saved completely, you can then increase the training volume.
 
 ```bash
-uv run python 02-opd/general-opd/01-demo-sync.py \
+uv run python experiments/general-opd/01-demo-sync.py \
   --steps 10 \
   --batch-size 4 \
   --group-size 4 \
@@ -407,7 +407,7 @@ If `kl_penalty_coef` is too small, teacher alignment may be weak. If it is too l
 The synchronous version is best suited for understanding and debugging. Once the data flow is confirmed to be correct, you can proceed to run it.
 
 ```bash
-uv run python 02-opd/general-opd/02-demo-async.py \
+uv run python experiments/general-opd/02-demo-async.py \
   --steps 10 \
   --batch-size 4 \
   --group-size 4 \

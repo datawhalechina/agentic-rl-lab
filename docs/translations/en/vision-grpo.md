@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-vision-grpo"><img alt="Code" src="https://img.shields.io/badge/Code-09--vision--grpo-2563eb?style=flat"></a>
+  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/vision-grpo"><img alt="Code" src="https://img.shields.io/badge/Code-09--vision--grpo-2563eb?style=flat"></a>
   <a href="https://huggingface.co/datasets/hz2475/geoQA"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-GeoQA-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.7-d94a45?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
@@ -14,7 +14,7 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [`09-vision-grpo`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-vision-grpo)
+> - Complete code: [`experiments/vision-grpo`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/vision-grpo)
 > - Quick start: [`start.md`](./start.md)
 > - Dataset: [`hz2475/geoQA`](https://huggingface.co/datasets/hz2475/geoQA)
 > - GRPO paper: [DeepSeekMath](https://arxiv.org/abs/2402.03300)
@@ -55,7 +55,7 @@ The source dataset contains 5,010 examples:
 `download-dataset.py` keeps the complete train split, shuffles the original test split with `seed=42`, and writes the last 100 examples to `datasets/test.parquet`. Training and evaluation read separate files:
 
 ```text
-09-vision-grpo/datasets/
+experiments/vision-grpo/datasets/
 ├── train.parquet
 └── test.parquet
 ```
@@ -228,7 +228,7 @@ swanlab login
 ### 3.2 Download GeoQA
 
 ```bash
-uv run python 09-vision-grpo/download-dataset.py
+uv run python experiments/vision-grpo/download-dataset.py
 ```
 
 The default output contains `3,503` training examples and the fixed `100` test examples. For strict reproduction, pass the same Hugging Face dataset revision through `--revision` to avoid drift when `main` changes.
@@ -238,7 +238,7 @@ The default output contains `3,503` training examples and the fixed `100` test e
 This command calls paid remote sampling and training services. Start with a small batch to check images, token alignment, rewards and the asynchronous API:
 
 ```bash
-uv run python 09-vision-grpo/train.py \
+uv run python experiments/vision-grpo/train.py \
   --steps 1 \
   --batch-size 1 \
   --group-size 4 \
@@ -254,7 +254,7 @@ All 4 answers to a single question may receive the same reward. In that case, th
 ### 3.4 Reproduce the 100-step configuration
 
 ```bash
-uv run python 09-vision-grpo/train.py \
+uv run python experiments/vision-grpo/train.py \
   --base-model Qwen/Qwen3.5-4B \
   --lora-rank 32 \
   --steps 100 \
@@ -311,16 +311,16 @@ Online batch reward also varies with question difficulty. Final conclusions must
 Evaluate the base model:
 
 ```bash
-uv run python 09-vision-grpo/eval.py \
-  --output 09-vision-grpo/eval-results-base.json
+uv run python experiments/vision-grpo/eval.py \
+  --output experiments/vision-grpo/eval-results-base.json
 ```
 
 Evaluate the trained checkpoint:
 
 ```bash
-uv run python 09-vision-grpo/eval.py \
+uv run python experiments/vision-grpo/eval.py \
   --model-path 'trio://RUN_ID/sampler_weights/WEIGHTS_NAME' \
-  --output 09-vision-grpo/eval-results-step-100.json
+  --output experiments/vision-grpo/eval-results-step-100.json
 ```
 
 Both evaluations use the same `datasets/test.parquet`, with these defaults:
@@ -353,7 +353,7 @@ After training, 9 responses still could not be parsed. All 9 reached the 1,024-t
 Regenerate the comparison figure:
 
 ```bash
-uv run python 09-vision-grpo/analysis.py
+uv run python experiments/vision-grpo/analysis.py
 ```
 
 `analysis.py` plots the Base and step-100 summary values recorded in this article; it does not read newly generated evaluation JSON. After a new experiment, update `BASE_RESULTS` and `GRPO_RESULTS` in the script first.
@@ -373,7 +373,7 @@ uv run python 09-vision-grpo/analysis.py
 ## 7. File structure
 
 ```text
-09-vision-grpo/
+experiments/vision-grpo/
 ├── download-dataset.py   # 下载 GeoQA，生成 train/test parquet
 ├── train.py              # 多模态 group rollout 与 GRPO 更新
 ├── eval.py               # 异步评测一个 Base 或 checkpoint

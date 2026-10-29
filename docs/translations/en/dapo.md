@@ -12,8 +12,8 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/06-dapo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/06-dapo)
-> - Shared training entry point: [06-dapo/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/train.py)
+> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/dapo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
+> - Shared training entry point: [experiments/dapo/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py)
 > - Paper: [DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://arxiv.org/abs/2503.14476)
 > - Official project page: [dapo-sia.github.io](https://dapo-sia.github.io/)
 > - Official implementation: [BytedTsinghua-SIA/DAPO](https://github.com/BytedTsinghua-SIA/DAPO)
@@ -23,12 +23,12 @@ This is the sixth chapter in my series reproducing ten reinforcement learning al
 
 Previous chapters cover:
 
-- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/00-loss-function/readme.md)
-- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/readme.md)
-- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/readme.md)
-- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/03-search-r1/readme.md)
-- [Chapter 4: OPSD for the price of a meal](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/readme.md)
-- [Chapter 5: ReTool for the price of two coffees](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/readme.md)
+- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [Chapter 4: OPSD for the price of a meal](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
+- [Chapter 5: ReTool for the price of two coffees](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/readme.md)
 
 I originally planned the familiar route: explain the algorithm, finish training and organize the results.
 
@@ -65,9 +65,9 @@ The official description highlights four changes:
 
 This overview compares the four changes with GRPO:
 
-![](./images/01%20%C2%B7%20DAPO%20vs%20GRPO%20Overview.png)
+![](./images/01 · DAPO vs GRPO Overview.png)
 
-The implementation keeps two presets in the same [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/train.py):
+The implementation keeps two presets in the same [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py):
 
 | Item | GRPO | DAPO |
 | --- | --- | --- |
@@ -92,7 +92,7 @@ GRPO samples multiple answers to one question and computes within-group advantag
 
 DAPO removes groups that are entirely correct or entirely incorrect, then samples another question. [Section 3.2 of the paper](https://arxiv.org/pdf/2503.14476#page=5) continues sampling before training until the batch contains only informative groups with `accuracy ∈ (0, 1)`.
 
-![](./images/02%20%C2%B7%20Bounded%20Dynamic%20Sampling.png)
+![](./images/02 · Bounded Dynamic Sampling.png)
 
 The motivation is reasonable. If many prompts become too easy or too hard, fewer examples in a fixed batch contribute gradients. Dynamic Sampling performs online difficulty selection, concentrating training near the current policy's capability boundary.
 
@@ -139,7 +139,7 @@ DAPO's token mean is:
 
 Every token has equal weight, so longer reasoning contributes more gradient terms. This avoids diluting long trajectories through sequence averaging, but also gives long responses more optimization weight. Interpret it alongside length shaping.
 
-![](./images/03%20%C2%B7%20Clip-Higher%20and%20Token%20Mean.png)
+![](./images/03 · Clip-Higher and Token Mean.png)
 
 ### 4. Soft Overlong Punishment: penalize before abrupt truncation
 
@@ -156,7 +156,7 @@ length > max_tokens:      penalty = -1
 shaped_reward = correctness_reward + length_penalty
 ```
 
-![](./images/04%20%C2%B7%20Soft%20Overlong%20Punishment.png)
+![](./images/04 · Soft Overlong Punishment.png)
 
 The figure uses the original configuration, `max_tokens=8192` and `overlong_cache=2048`. The penalty starts at 6,144 tokens and reaches −1 at 8,192.
 
@@ -174,7 +174,7 @@ The length penalty augments correctness reward. This implementation assigns +1 f
 
 ### Run the code first
 
-All code for this chapter is in `06-dapo/`.
+All code for this chapter is in `experiments/dapo/`.
 
 The project requires Python `>=3.13`. PyTRIO performs sampling and LoRA training, so log in after installing dependencies.
 
@@ -187,7 +187,7 @@ cd agentic-rl-lab
 uv sync
 trio login
 swanlab login
-cd 06-dapo
+cd experiments/dapo
 ```
 
 Download and prepare training data:
@@ -233,10 +233,10 @@ With the code running, we can examine the implementation.
 
 Four files contain the main implementation:
 
-- [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/prepare_data.py): download, clean and pin the dataset.
-- [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/rollout.py): group rollouts, advantages and Dynamic Sampling.
-- [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/reward.py): mathematical answer checking and Soft Overlong Punishment.
-- [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/06-dapo/train.py): shared GRPO/DAPO PPO updates.
+- [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/prepare_data.py): download, clean and pin the dataset.
+- [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/rollout.py): group rollouts, advantages and Dynamic Sampling.
+- [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/reward.py): mathematical answer checking and Soft Overlong Punishment.
+- [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py): shared GRPO/DAPO PPO updates.
 
 ### Data
 
@@ -470,5 +470,5 @@ Implementing DAPO from scratch changed how I diagnose slow training. With transf
 
 ### This implementation and experiment
 
-1. [Complete DAPO PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/06-dapo)
+1. [Complete DAPO PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
 2. [PyTRIO documentation](https://docs.pytrio.com/docs)

@@ -1,6 +1,6 @@
 # Reproducing Ten RL Algorithms, Chapter 9.4: Spec-o3, Finding Stars with GRPO 🌟
 
-> **Quick start:** See [start.md](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/start.md) for environment setup, data download, SFT, RL, evaluation and plotting commands.
+> **Quick start:** See [start.md](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/start.md) for environment setup, data download, SFT, RL, evaluation and plotting commands.
 
 <div align="center">
   <img src="./images/封面.png" alt="Spec-o3: finding stars with GRPO" width="100%">
@@ -18,7 +18,7 @@
 
 > **Code and reproduction resources**
 >
-> - This implementation: [SFT](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/train_sft.py) / [GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/train_rl.py) / [Evaluation](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/eval.py) / [Plotting](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/analysis.py)
+> - This implementation: [SFT](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) / [GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) / [Evaluation](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) / [Plotting](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py)
 > - Paper: [Spec-o3: A Tool-Augmented Vision-Language Agent for Rare Celestial Object Candidate Vetting via Automated Spectral Inspection](https://arxiv.org/abs/2601.06498)
 > - Authors' code: [Maxwell-Jia/spec-o3](https://github.com/Maxwell-Jia/spec-o3)
 > - Public datasets: [Cold-start SFT](https://huggingface.co/datasets/Maxwell-Jia/Spec-o3-ColdStartSFT) / [SpecVI-Bench](https://huggingface.co/datasets/Maxwell-Jia/SpecVI-Bench)
@@ -27,7 +27,7 @@
 
 This is chapter 9.4 in my series reproducing ten reinforcement learning algorithms.
 
-In [Vision GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-vision-grpo/readme.md), the model solved geometry problems from images. In [ReTool](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/readme.md), it called Python while solving a problem. This time I wanted to combine them: **the model looks at an image, reasons, actively calls a tool, then analyzes a new image returned by that tool.**
+In [Vision GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/vision-grpo/readme.md), the model solved geometry problems from images. In [ReTool](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/readme.md), it called Python while solving a problem. This time I wanted to combine them: **the model looks at an image, reasons, actively calls a tool, then analyzes a new image returned by that tool.**
 
 The task moves to astronomy. Given a complete spectrum, the model decides whether a celestial candidate belongs to a target category. When details are unclear in the full view, it can specify a wavelength interval, ask a tool to redraw that region, and continue judging from the new evidence.
 
@@ -119,7 +119,7 @@ After installing UV, you can run the following commands. On first use, follow th
 
 ```bash
 git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
-cd agentic-rl-lab/09-spec-o3
+cd agentic-rl-lab/experiments/spec-o3
 uv sync --locked
 
 uv run trio login
@@ -131,13 +131,13 @@ uv run python train_sft.py --epochs 2
 
 This downloads SFT data and images into `datasets/sft/` and starts 2 epochs of cold-start training with the default Qwen3.5-4B LoRA configuration. At each epoch end, the terminal prints `state_path` for continued training and `sampler_path` for inference and evaluation.
 
-The following sections explain the implementation. Data splits, full training parameters, the transition to RL, evaluation and plotting commands appear in [Section 8: Running this experiment](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/readme.md#8-如何运行这次实验).
+The following sections explain the implementation. Data splits, full training parameters, the transition to RL, evaluation and plotting commands appear in [Section 8: Running this experiment](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md#8-如何运行这次实验).
 
 ## 3. How do images and tool calls enter PyTRIO?
 
 ### 3.1 What changes in Qwen3.5's native template?
 
-Qwen3.5's native template already supports thinking, tool calls and images, and preserves reasoning within the same tool-interaction chain. Starting from a [pinned official template](https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/chat_template.jinja), we created [qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/templates/qwen3_5_spec_o3.jinja) with two main changes:
+Qwen3.5's native template already supports thinking, tool calls and images, and preserves reasoning within the same tool-interaction chain. Starting from a [pinned official template](https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/chat_template.jinja), we created [qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja) with two main changes:
 
 - Always preserve each assistant turn's `reasoning_content`, including earlier reasoning across new user questions, for full-trajectory supervision.
 - Mark assistant learning spans with `{% generation %}` so the tokenizer returns the corresponding supervision mask.
@@ -164,7 +164,7 @@ After tool execution, its image enters the message corresponding to `<tool_respo
 
 ### 3.2 Images enter the context through ImageChunk
 
-[protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/protocol.py) renders messages, then replaces every `<|image_pad|>` with a real image chunk. Text, images and following text retain their original order. This excerpt shows the structure, omitting encoding details:
+[protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) renders messages, then replaces every `<|image_pad|>` with a real image chunk. Text, images and following text retain their original order. This excerpt shows the structure, omitting encoding details:
 
 ```python
 prompt = trio.ModelInput(
@@ -188,7 +188,7 @@ This length determines training alignment. Every image position enters the conte
 
 The tool uses numerical spectra included in the public Parquet files. `prepare_data.py` extracts them into `datasets/rl/spectra/*.npz`, storing `wavelength`, `flux` and `redshift`. Initial images are saved separately in `datasets/rl/images/`.
 
-The core calculation in [tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/tools.py) is short:
+The core calculation in [tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) is short:
 
 ```python
 wavelength = np.asarray(wavelength) / (1 + redshift)
@@ -227,7 +227,7 @@ Before RL, SFT teaches Qwen3.5-4B **the interleaved reasoning and tool-call form
 
 Complete demonstrations connect these steps: analysis inside `<think>`, tool and wavelength parameters inside `<tool_call>`, another reasoning turn after the tool observation, and a conclusion with explanation inside `<answer>`. SFT supervises each assistant turn, preparing the model to organize its actions under the protocol before multi-turn GRPO exploration.
 
-[train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/train_sft.py) runs asynchronously with `cross_entropy`, supervising only assistant-generated content. The original 4B SFT run uses batch size 4, learning rate `2e-5`, LoRA rank 32 and 2 epochs, totaling **424 training steps**. Each epoch ends with validation loss and saved weights for further training and evaluation.
+[train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) runs asynchronously with `cross_entropy`, supervising only assistant-generated content. The original 4B SFT run uses batch size 4, learning rate `2e-5`, LoRA rank 32 and 2 epochs, totaling **424 training steps**. Each epoch ends with validation loss and saved weights for further training and evaluation.
 
 ![Spec-o3 cold-start SFT: training loss and supervised assistant tokens per batch](./images/swanlab-sft.png)
 
@@ -291,7 +291,7 @@ The standard deviation is the sample standard deviation, `ddof=1`. Even an incor
 
 ### 5.4 Update only the assistant tokens actually generated
 
-[rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/rollout.py) retains the tokens and log probabilities returned by the service for every turn. Continuation preserves the generated history and encodes only the new tool observation and next prefix, avoiding token changes caused by rerendering assistant text.
+[rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) retains the tokens and log probabilities returned by the service for every turn. Continuation preserves the generated history and encodes only the new tool observation and next prefix, avoiding token changes caused by rerendering assistant text.
 
 Assistant tokens in a trajectory share its advantage. Questions, images, tool observations and program-inserted separators are context only, with zero advantage. The batch of Datums then uses PyTRIO's built-in `ppo` loss with clipping bounds `[0.8, 1.2]` and one update per batch.
 
@@ -347,13 +347,13 @@ With UV installed, clone the project and install its locked dependencies:
 git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync --locked
-cd 09-spec-o3
+cd experiments/spec-o3
 
 uv run trio login
 uv run swanlab login
 ```
 
-In an existing checkout, run `uv sync --locked` from the root, then enter `09-spec-o3/`. **All commands below run in that directory.** The project uses Python 3.13+ and PyTRIO 0.2.9. Local code handles data, plotting and orchestration; the remote service handles model training and sampling. Training uses authentication saved by the CLI.
+In an existing checkout, run `uv sync --locked` from the root, then enter `experiments/spec-o3/`. **All commands below run in that directory.** The project uses Python 3.13+ and PyTRIO 0.2.9. Local code handles data, plotting and orchestration; the remote service handles model training and sampling. Training uses authentication saved by the CLI.
 
 ### 8.2 Prepare SFT data before RL data
 
@@ -519,12 +519,12 @@ Read the code from data preparation through input construction, interaction and 
 
 | File | Responsibility |
 | --- | --- |
-| [prepare_data.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/prepare_data.py) | Download, clean and split data; save images and spectrum arrays |
-| [templates/qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/templates/qwen3_5_spec_o3.jinja) | Render multi-turn image/text messages and mark assistant supervision spans |
-| [protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/protocol.py) | Build image chunks and SFT/RL Datums; parse actions |
-| [tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/tools.py) | Redraw a local spectrum for a wavelength interval |
-| [rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/rollout.py) | Execute a complete tool trajectory and retain actual tokens and log probabilities |
-| [train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/train_sft.py) | Asynchronous SFT, validation and state/sampler saving |
-| [train_rl.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/train_rl.py) | Group sampling, rewards, advantages, PPO updates and checkpoints |
-| [eval.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/eval.py) | Independent evaluation with classification metrics, trajectories and tool images |
-| [analysis.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/analysis.py) | Plot this article's fixed results |
+| [prepare_data.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/prepare_data.py) | Download, clean and split data; save images and spectrum arrays |
+| [templates/qwen3_5_spec_o3.jinja](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/templates/qwen3_5_spec_o3.jinja) | Render multi-turn image/text messages and mark assistant supervision spans |
+| [protocol.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/protocol.py) | Build image chunks and SFT/RL Datums; parse actions |
+| [tools.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/tools.py) | Redraw a local spectrum for a wavelength interval |
+| [rollout.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/rollout.py) | Execute a complete tool trajectory and retain actual tokens and log probabilities |
+| [train_sft.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_sft.py) | Asynchronous SFT, validation and state/sampler saving |
+| [train_rl.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/train_rl.py) | Group sampling, rewards, advantages, PPO updates and checkpoints |
+| [eval.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/eval.py) | Independent evaluation with classification metrics, trajectories and tool images |
+| [analysis.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/analysis.py) | Plot this article's fixed results |

@@ -21,7 +21,7 @@ Tinker 的[官方快速开始](https://tinker-docs.thinkingmachines.ai/tinker/qu
 
 | 训练环节 | Tinker 官方文档中的入口 | 本仓库的 PyTRIO 阅读入口 |
 | --- | --- | --- |
-| 创建训练会话 | Quickstart 中的 `ServiceClient` 与 LoRA training client | [GRPO 同步脚本](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/01-demo-sync.py)的 client 初始化 |
+| 创建训练会话 | Quickstart 中的 `ServiceClient` 与 LoRA training client | [GRPO 同步脚本](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py)的 client 初始化 |
 | 用当前策略生成回答 | Quickstart 的 sampling 与 sampler checkpoint | [GRPO](/experiments/grpo/)中的当前权重 sampler、组采样与旧策略 logprob |
 | 把反馈变成更新信号 | [RL Cookbook](https://tinker-docs.thinkingmachines.ai/cookbook/rl/)的 rollout、reward 和 advantage | [Loss Functions](/experiments/loss-functions/)与 [GRPO](/experiments/grpo/)的训练数据构造 |
 | 计算梯度并更新策略 | `forward_backward` 与 `optim_step` | GRPO 的内置 loss，以及 [DAPO](/experiments/dapo/)和 [GSPO](/experiments/gspo/)的自定义目标 |

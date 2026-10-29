@@ -15,7 +15,7 @@ This page mirrors the [Contributing Guide](https://github.com/KMnO4-zx/agentic-r
 
 | Type | Process |
 | --- | --- |
-| New algorithm chapter | Open an Issue proposal first → maintainer approves and assigns a chapter number → submit a PR → review and merge |
+| New algorithm chapter | Open an Issue proposal first → maintainer approves the topic and directory name → submit a PR → review and merge |
 | Bug fixes / additional experiments for existing chapters | Submit a PR directly; describe the problem and how to reproduce it |
 | Typos, docs improvements, translations | Submit a PR directly |
 
@@ -26,17 +26,17 @@ This page mirrors the [Contributing Guide](https://github.com/KMnO4-zx/agentic-r
    - Which dataset and base model you plan to use
    - Your design for the reward / advantage / loss training loop
    - Estimated PyTRIO cost (for reference: a single training run in existing chapters usually costs a few dozen to a few hundred CNY)
-2. **Wait for confirmation**. The maintainer will align with you on whether the topic fits and whether it conflicts with ongoing work, and will **assign the chapter number** (please do not pick a number yourself, to avoid collisions).
-3. **Fork and develop**. Suggested branch name: `feat/NN-algorithm-name`.
+2. **Wait for confirmation**. The maintainer will align with you on whether the topic fits and whether it conflicts with ongoing work, and confirm the directory name under `experiments/<algorithm-name>/` (lowercase letters and hyphens, without a chapter number).
+3. **Fork and develop**. Suggested branch name: `feat/algorithm-name`.
 4. **Submit the PR**. Link the Issue in the PR description, and attach training records and evaluation results (see Quality Requirements below).
 5. **Review**. The maintainer reviews from two angles — "is the algorithm explained clearly" and "can the code actually be reproduced" — and may ask for a few rounds of revision. This is a normal part of the process.
 
 ## Chapter Structure Conventions
 
-New chapters should strictly follow the structure of existing chapters (use `03-search-r1/` as the reference template):
+New chapters should strictly follow the structure of existing chapters (use `experiments/search-r1/` as the reference template):
 
 ```text
-NN-algorithm-name/
+experiments/algorithm-name/
 ├── readme.md          # Main chapter text (long-form, blog style)
 ├── start.md           # Quick start: full commands for data prep → training → evaluation
 ├── data.py / prepare_data.py   # Data download and preprocessing
@@ -49,7 +49,7 @@ NN-algorithm-name/
 └── .env.example       # Config template if API keys are needed
 ```
 
-- All scripts run from the **repo root**, e.g. `uv run python NN-name/train.py ...`.
+- All scripts run from the **repo root**, e.g. `uv run python experiments/algorithm-name/train.py ...`.
 - For the style of `readme.md`, follow the existing chapters: first explain where the algorithm comes from, what problem it solves, and what its core variables are; then explain how to reproduce it. Intuition first; everyday analogies (bubble tea, Heytea) are encouraged.
 - `start.md` must let a new reader copy the commands in order and get a working run: login (`trio login`, `swanlab login`) → data → training → evaluation.
 

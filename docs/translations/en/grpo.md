@@ -89,8 +89,8 @@ Today, debugging this code cost me 55 yuan. If it only runs 10 steps, the cost c
 ![](./images/trio-consume.png)
 
 ```text
-01-grpo/01-demo-sync.py
-01-grpo/02-demo-async.py
+experiments/grpo/01-demo-sync.py
+experiments/grpo/02-demo-async.py
 ```
 
 This section primarily discusses the synchronized version of `01-demo-sync.py`. The asynchronous version performs the same function, but instead submits each question within a batch concurrently, making it better suited for running formal experiments.
@@ -113,7 +113,7 @@ We can start with a lower-cost version.
 ```bash
 trio login
 
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
   --steps 10 \
   --batch-size 4 \
   --group-size 8 \
@@ -125,7 +125,7 @@ uv run python 01-grpo/01-demo-sync.py \
 If you're just checking whether the script runs successfully, you can temporarily disable SwanLab.
 
 ```bash
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
   --steps 1 \
   --batch-size 2 \
   --group-size 2 \
@@ -664,7 +664,7 @@ Looking solely at the reward isn't enough. For example, if the reward hasn't cha
 The simplest approach is to keep all other parameters unchanged and only replace the `--loss-fn`.
 
 ```bash
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
   --steps 30 \
   --batch-size 4 \
   --group-size 8 \
@@ -672,7 +672,7 @@ uv run python 01-grpo/01-demo-sync.py \
   --loss-fn importance_sampling \
   --swanlab-mode online
 
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
   --steps 30 \
   --batch-size 4 \
   --group-size 8 \
@@ -680,7 +680,7 @@ uv run python 01-grpo/01-demo-sync.py \
   --loss-fn ppo \
   --swanlab-mode online
 
-uv run python 01-grpo/01-demo-sync.py \
+uv run python experiments/grpo/01-demo-sync.py \
   --steps 30 \
   --batch-size 4 \
   --group-size 8 \

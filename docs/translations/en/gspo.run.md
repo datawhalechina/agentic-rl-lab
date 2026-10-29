@@ -11,7 +11,7 @@ swanlab login
 ## 1. Download the data
 
 ```bash
-uv run python 07-gspo/prepare_data.py
+uv run python experiments/gspo/prepare_data.py
 ```
 
 This prepares the DAPO-Math training set and AIME25 evaluation set.
@@ -19,7 +19,7 @@ This prepares the DAPO-Math training set and AIME25 evaluation set.
 ## 2. Start training
 
 ```bash
-uv run python 07-gspo/train.py \
+uv run python experiments/gspo/train.py \
     --max-steps 100 \
     --groups-per-step 8 \
     --group-size 8 \
@@ -36,13 +36,13 @@ The training log prints a state path for resuming training and a sampler weights
 First evaluate the base model:
 
 ```bash
-uv run python 07-gspo/eval.py
+uv run python experiments/gspo/eval.py
 ```
 
 Then evaluate the trained sampler weights:
 
 ```bash
-uv run python 07-gspo/eval.py \
+uv run python experiments/gspo/eval.py \
     --model-path 'trio://RUN_ID/sampler_weights/GSPO_WEIGHTS_NAME' \
-    --output 07-gspo/eval-results/aime25-gspo-step100.jsonl
+    --output experiments/gspo/eval-results/aime25-gspo-step100.jsonl
 ```

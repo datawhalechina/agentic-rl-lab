@@ -18,7 +18,7 @@
 > - Medical SFT dataset: [FreedomIntelligence/medical-o1-reasoning-SFT](https://huggingface.co/datasets/FreedomIntelligence/medical-o1-reasoning-SFT)
 > - MedQA-zh evaluation data: [bigbio/med_qa](https://huggingface.co/datasets/bigbio/med_qa)
 > - C-Eval dataset: [ceval/ceval-exam](https://huggingface.co/datasets/ceval/ceval-exam)
-> - Prerequisite: [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/general-opd/readme.md)
+> - Prerequisite: [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md)
 > - PyTRIO Skill：[SwanHubX/pytrio-skill](https://github.com/SwanHubX/pytrio-skill)
 > - SwanLab Skill：[SwanHubX/swanlab-skill](https://github.com/SwanHubX/swanlab-skill)
 
@@ -38,7 +38,7 @@ In the previous GRPO chapter, reward supplied the training signal. We sampled se
 
 OPD uses a different signal. It does not require a reference answer for every prompt or a hand-written reward function. The student generates its own response, and the teacher scores each token along that actual trajectory. The update then moves the student toward the distribution preferred by the teacher.
 
-The DeepMath-103K version is available as a [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/general-opd/readme.md), covering the minimal training loop. Here I wanted to find out whether that mechanism could solve a more practical problem.
+The DeepMath-103K version is available as a [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md), covering the minimal training loop. Here I wanted to find out whether that mechanism could solve a more practical problem.
 
 A friend's suggestion led me to Chinese medical capability enhancement.
 
@@ -153,7 +153,7 @@ OPD:  advantage 来自 Teacher 与 Student 的 token logprob 差
 
 OPD also has a `group_size`, which simply samples more student trajectories per prompt. It does not compute group-relative rewards as GRPO does; each completion independently receives token-level teacher supervision.
 
-If OPD is new to you, start with the [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/general-opd/readme.md). It explains reverse KL, autoregressive shifting, Datum alignment, and synchronous and asynchronous training in more detail. This chapter focuses on the design and results of the two medical experiments.
+If OPD is new to you, start with the [General OPD tutorial](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/general-opd/readme.md). It explains reverse KL, autoregressive shifting, Datum alignment, and synchronous and asynchronous training in more detail. This chapter focuses on the design and results of the two medical experiments.
 
 ## Preparing the Data
 
@@ -168,7 +168,7 @@ The experiment uses three types of data:
 The download script prepares data with a fixed seed:
 
 ```bash
-uv run python 02-opd/00-download-dataset.py
+uv run python experiments/medical-opd/00-download-dataset.py
 ```
 
 C-Eval is first split `80% / 20%` into an OPD training pool and a held-out test pool; 300 fixed questions are then sampled from the latter. To reduce medical overlap, the selection excludes `basic_medicine`, `clinical_medicine`, `physician`, `veterinary_medicine`, high-school biology and middle-school biology. The eight retained non-medical subsets are:
@@ -592,10 +592,10 @@ uv sync
 trio login
 ```
 
-Training scripts use the PyTRIO SDK. The two evaluation scripts use TRIO's OpenAI-compatible API and need the same API key in `02-opd/.env`:
+Training scripts use the PyTRIO SDK. The two evaluation scripts use TRIO's OpenAI-compatible API and need the same API key in `experiments/medical-opd/.env`:
 
 ```bash
-cp 02-opd/.env.example 02-opd/.env
+cp experiments/medical-opd/.env.example experiments/medical-opd/.env
 ```
 
 Replace the placeholder in `.env`:
@@ -609,13 +609,13 @@ PYTRIO_API_KEY="your_pytrio_api_key_here"
 For the full download:
 
 ```bash
-uv run python 02-opd/00-download-dataset.py
+uv run python experiments/medical-opd/00-download-dataset.py
 ```
 
 To check the data pipeline with a small run first:
 
 ```bash
-uv run python 02-opd/00-download-dataset.py \
+uv run python experiments/medical-opd/00-download-dataset.py \
   --medical-sft-sample-size 100 \
   --medqa-sample-size 20 \
   --ceval-train-size 100 \
@@ -627,7 +627,7 @@ uv run python 02-opd/00-download-dataset.py \
 A small trial run:
 
 ```bash
-uv run python 02-opd/02-medical-sft.py \
+uv run python experiments/medical-opd/02-medical-sft.py \
   --sample-size 100 \
   --num-epochs 1 \
   --batch-size 2 \
@@ -638,7 +638,7 @@ uv run python 02-opd/02-medical-sft.py \
 The full training run:
 
 ```bash
-uv run python 02-opd/02-medical-sft.py \
+uv run python experiments/medical-opd/02-medical-sft.py \
   --num-epochs 3 \
   --batch-size 16 \
   --max-length 2048 \
@@ -650,7 +650,7 @@ After training, record the epoch-3 `sampler_weights` path. Both approaches use i
 ### 3. Run Medical OPD
 
 ```bash
-uv run python 02-opd/03-medical-opd-async.py \
+uv run python experiments/medical-opd/03-medical-opd-async.py \
   --teacher-model-path YOUR_SFT_SAMPLER_WEIGHTS_PATH \
   --steps 300 \
   --batch-size 4 \
@@ -672,7 +672,7 @@ Medical OPD sampler weights  -> 用于评测或推理
 ### 4. Run SAR-OPD's Base-anchor stage
 
 ```bash
-uv run python 02-opd/04-ceval-opd-async.py \
+uv run python experiments/medical-opd/04-ceval-opd-async.py \
   --student-state-path YOUR_MEDICAL_OPD_TRAIN_STATE_PATH \
   --steps 300 \
   --batch-size 4 \
@@ -689,7 +689,7 @@ uv run python 02-opd/04-ceval-opd-async.py \
 ### 5. Run IDT-OPD
 
 ```bash
-uv run python 02-opd/05-interleaved-multi-teacher-opd.py \
+uv run python experiments/medical-opd/05-interleaved-multi-teacher-opd.py \
   --medical-teacher-model-path YOUR_SFT_SAMPLER_WEIGHTS_PATH \
   --steps 600 \
   --medical-steps-per-cycle 1 \
@@ -716,7 +716,7 @@ Prefer saving checkpoints at the end of complete scheduling cycles. A `1:1` cycl
 MedQA-zh：
 
 ```bash
-uv run python 02-opd/01-eval-medical.py \
+uv run python experiments/medical-opd/01-eval-medical.py \
   --model YOUR_SAMPLER_WEIGHTS_PATH \
   --max-tokens 1024 \
   --concurrency 16
@@ -725,13 +725,13 @@ uv run python 02-opd/01-eval-medical.py \
 C-Eval non-med：
 
 ```bash
-uv run python 02-opd/01-eval-ceval.py \
+uv run python experiments/medical-opd/01-eval-ceval.py \
   --model YOUR_SAMPLER_WEIGHTS_PATH \
   --max-tokens 8192 \
   --concurrency 16
 ```
 
-Evaluation writes per-question JSONL and summary metrics JSON files to `02-opd/eval-results/`. Keep the data files, system prompt, temperature and output budgets identical when comparing checkpoints; otherwise the accuracies are not directly comparable.
+Evaluation writes per-question JSONL and summary metrics JSON files to `experiments/medical-opd/eval-results/`. Keep the data files, system prompt, temperature and output budgets identical when comparing checkpoints; otherwise the accuracies are not directly comparable.
 
 ## Metrics to Watch During Training
 
@@ -809,6 +809,6 @@ That is what I find most interesting about OPD. Its uses extend beyond compressi
 
 ### Implementation and experiment tools
 
-1. Complete code for this chapter: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/02-opd)
+1. Complete code for this chapter: [KMnO4-zx/agentic-rl-lab](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/medical-opd)
 2. PyTRIO documentation: [Quick start](https://docs.pytrio.cn/docs) · [Compute Logprobs](https://docs.pytrio.cn/docs/advanced/compute_logprobs) · [Custom Loss Functions](https://docs.pytrio.cn/docs/guide/loss_fn)
 3. SwanLab documentation: [Quick start](https://docs.swanlab.cn/guide_cloud/general/quick-start.html)

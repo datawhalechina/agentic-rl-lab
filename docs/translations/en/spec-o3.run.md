@@ -2,7 +2,7 @@
 
 Follow this order: environment setup → download data → SFT cold start → GRPO → evaluation.
 
-See the [Spec-o3 article](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/readme.md) for the method and results, and [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs) for public training curves.
+See the [Spec-o3 article](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) for the method and results, and [SwanLab](https://swanlab.cn/@kmno4/agentic-rl-lab-spec-o3/v1/rjj3zx/runs) for public training curves.
 
 ## 1. Get the project, install dependencies and log in
 
@@ -10,14 +10,14 @@ Install uv first, then run:
 
 ```bash
 git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
-cd agentic-rl-lab/09-spec-o3
+cd agentic-rl-lab/experiments/spec-o3
 uv sync --locked
 
 uv run trio login
 uv run swanlab login
 ```
 
-**Run all subsequent commands inside `09-spec-o3/`.** If you already have the repository, enter that directory and start with `uv sync --locked`.
+**Run all subsequent commands inside `experiments/spec-o3/`.** If you already have the repository, enter that directory and start with `uv sync --locked`.
 
 Python 3.13+ is required, with PyTRIO pinned to 0.2.9. Data, tool plotting and orchestration run locally; training and sampling use remote PyTRIO resources. SwanLab logs to the cloud by default. With `--swanlab-mode disabled`, you can skip SwanLab login.
 

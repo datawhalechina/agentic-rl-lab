@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-tempo"><img alt="Code" src="https://img.shields.io/badge/Code-09--tempo-2563eb?style=flat"></a>
+  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/tempo"><img alt="Code" src="https://img.shields.io/badge/Code-09--tempo-2563eb?style=flat"></a>
   <a href="https://arxiv.org/abs/2010.03768"><img alt="Dataset" src="https://img.shields.io/badge/Env-ALFWorld-f59e0b?style=flat"></a>
   <a href="https://studio.dots.ai/dots/tempo-blog.html"><img alt="TEMPO" src="https://img.shields.io/badge/TEMPO-Dots%20Blog-d94a45?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.8-7c3aed?style=flat"></a>
@@ -16,13 +16,13 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/09-tempo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/09-tempo)
+> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/tempo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/tempo)
 > - Method source: [TEMPO: Test-Time-Scaled Value Estimation with Macro-Step Policy Optimization](https://studio.dots.ai/dots/tempo-blog.html), a technical blog from the Xiaohongshu Dots team
 > - PyTRIO documentation: [docs.pytrio.com](https://docs.pytrio.com/docs)
 
 This is chapter 9.2 in my series reproducing ten reinforcement learning algorithms.
 
-A note on numbering: I originally reserved chapter 10 for our own Harness-RL. Until it is ready, chapter 9 continues as a 9.x series. Chapter 9.1 is [Vision GRPO](../09-vision-grpo/readme.md), and this chapter, 9.2, reproduces TEMPO.
+A note on numbering: I originally reserved chapter 10 for our own Harness-RL. Until it is ready, chapter 9 continues as a 9.x series. Chapter 9.1 is [Vision GRPO](../vision-grpo/readme.md), and this chapter, 9.2, reproduces TEMPO.
 
 This experiment began differently from the earlier chapters. **At the time of this note, TEMPO had no published paper**, only a Dots technical blog. The blog explained the mechanisms but omitted hyperparameters, training curves and ablations. I therefore aimed for an **algorithm-level reproduction**: implement the mechanisms that distinguish TEMPO from ordinary GRPO and verify them in a real environment, without pursuing leaderboard scores. I replaced the original ARC-AGI-3 environment with ALFWorld because ARC-AGI-3 used a paid API without exposed server-state restoration. The interaction infrastructure comes from chapter 8.
 

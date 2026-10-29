@@ -21,36 +21,36 @@ Training uses online SwanLab tracking by default. For debugging, pass `--swanlab
 ## 2. Download and split GeoQA
 
 ```bash
-uv run python 09-vision-grpo/download-dataset.py
+uv run python experiments/vision-grpo/download-dataset.py
 ```
 
 The default output is:
 
 ```text
-09-vision-grpo/datasets/train.parquet  # 3,503 条
-09-vision-grpo/datasets/test.parquet   # 固定 100 条
+experiments/vision-grpo/datasets/train.parquet  # 3,503 条
+experiments/vision-grpo/datasets/test.parquet   # 固定 100 条
 ```
 
 To pin a dataset revision:
 
 ```bash
-uv run python 09-vision-grpo/download-dataset.py \
+uv run python experiments/vision-grpo/download-dataset.py \
   --revision DATASET_COMMIT
 ```
 
 ## 3. Check commands and local imports
 
 ```bash
-uv run python 09-vision-grpo/download-dataset.py --help
-uv run python 09-vision-grpo/train.py --help
-uv run python 09-vision-grpo/eval.py --help
-uv run python 09-vision-grpo/analysis.py --help
+uv run python experiments/vision-grpo/download-dataset.py --help
+uv run python experiments/vision-grpo/train.py --help
+uv run python experiments/vision-grpo/eval.py --help
+uv run python experiments/vision-grpo/analysis.py --help
 ```
 
 ## 4. Run a small 1-step check
 
 ```bash
-uv run python 09-vision-grpo/train.py \
+uv run python experiments/vision-grpo/train.py \
   --steps 1 \
   --batch-size 1 \
   --group-size 4 \
@@ -66,7 +66,7 @@ This checks sampling with real images, `input_tokens` alignment, boxed-answer re
 ## 5. Run a small 20-step experiment
 
 ```bash
-uv run python 09-vision-grpo/train.py \
+uv run python experiments/vision-grpo/train.py \
   --steps 20 \
   --batch-size 8 \
   --group-size 8 \
@@ -79,7 +79,7 @@ uv run python 09-vision-grpo/train.py \
 ## 6. Launch the full 100-step run
 
 ```bash
-uv run python 09-vision-grpo/train.py \
+uv run python experiments/vision-grpo/train.py \
   --base-model Qwen/Qwen3.5-4B \
   --lora-rank 32 \
   --steps 100 \
@@ -107,11 +107,11 @@ Use `sampler_weights` for evaluation and `training_state` to resume training.
 ## 7. Evaluate the base model
 
 ```bash
-uv run python 09-vision-grpo/eval.py \
+uv run python experiments/vision-grpo/eval.py \
   --base-model Qwen/Qwen3.5-4B \
   --max-tokens 1024 \
   --limit 100 \
-  --output 09-vision-grpo/eval-results-base.json
+  --output experiments/vision-grpo/eval-results-base.json
 ```
 
 ## 8. Evaluate a checkpoint
@@ -119,12 +119,12 @@ uv run python 09-vision-grpo/eval.py \
 Replace `--model-path` with the sampler weights path printed in the training log:
 
 ```bash
-uv run python 09-vision-grpo/eval.py \
+uv run python experiments/vision-grpo/eval.py \
   --base-model Qwen/Qwen3.5-4B \
   --model-path 'trio://RUN_ID/sampler_weights/WEIGHTS_NAME' \
   --max-tokens 1024 \
   --limit 100 \
-  --output 09-vision-grpo/eval-results-step-100.json
+  --output experiments/vision-grpo/eval-results-step-100.json
 ```
 
 Evaluate one model at a time, using separate output files for the base model and each checkpoint.
@@ -132,13 +132,13 @@ Evaluate one model at a time, using separate output files for the base model and
 ## 9. Generate the documented result figures
 
 ```bash
-uv run python 09-vision-grpo/analysis.py
+uv run python experiments/vision-grpo/analysis.py
 ```
 
 Output location:
 
 ```text
-09-vision-grpo/images/eval-comparison.png
+experiments/vision-grpo/images/eval-comparison.png
 ```
 
 The current `analysis.py` plots the documented base results `71.0% / 75.0%` and step-100 results `87.0% / 91.0%`. After a new experiment, update `BASE_RESULTS` and `GRPO_RESULTS` first.

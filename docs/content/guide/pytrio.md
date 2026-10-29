@@ -13,7 +13,7 @@ PyTRIO 将模型训练与采样放到远程服务，本地脚本组织数据、�
 
 1. 按[安装与首次训练指南](./quickstart.html)获取仓库、安装锁定依赖，并登录 PyTRIO 与 SwanLab。
 2. 阅读 [GRPO 原理与代码](/experiments/grpo/)，先认清 prompt、group、reward 和 advantage 在代码里的位置。
-3. 按 [GRPO 快速启动](/experiments/grpo/run.html)运行 GSM8K 小规模训练。当前指南使用 `01-grpo/01-demo-sync.py` 同步入口。
+3. 按 [GRPO 快速启动](/experiments/grpo/run.html)运行 GSM8K 小规模训练。当前指南使用 `experiments/grpo/01-demo-sync.py` 同步入口。
 4. 检查训练日志里的 reward、退化组比例、生成长度与训练 token 数，并保存程序输出的 sampler weights 路径。
 
 仓库当前锁定 `pytrio==0.2.9`，要求 Python 3.13 或以上。复现实验时优先使用仓库的锁定环境；想尝试其他 SDK 版本时，单独检查接口和实验结果。
@@ -34,7 +34,7 @@ GSPO 笔记会区分核心 loss 实现与完整训练复现；其他章节也保
 
 ## 读 PyTRIO 训练代码时，先找这五个位置
 
-以仓库的 [GRPO 同步脚本](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/01-demo-sync.py)为例：
+以仓库的 [GRPO 同步脚本](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/01-demo-sync.py)为例：
 
 1. `ServiceClient` 与 `create_lora_training_client`：选择基模并创建训练会话。
 2. `save_weights_and_get_sampling_client`：从当前训练权重取得 sampler，再做组采样。

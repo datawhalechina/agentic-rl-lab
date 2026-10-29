@@ -12,8 +12,8 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/05-retool](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/05-retool)
-> - Training script: [05-retool/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/train.py)
+> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/retool](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/retool)
+> - Training script: [experiments/retool/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/train.py)
 > - SwanLab: [Complete training records](https://swanlab.cn/@kmno4/llm-agent-rl-lab-retool/overview)
 > - Paper: [ReTool: Reinforcement Learning for Strategic Tool Use in LLMs](https://arxiv.org/abs/2504.11536)
 > - PyTRIO documentation: [https://docs.pytrio.com/docs](https://docs.pytrio.com/docs)
@@ -24,11 +24,11 @@ This is the fifth chapter in my series reproducing ten reinforcement learning al
 
 Earlier chapters cover:
 
-- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/00-loss-function/readme.md)
-- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/readme.md)
-- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/readme.md)
-- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/03-search-r1/readme.md)
-- [Chapter 4: OPSD for the price of a meal](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/readme.md)
+- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [Chapter 4: OPSD for the price of a meal](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
 
 This time the tool does computation: **ReTool lets the model decide when to write Python, and what to calculate, within a long mathematical reasoning process.**
 
@@ -115,9 +115,9 @@ No one specifies exactly when to use the calculator. The student may initially o
 
 The implementation retains the central algorithm around three components:
 
-- **Tool protocol** ([`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/protocol.py)): declare the interpreter as a native model tool, define the system prompt and parse `<tool_call>`.
-- **Local execution sandbox** ([`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/sandbox.py)): execute each snippet in a fresh Python subprocess with timeouts and resource limits.
-- **Outcome reward** ([`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/reward.py)): check mathematical equivalence of the final `\boxed{}` answer, scoring +1 / −1.
+- **Tool protocol** ([`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py)): declare the interpreter as a native model tool, define the system prompt and parse `<tool_call>`.
+- **Local execution sandbox** ([`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/sandbox.py)): execute each snippet in a fresh Python subprocess with timeouts and resource limits.
+- **Outcome reward** ([`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/reward.py)): check mathematical equivalence of the final `\boxed{}` answer, scoring +1 / −1.
 
 The multi-turn rollout state machine, group advantages and PyTRIO loop reuse the framework verified in earlier chapters.
 
@@ -205,7 +205,7 @@ One training step can be divided into seven parts.
 
 ### Step 1: prepare math questions with verifiable answers
 
-[`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/prepare_data.py) follows the recipe's [`BytedTsinghua-SIA/DAPO-Math-17k`](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k), exporting `question + answer` JSONL:
+[`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/prepare_data.py) follows the recipe's [`BytedTsinghua-SIA/DAPO-Math-17k`](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k), exporting `question + answer` JSONL:
 
 ```json
 {"id": "40f50547-...", "question": "The points $P,$ $Q,$ and $R$ are represented by ...", "answer": "3", "data_source": "math_dapo"}
@@ -215,7 +215,7 @@ The original DAPO prompt includes an `"Answer:"` wrapper. We remove it to avoid 
 
 ### Step 2: declare the interpreter as a native tool
 
-[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/protocol.py) declares one tool through the chat template's `tools` argument:
+[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py) declares one tool through the chat template's `tools` argument:
 
 ```python
 "name": "code_interpreter",
@@ -226,13 +226,13 @@ The system prompt specifies the task, available tool and invocation format. It a
 
 ### Step 3: branch and continue trajectories
 
-In [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/rollout.py), the first request uses `num_samples=group_size` to create 8 trajectories. Later requests continue each branch independently. Generation pauses at `<tool_call>`; after execution, [`build_next_prompt`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/protocol.py#L127) appends assistant closing tokens and the tool observation to the actual sampled tokens, then generation resumes.
+In [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/rollout.py), the first request uses `num_samples=group_size` to create 8 trajectories. Later requests continue each branch independently. Generation pauses at `<tool_call>`; after execution, [`build_next_prompt`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/protocol.py#L127) appends assistant closing tokens and the tool observation to the actual sampled tokens, then generation resumes.
 
 Continuation keeps the original token sequence without text↔token re-encoding. The official implementation reports that irreversible re-encoding can cause collapse around 100 steps and NaN gradient norms; this design avoids that mismatch.
 
 ### Step 4: execute code locally
 
-[`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/sandbox.py) replaces SandboxFusion with local subprocess execution, avoiding a separate cloud-sandbox service:
+[`sandbox.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/sandbox.py) replaces SandboxFusion with local subprocess execution, avoiding a separate cloud-sandbox service:
 
 ```text
 python -B -c <code>   # 每次调用起全新进程
@@ -246,7 +246,7 @@ Two details follow the official approach. The final nonempty line receives autom
 
 ### Step 5: reward only the final answer
 
-[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/reward.py) uses strict final-answer checking consistent with `compute_score(strict_box_verify=True)`:
+[`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/reward.py) uses strict final-answer checking consistent with `compute_score(strict_box_verify=True)`:
 
 ```text
 取回答最后 300 个字符 → 提取最后一个 \boxed{} → math_verify 数学等价
@@ -257,7 +257,7 @@ Code use itself receives no reward. The tool policy develops through outcome rew
 
 ### Step 6: retain observations as context and mask their loss
 
-Sandbox stdout/stderr remains visible to the model but is not model-generated. When [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/train.py) builds a Datum, observation positions receive zero advantage:
+Sandbox stdout/stderr remains visible to the model but is not model-generated. When [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/train.py) builds a Datum, observation positions receive zero advantage:
 
 ```python
 advantages_by_token.extend([0.0] * len(delta_observation))
@@ -270,7 +270,7 @@ Only assistant-generated tokens are optimized.
 
 ### Step 7: center group advantages and make one PPO update
 
-For the 8 trajectories of a question, [`assign_group_advantages`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/05-retool/rollout.py#L273) centers rewards within the group and separately records degenerate groups. In the 8-question batches of this run, this did not eliminate all gradients. The full batch then receives one update:
+For the 8 trajectories of a question, [`assign_group_advantages`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/rollout.py#L273) centers rewards within the group and separately records degenerate groups. In the 8-question batches of this run, this did not eliminate all gradients. The full batch then receives one update:
 
 ```python
 loss_fn="ppo",
@@ -341,13 +341,13 @@ The local machine needs a CPU environment. PyTRIO handles remote sampling and Lo
 ### 2. Download and prepare training data
 
 ```bash
-uv run python 05-retool/prepare_data.py
+uv run python experiments/retool/prepare_data.py
 ```
 
 The script downloads `BytedTsinghua-SIA/DAPO-Math-17k` and exports:
 
 ```text
-05-retool/datasets/
+experiments/retool/datasets/
 ├── raw/dapo-math-17k.parquet   # 原始数据
 ├── train.jsonl                  # 训练集（question + answer）
 └── dev.jsonl                    # 50 条开发集
@@ -356,7 +356,7 @@ The script downloads `BytedTsinghua-SIA/DAPO-Math-17k` and exports:
 ### 3. Run the 20-step trial
 
 ```bash
-uv run python 05-retool/train.py \
+uv run python experiments/retool/train.py \
     --max-steps 20 \
     --save-every 5 \
     --run-name retool-qwen35-4b-step20
@@ -367,7 +367,7 @@ The documented 20-step run showed increasing correctness and code calls, with no
 ### 4. Run 200 training steps
 
 ```bash
-uv run python 05-retool/train.py \
+uv run python experiments/retool/train.py \
     --max-steps 200 \
     --save-every 50 \
     --run-name retool-qwen35-4b-step200
@@ -379,21 +379,21 @@ Every 50 steps, save a resumable state and sampler weights for sampling/evaluati
 
 ```bash
 # Base Model
-uv run python 05-retool/eval.py \
+uv run python experiments/retool/eval.py \
     --mode retool \
     --val-n 12 \
     --temperature 1.0 \
     --top-p 0.7 \
-    --output 05-retool/eval-results/aime25-retool-base.jsonl
+    --output experiments/retool/eval-results/aime25-retool-base.jsonl
 
 # checkpoint（填入训练日志里的 trio:// 路径）
-uv run python 05-retool/eval.py \
+uv run python experiments/retool/eval.py \
     --mode retool \
     --val-n 12 \
     --temperature 1.0 \
     --top-p 0.7 \
     --model-path trio://<your_sampler_weights_path> \
-    --output 05-retool/eval-results/aime25-retool-step200.jsonl
+    --output experiments/retool/eval-results/aime25-retool-step200.jsonl
 ```
 
 Evaluation also supports `--mode text`, disabling tools for a text-only baseline.
@@ -403,10 +403,10 @@ Evaluation also supports `--mode text`, disabling tools for a text-only baseline
 Once `eval-results/` contains Base and checkpoint JSONL files:
 
 ```bash
-uv run python 05-retool/analysis.py
+uv run python experiments/retool/analysis.py
 ```
 
-The figure is written to `05-retool/images/checkpoint_avg_pass_format.png`.
+The figure is written to `experiments/retool/images/checkpoint_avg_pass_format.png`.
 
 ## Reproduction boundaries
 
@@ -447,7 +447,7 @@ For me, the small trial showed how native model tools plus a local execution env
 
 ### This implementation
 
-1. [Complete ReTool PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/05-retool)
+1. [Complete ReTool PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/retool)
 2. [PyTRIO documentation](https://docs.pytrio.com/docs)
 3. [What is PyTRIO? Introduction on Zhihu](https://zhuanlan.zhihu.com/p/2063265307226019219)
 4. [SwanLab record for this experiment](https://swanlab.cn/@kmno4/llm-agent-rl-lab-retool/overview)

@@ -12,8 +12,8 @@
 
 > **Code and reproduction resources**
 >
-> - Complete code: [KMnO4-zx/agentic-rl-lab/04-opsd](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/04-opsd)
-> - Asynchronous training: [01-opsd-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py)
+> - Complete code: [KMnO4-zx/agentic-rl-lab/experiments/opsd](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/opsd)
+> - Asynchronous training: [01-opsd-async.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
 > - SwanLab: [Complete training curves](https://swanlab.cn/@kmno4/llm-agent-rl-lab-opsd/runs/pxsnuza4/chart)
 > - Paper: [Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models](https://arxiv.org/abs/2601.18734)
 > - Official implementation: [siyan-zhao/OPSD](https://github.com/siyan-zhao/OPSD)
@@ -25,10 +25,10 @@ This is the fourth chapter in my series reproducing ten reinforcement learning a
 
 Previous chapters cover:
 
-- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/00-loss-function/readme.md)
-- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/01-grpo/readme.md)
-- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/02-opd/readme.md)
-- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/03-search-r1/readme.md)
+- [Chapter 0: RL loss functions](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [Chapter 1: GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [Chapter 2: OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [Chapter 3: Search-R1 for the price of a drink](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
 
 This time I wanted to try **OPSD, On-Policy Self-Distillation**, a then-recent method with an appealing idea.
 
@@ -206,7 +206,7 @@ Here is a reference solution to this problem:
 请理解上面的推理，但不要直接复制；用自己的方式推导同一个答案。
 ```
 
-See [`build_student_prompt_ids()` and `build_teacher_prompt_ids()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L279-L305).
+See [`build_student_prompt_ids()` and `build_teacher_prompt_ids()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L279-L305).
 
 The solution acts as privileged information that changes next-token probabilities. It is not a request for the teacher to generate a new reference answer.
 
@@ -262,7 +262,7 @@ reverse_kl = np.asarray(student_lps) - np.asarray(teacher_lps)
 advantages = -args.kl_penalty_coef * reverse_kl
 ```
 
-See [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L373-L468).
+See [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468).
 
 If the teacher favors the token more than the student, `log p_T - log p_S` is positive and training encourages it. A negative difference discourages it.
 
@@ -346,7 +346,7 @@ Let's inspect the actual training code.
 
 The complete asynchronous script is:
 
-> [`04-opsd/01-opsd-async.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py)
+> [`experiments/opsd/01-opsd-async.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py)
 
 One training step can be summarized by this pseudocode:
 
@@ -370,7 +370,7 @@ Several alignment constraints are hidden inside that short loop.
 
 ## Step 1: prepare `problem + solution` data
 
-The download script is [`00-datasets.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/00-datasets.py).
+The download script is [`00-datasets.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/00-datasets.py).
 
 Training uses the authors' public [`siyanzhao/Openthoughts_math_30k_opsd`](https://huggingface.co/datasets/siyanzhao/Openthoughts_math_30k_opsd), pinned to a revision containing `29,434` examples. Each includes at least:
 
@@ -385,7 +385,7 @@ It conditions only the teacher distribution and is not appended to student targe
 
 ## Step 2: create a trainable student and fixed teacher
 
-See [`train()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L558-L616):
+See [`train()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L558-L616):
 
 ```python
 training_client = await service_client.create_lora_training_client_async(
@@ -447,7 +447,7 @@ After generation, the teacher receives:
 teacher_prompt_ids + student_completion_ids
 ```
 
-See [`teacher_completion_logprobs_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L308-L330):
+See [`teacher_completion_logprobs_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L308-L330):
 
 ```python
 all_ids = teacher_prompt_ids + completion_ids
@@ -499,7 +499,7 @@ old logprobs
 advantages
 ```
 
-See [`build_opd_datum()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L333-L371).
+See [`build_opd_datum()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L333-L371).
 
 The core logic is:
 
@@ -536,7 +536,7 @@ rollouts = await asyncio.gather(
 
 One `asyncio.Semaphore(32)` bounds total student-sampling and teacher-scoring concurrency.
 
-See [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L373-L468) and the [batch gather in `train()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L623-L666).
+See [`run_prompt_rollout_async()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L373-L468) and the [batch gather in `train()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L623-L666).
 
 Concurrency preserves the on-policy boundary: every rollout in the batch uses one student checkpoint, and the optimizer updates only after all finish.
 
@@ -555,7 +555,7 @@ await fwd_bwd_future
 await optim_future
 ```
 
-See [`01-opsd-async.py#L670-L699`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/04-opsd/01-opsd-async.py#L670-L699).
+See [`01-opsd-async.py#L670-L699`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/01-opsd-async.py#L670-L699).
 
 PyTRIO handles remote forward/backward computation, gradient accumulation and LoRA optimization. Local code controls rollout, advantages, batch boundaries and update timing.
 
@@ -609,13 +609,13 @@ The local host needs only a CPU environment; PyTRIO performs model sampling and 
 ### 2. Download OPSD and AIME25 data
 
 ```bash
-uv run python 04-opsd/00-datasets.py
+uv run python experiments/opsd/00-datasets.py
 ```
 
 The script downloads and validates:
 
 ```text
-04-opsd/datasets/
+experiments/opsd/datasets/
 ├── openthoughts_math_30k_opsd/   # 29,434 条训练数据
 └── aime_2025/                     # 30 道评测题
 ```
@@ -625,7 +625,7 @@ Both datasets use pinned Hugging Face revisions to avoid silent changes from ups
 ### 3. Run 100 steps of asynchronous OPSD
 
 ```bash
-uv run python 04-opsd/01-opsd-async.py \
+uv run python experiments/opsd/01-opsd-async.py \
     --steps 100 \
     --batch-size 32 \
     --group-size 1 \
@@ -646,12 +646,12 @@ Every 25 steps, it saves:
 ### 4. Evaluate the base model
 
 ```bash
-uv run python 04-opsd/00-eval-aime25.py \
+uv run python experiments/opsd/00-eval-aime25.py \
     --val-n 12 \
     --max-tokens 38912 \
     --temperature 1.0 \
     --enable-thinking false \
-    --output 04-opsd/eval-results/aime25-base.jsonl
+    --output experiments/opsd/eval-results/aime25-base.jsonl
 ```
 
 ### 5. Evaluate an OPSD checkpoint
@@ -659,13 +659,13 @@ uv run python 04-opsd/00-eval-aime25.py \
 Insert the `trio://` path returned by `save_weights_for_sampler` in the training log:
 
 ```bash
-uv run python 04-opsd/00-eval-aime25.py \
+uv run python experiments/opsd/00-eval-aime25.py \
     --val-n 12 \
     --max-tokens 38912 \
     --temperature 1.0 \
     --enable-thinking false \
     --model-path trio://<your_sampler_weights_path> \
-    --output 04-opsd/eval-results/aime25-sampler-steps100.jsonl
+    --output experiments/opsd/eval-results/aime25-sampler-steps100.jsonl
 ```
 
 Evaluation saves 12 generations per question and writes a unified summary on the final JSONL line.
@@ -675,13 +675,13 @@ Evaluation saves 12 generations per question and writes a unified summary on the
 Once `eval-results/` contains Base, Step 25, 50, 75 and 100 JSONL files:
 
 ```bash
-uv run python 04-opsd/analysis.py
+uv run python experiments/opsd/analysis.py
 ```
 
 Outputs are written to:
 
 ```text
-04-opsd/images/aime25-opsd-progress.png
+experiments/opsd/images/aime25-opsd-progress.png
 ```
 
 ## Summary
@@ -720,7 +720,7 @@ Starting from the official multi-GPU stack might have required much of that time
 
 ### This implementation
 
-1. [Complete OPSD PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/04-opsd)
+1. [Complete OPSD PyTRIO code](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/opsd)
 2. [PyTRIO documentation](https://docs.pytrio.com/docs)
 3. [What is PyTRIO? Introduction on Zhihu](https://zhuanlan.zhihu.com/p/2063265307226019219)
 4. [PyTRIO on-policy distillation example](https://docs.pytrio.com/docs/example/opd)

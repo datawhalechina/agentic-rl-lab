@@ -28,7 +28,7 @@ This experiment pins PyTRIO `0.2.8`, ALFWorld `0.4.2` and SwanLab `0.9.2`.
 
 ```bash
 uv run --extra alfworld alfworld-download \
-    --data-dir "$PWD/09-AgentOPSD/datasets/alfworld"
+    --data-dir "$PWD/experiments/agentopsd/datasets/alfworld"
 ```
 
 Training and evaluation use this directory by default; no additional `--data-root` is needed.
@@ -36,9 +36,9 @@ Training and evaluation use this directory by default; no additional `--data-roo
 ## 3. Inspect available parameters
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/train.py --help
-uv run --extra alfworld python 09-AgentOPSD/eval.py --help
-uv run python 09-AgentOPSD/analysis.py --help
+uv run --extra alfworld python experiments/agentopsd/train.py --help
+uv run --extra alfworld python experiments/agentopsd/eval.py --help
+uv run python experiments/agentopsd/analysis.py --help
 ```
 
 ## 4. Run a 1-step smoke check
@@ -46,7 +46,7 @@ uv run python 09-AgentOPSD/analysis.py --help
 Use one game and 4 trajectories to check the ALFWorld environment, student rollouts, teacher rescoring from the same snapshot, turn credit, PPO and checkpointing:
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/train.py \
+uv run --extra alfworld python experiments/agentopsd/train.py \
     --max-steps 1 \
     --tasks-per-update 1 \
     --group-size 4 \
@@ -63,7 +63,7 @@ All 4 trajectories may succeed or fail, making group-relative advantages zero. T
 ## 5. Launch the full 80-step run
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/train.py \
+uv run --extra alfworld python experiments/agentopsd/train.py \
     --base-model Qwen/Qwen3.5-4B \
     --max-steps 80 \
     --tasks-per-update 16 \
@@ -102,14 +102,14 @@ Saved sampler weights: trio://.../sampler_weights/...
 This evaluates only 2 seen and 2 unseen games to check output paths and environments:
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --split all \
     --limit-per-split 2 \
     --games-per-batch 2 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/base-smoke.jsonl \
+    --output experiments/agentopsd/eval_results/base-smoke.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -118,13 +118,13 @@ uv run --extra alfworld python 09-AgentOPSD/eval.py \
 Full evaluation covers `valid_seen=140` and `valid_unseen=134`, for 274 games in total:
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/base-qwen35-4b-eval.jsonl \
+    --output experiments/agentopsd/eval_results/base-qwen35-4b-eval.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -133,14 +133,14 @@ uv run --extra alfworld python 09-AgentOPSD/eval.py \
 Replace `--model-path` with the sampler weights path printed in the training log:
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://RUN_ID/sampler_weights/WEIGHTS_NAME' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/checkpoint-eval.jsonl \
+    --output experiments/agentopsd/eval_results/checkpoint-eval.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -153,24 +153,24 @@ By default, `eval.py` protects existing JSONL files. To rerun evaluation into th
 ## 9. Reproduce the Step 40 and Step 80 evaluations
 
 ```bash
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://run_sschmbprfwg0/sampler_weights/agentopsd-alfworld-qwen35-4b-step-40-weights' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/checkpoint-eval-step40.jsonl \
+    --output experiments/agentopsd/eval_results/checkpoint-eval-step40.jsonl \
     --swanlab-mode disabled
 
-uv run --extra alfworld python 09-AgentOPSD/eval.py \
+uv run --extra alfworld python experiments/agentopsd/eval.py \
     --base-model Qwen/Qwen3.5-4B \
     --model-path 'trio://run_sschmbprfwg0/sampler_weights/agentopsd-alfworld-qwen35-4b-step-80-weights' \
     --split all \
     --games-per-batch 16 \
     --temperature 0.01 \
     --seed 42 \
-    --output 09-AgentOPSD/eval_results/checkpoint-eval-step80.jsonl \
+    --output experiments/agentopsd/eval_results/checkpoint-eval-step80.jsonl \
     --swanlab-mode disabled
 ```
 
@@ -179,28 +179,28 @@ uv run --extra alfworld python 09-AgentOPSD/eval.py \
 By default, `analysis.py` reads:
 
 ```text
-09-AgentOPSD/eval_results/base-qwen35-4b-eval.jsonl
-09-AgentOPSD/eval_results/checkpoint-eval-step40.jsonl
-09-AgentOPSD/eval_results/checkpoint-eval-step80.jsonl
+experiments/agentopsd/eval_results/base-qwen35-4b-eval.jsonl
+experiments/agentopsd/eval_results/checkpoint-eval-step40.jsonl
+experiments/agentopsd/eval_results/checkpoint-eval-step80.jsonl
 ```
 
 Once the three files are ready, run:
 
 ```bash
-uv run python 09-AgentOPSD/analysis.py
+uv run python experiments/agentopsd/analysis.py
 ```
 
 Figures are saved to:
 
 ```text
-09-AgentOPSD/images/agentopsd_checkpoint_evaluation.png
+experiments/agentopsd/images/agentopsd_checkpoint_evaluation.png
 ```
 
 To customize the result directory, output location or resolution:
 
 ```bash
-uv run python 09-AgentOPSD/analysis.py \
-    --result-dir 09-AgentOPSD/eval_results \
-    --output 09-AgentOPSD/images/agentopsd_checkpoint_evaluation.png \
+uv run python experiments/agentopsd/analysis.py \
+    --result-dir experiments/agentopsd/eval_results \
+    --output experiments/agentopsd/images/agentopsd_checkpoint_evaluation.png \
     --dpi 300
 ```

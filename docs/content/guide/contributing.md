@@ -15,7 +15,7 @@ description: Agentic RL Lab 的贡献指南：如何提议新的算法复现章�
 
 | 类型 | 流程 |
 | --- | --- |
-| 新增算法章节 | 先开 Issue 提案 → 维护者确认后分配章节编号 → 提 PR → 审核合并 |
+| 新增算法章节 | 先开 Issue 提案 → 维护者确认选题和目录名称 → 提 PR → 审核合并 |
 | 修复已有章节的 bug / 补充实验 | 直接提 PR，在描述里说明问题和复现方式 |
 | 错别字、文档改进、翻译 | 直接提 PR |
 
@@ -26,17 +26,17 @@ description: Agentic RL Lab 的贡献指南：如何提议新的算法复现章�
    - 打算在什么数据集、什么基座模型上复现
    - 训练闭环的 reward / advantage / loss 设计思路
    - 预估的 PyTRIO 成本（参考：现有章节单次训练大多在十几到上百元）
-2. **等待确认**。维护者会和你对齐选题是否合适、是否和进行中的工作冲突，并**统一分配章节编号**（请勿自行编号，避免撞号）。
-3. **Fork 并开发**。分支命名建议 `feat/NN-algorithm-name`。
+2. **等待确认**。维护者会和你对齐选题是否合适、是否和进行中的工作冲突，并确认 `experiments/<algorithm-name>/` 的目录名称（小写英文与连字符，不加章节编号）。
+3. **Fork 并开发**。分支命名建议 `feat/algorithm-name`。
 4. **提 PR**。PR 描述里关联 Issue，并附上训练记录和评测结果（见下方质量要求）。
 5. **审核**。维护者会从「算法讲得是否明白」和「代码能否复现」两个角度审稿，可能会要求修改几轮，这是正常流程。
 
 ## 章节结构约定
 
-新章节请严格对齐现有章节的结构（以 `03-search-r1/` 为参考模板）：
+新章节请严格对齐现有章节的结构（以 `experiments/search-r1/` 为参考模板）：
 
 ```text
-NN-algorithm-name/
+experiments/algorithm-name/
 ├── readme.md          # 章节正文（博客式长文）
 ├── start.md           # 快速启动：数据准备 → 训练 → 评测的完整命令
 ├── data.py / prepare_data.py   # 数据下载与预处理
@@ -49,7 +49,7 @@ NN-algorithm-name/
 └── .env.example       # 如需 API Key，提供配置模板
 ```
 
-- 所有脚本都从**仓库根目录**运行，命令形如 `uv run python NN-name/train.py ...`。
+- 所有脚本都从**仓库根目录**运行，命令形如 `uv run python experiments/algorithm-name/train.py ...`。
 - `readme.md` 的风格请参考已有章节：先讲清楚算法从哪来、解决什么问题、核心变量是什么，再讲怎么复现。直觉优先，鼓励用生活化的类比（奶茶、喜茶都可以）。
 - `start.md` 必须让一个新读者按顺序复制命令就能跑通：登录（`trio login`、`swanlab login`）→ 数据 → 训练 → 评测。
 

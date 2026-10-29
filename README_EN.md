@@ -55,21 +55,21 @@ If you have a promising Agentic-RL idea and want to turn it into a paper or a pr
 
 | Topic | Content | Read online |
 | --- | --- | --- |
-| [Loss Function](./00-loss-function/readme.md) | An intuitive explanation of what `importance_sampling`, `ppo`, and `cispo` are each optimizing | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/loss-functions/) |
-| [GRPO](./01-grpo/readme.md) | Reproduce GRPO on GSM8K and compare the `importance_sampling` / `ppo` / `cispo` losses | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/grpo/) |
-| [General OPD](./02-opd/general-opd/readme.md) | A minimal closed loop on DeepMath-103K: Student sampling, Teacher scoring, and reverse KL | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/general-opd/) |
-| [Medical OPD](./02-opd/readme.md) | Starting from Medical SFT, boost medical capability with SAR-OPD and IDT-OPD while preserving general ability | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/medical-opd/) |
-| [Search-R1](./03-search-r1/readme.md) | Reproduce multi-turn search RL with Qwen3.5-4B, PyTRIO, and switchable online search backends | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/search-r1/) |
-| [OPSD](./04-opsd/readme.md) | Distill the Student's self-sampled trajectories with a fixed step-0 Teacher | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/opsd/) |
-| [ReTool](./05-retool/readme.md) | Reproduce code-interleaved Agentic RL with Qwen3.5-4B, PyTRIO, and a local code sandbox | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/retool/) |
-| [DAPO](./06-dapo/readme.md) | Dissect the four core improvements and measure the real time cost of Dynamic Sampling in training | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/dapo/) |
-| [GSPO](./07-gspo/readme.md) | Lift the importance ratio and clipping from the token level to the sequence level | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/gspo/) |
-| [ALFWorld](./08-alfworld/readme.md) | Train a household agent with 12K-token long trajectories, a real TextWorld environment, and group-relative advantage | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/alfworld/) |
-| [Vision GRPO](./09-vision-grpo/readme.md) | Add image inputs on GeoQA and train Qwen3.5-4B to solve geometry multiple-choice questions with rule-based rewards | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/vision-grpo/) |
-| [TEMPO](./09-tempo/readme.md) | Algorithm-level reproduction of macro-step optimization with a generative critic | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/tempo/) |
-| [AgentOPSD](./09-AgentOPSD/readme.md) | Use a skill-guided Self-Teacher for turn-level credit assignment | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/agentopsd/) |
-| [Spec-o3](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/09-spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
-| [PyTrio-Jev](./09-pytrio-jev/readme.md) | For the price of a McDonald's breakfast, anyone can train their own Jev decision model | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/pytrio-jev/) |
+| [Loss Function](./experiments/loss-functions/readme.md) | An intuitive explanation of what `importance_sampling`, `ppo`, and `cispo` are each optimizing | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/loss-functions/) |
+| [GRPO](./experiments/grpo/readme.md) | Reproduce GRPO on GSM8K and compare the `importance_sampling` / `ppo` / `cispo` losses | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/grpo/) |
+| [Vision GRPO](./experiments/vision-grpo/readme.md) | Add image inputs on GeoQA and train Qwen3.5-4B to solve geometry multiple-choice questions with rule-based rewards | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/vision-grpo/) |
+| [PyTrio-Jev](./experiments/pytrio-jev/readme.md) | For the price of a McDonald's breakfast, anyone can train their own Jev decision model | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/pytrio-jev/) |
+| [General OPD](./experiments/general-opd/readme.md) | A minimal closed loop on DeepMath-103K: Student sampling, Teacher scoring, and reverse KL | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/general-opd/) |
+| [Medical OPD](./experiments/medical-opd/readme.md) | Starting from Medical SFT, boost medical capability with SAR-OPD and IDT-OPD while preserving general ability | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/medical-opd/) |
+| [DAPO](./experiments/dapo/readme.md) | Dissect the four core improvements and measure the real time cost of Dynamic Sampling in training | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/dapo/) |
+| [GSPO](./experiments/gspo/readme.md) | Lift the importance ratio and clipping from the token level to the sequence level | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/gspo/) |
+| [OPSD](./experiments/opsd/readme.md) | Distill the Student's self-sampled trajectories with a fixed step-0 Teacher | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/opsd/) |
+| [AgentOPSD](./experiments/agentopsd/readme.md) | Use a skill-guided Self-Teacher for turn-level credit assignment | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/agentopsd/) |
+| [Search-R1](./experiments/search-r1/readme.md) | Reproduce multi-turn search RL with Qwen3.5-4B, PyTRIO, and switchable online search backends | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/search-r1/) |
+| [ReTool](./experiments/retool/readme.md) | Reproduce code-interleaved Agentic RL with Qwen3.5-4B, PyTRIO, and a local code sandbox | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/retool/) |
+| [ALFWorld](./experiments/alfworld/readme.md) | Train a household agent with 12K-token long trajectories, a real TextWorld environment, and group-relative advantage | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/alfworld/) |
+| [TEMPO](./experiments/tempo/readme.md) | Algorithm-level reproduction of macro-step optimization with a generative critic | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/tempo/) |
+| [Spec-o3](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
 
 ## Quick Start
 
@@ -83,7 +83,7 @@ uv sync
 
 For Spec-o3 data preparation, SFT, GRPO, evaluation, and plotting commands, see the [Spec-o3 Quick Start](https://kmno4-zx.github.io/agentic-rl-lab/en/experiments/spec-o3/run.html).
 
-New Spec-o3 RL epoch 3 results on the same 256 development examples: Qwen3.5-4B answers **175 correctly (68.36%)**, and Qwen3.5-9B answers **191 correctly (74.61%)**, with Macro F1 scores of **70.93% / 75.94%**, respectively. See the [Spec-o3 article](./09-spec-o3/readme.md) for the full comparison and evaluation settings.
+New Spec-o3 RL epoch 3 results on the same 256 development examples: Qwen3.5-4B answers **175 correctly (68.36%)**, and Qwen3.5-9B answers **191 correctly (74.61%)**, with Macro F1 scores of **70.93% / 75.94%**, respectively. See the [Spec-o3 article](./experiments/spec-o3/readme.md) for the full comparison and evaluation settings.
 
 To run the ALFWorld, TEMPO, or AgentOPSD chapters, you also need the TextWorld environment dependencies:
 
@@ -110,7 +110,7 @@ uv add \
   "tqdm>=4.68.3"
 ```
 
-Search-R1 calls the official DeepSeek Search API through `httpx`. See the [quickstart](./03-search-r1/start.md) for API key setup.
+Search-R1 calls the official DeepSeek Search API through `httpx`. See the [quickstart](./experiments/search-r1/start.md) for API key setup.
 
 The ALFWorld optional extra corresponds to:
 
@@ -137,7 +137,3 @@ Want to contribute to this repo? Welcome! Please read the [Contributing Guide](.
 ## License
 
 See [LICENSE](./LICENSE).
-
-## Links
-
-- [LINUX DO](https://linux.do/) — A new ideal community

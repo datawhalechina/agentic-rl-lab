@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 import { slug } from 'github-slugger'
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
-import { localizedChapters, localizedGroups, repoUrl, chapterLink } from '../chapters.mjs'
+import { localizedChapters, repoUrl, chapterLink } from '../chapters.mjs'
 import { siteUrl, siteBase } from '../site.mjs'
 import { addSeo, pageDates } from './seo.mjs'
 import { imageSize, imageHints } from './images.mjs'
@@ -49,13 +49,13 @@ function navigation(locale: 'zh' | 'en') {  const en = locale === 'en'
         { text: en ? 'PyTRIO tutorials' : 'PyTRIO 实战教程', link: `${prefix}/guide/pytrio.html` },
         { text: en ? 'Tinker & PyTRIO workflows' : 'Tinker 与 PyTRIO', link: `${prefix}/guide/tinker-pytrio.html` },
       ] },
-      ...localizedGroups(locale).map(g => ({
-        text: `${g.number} · ${g.label}`, collapsed: false,
-        items: chapters.filter(c => c.group === g.id).map(c => ({
+      {
+        text: en ? 'Experiment reading order' : '实验阅读顺序', collapsed: false,
+        items: chapters.map(c => ({
           text: `${c.number}  ${c.title}`, link: chapterLink(c, locale),
           ...(c.start ? { collapsed: true, items: [{ text: en ? 'Quick start' : '快速启动', link: `${chapterLink(c, locale)}run.html` }] } : {}),
         })),
-      })),
+      },
     ],
     outline: { label: en ? 'On this page' : '本页目录', level: [2, 3] as [number, number] },
     docFooter: { prev: en ? 'Previous page' : '上一篇', next: en ? 'Next page' : '下一篇' },

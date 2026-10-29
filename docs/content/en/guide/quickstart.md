@@ -30,7 +30,7 @@ PyTRIO handles training and sampling; SwanLab tracks training metrics. Available
 
 ## Run GRPO
 
-Start with the [GRPO quick start](/en/experiments/grpo/run). It translates the repository’s `01-grpo/start.md`, including the current entry point, sampling settings and metric descriptions.
+Start with the [GRPO quick start](/en/experiments/grpo/run). It translates the repository’s `experiments/grpo/start.md`, including the current entry point, sampling settings and metric descriptions.
 
 ::: tip Understand the loop
 Read the [GRPO walkthrough](/en/experiments/grpo/) alongside the code: prepare prompts → sample a group → compute rewards and advantages → update the policy. Training consumes remote service resources; begin with the small configuration in the quick start.
