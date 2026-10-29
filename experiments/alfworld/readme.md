@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-alfworld&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-alfworld&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/alfworld](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/alfworld)
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/alfworld](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/alfworld)
 > - ALFWorld 论文：[ALFWorld: Aligning Text and Embodied Environments for Interactive Learning](https://arxiv.org/abs/2010.03768)
 > - ALFWorld 官方实现：[alfworld/alfworld](https://github.com/alfworld/alfworld)
 > - SwanLab：[ALFWorld 完整训练记录](https://swanlab.cn/@kmno4/llm-agent-rl-lab-alfworld/runs)
@@ -87,7 +87,7 @@ Put a heated apple in the fridge.
 | `pick_cool_then_place_in_recep` | 冷却物体后放入指定容器 |
 | `pick_two_obj_and_place` | 找到两个同类物体并放入指定容器 |
 
-按照 [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py) 的实际筛选规则，只保留 `solvable=true`、属于上述六类任务的 `game.tw-pddl`。本地下载的数据可以发现：
+按照 [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py) 的实际筛选规则，只保留 `solvable=true`、属于上述六类任务的 `game.tw-pddl`。本地下载的数据可以发现：
 
 | Split | 可用游戏数 | 含义 |
 | --- | ---: | --- |
@@ -164,7 +164,7 @@ TextWorld / PDDL 执行动作并更新状态
 ### 安装依赖并下载 ALFWorld 数据
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync --extra alfworld
@@ -467,28 +467,28 @@ Valid Unseen:    52.99% → 58.96%   +5.97 pp
 
 ### 1. `data.py`：发现并固定游戏顺序
 
-[`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py) 从项目内的 `datasets/alfworld/json_2.1.1` 发现 `game.tw-pddl`，读取相邻的 `traj_data.json`，过滤任务类型与 `solvable` 状态，再构造 `GameExample`。
+[`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py) 从项目内的 `datasets/alfworld/json_2.1.1` 发现 `game.tw-pddl`，读取相邻的 `traj_data.json`，过滤任务类型与 `solvable` 状态，再构造 `GameExample`。
 
 训练前按固定 seed 打乱游戏。`take_batch()` 支持循环取样，所以 `--max-steps` 超过一轮数据后也能继续训练。
 
-关键入口：[`discover_games()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py#L80)。
+关键入口：[`discover_games()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py#L80)。
 
 ### 2. `protocol.py`：一个工具与完整多轮上下文
 
-[`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) 定义唯一工具 `alfworld_step(action)`、system prompt、工具调用解析和环境 observation 格式。
+[`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) 定义唯一工具 `alfworld_step(action)`、system prompt、工具调用解析和环境 observation 格式。
 
-这里最关键的是 [`build_next_prompt()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L263)。它直接在上一轮真实 prompt token 和 sampler 返回的 completion token 后追加 assistant 闭合符与 tool observation，不会重新 tokenize 历史 assistant 文本。
+这里最关键的是 [`build_next_prompt()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L263)。它直接在上一轮真实 prompt token 和 sampler 返回的 completion token 后追加 assistant 闭合符与 tool observation，不会重新 tokenize 历史 assistant 文本。
 
 这样可以同时保证两件事：
 
 1. 下一轮 prompt 是上一轮真实 token 序列的严格前缀扩展；
 2. rollout old logprob 与训练时的 assistant token 始终一一对齐。
 
-工具调用解析入口：[`parse_assistant()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L100)。
+工具调用解析入口：[`parse_assistant()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py#L100)。
 
 ### 3. `environment.py`：同一游戏的 K 个独立环境
 
-[`environment.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) 用同一个 `game.tw-pddl` 创建 K 个独立 TextWorld 实例。`reset()` 会检查 K 条分支的初始 observation 和游戏文件完全一致，确保 group advantage 比较的确实是同一个任务。
+[`environment.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) 用同一个 `game.tw-pddl` 创建 K 个独立 TextWorld 实例。`reset()` 会检查 K 条分支的初始 observation 和游戏文件完全一致，确保 group advantage 比较的确实是同一个任务。
 
 `step()` 接收 K 个 action，一次推进整组环境，并返回：
 
@@ -502,11 +502,11 @@ action 是否 admissible
 
 这个文件还包含 CPython 3.13+ 对 TextWorld 1.7.0 动态变量作用域的兼容处理，以及异步 worker 的安全关闭逻辑，因此当前项目可以直接在 Python 3.14 环境中运行。
 
-核心环境类：[`ALFWorldGroup`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py#L168)。
+核心环境类：[`ALFWorldGroup`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py#L168)。
 
 ### 4. `rollout.py`：并发推进长轨迹
 
-[`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) 是整个 Agent 状态机。
+[`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) 是整个 Agent 状态机。
 
 第一轮中，同游戏的 K 条轨迹共享完全相同的 prompt，因此只提交一个 `num_samples=K` 的采样请求。第一步之后，环境状态开始分叉；每条未结束轨迹各提交一个候选，不同轨迹之间通过 `sample_async` 并发，同一轨迹内部继续保持严格的先后顺序。
 
@@ -523,21 +523,21 @@ admissible / done / won
 
 所有轨迹结束后，`rollout_batch()` 统计非法动作、计算 episode reward，并调用 advantage 模块。
 
-核心入口：[`rollout_batch()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L469)。
+核心入口：[`rollout_batch()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L469)。
 
 ### 5. `advantages.py`：组相对轨迹 advantage
 
-[`advantages.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) 只有一个核心任务：按照 `group_id` 聚合同游戏轨迹，再执行 `reward - group_mean`。
+[`advantages.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) 只有一个核心任务：按照 `group_id` 聚合同游戏轨迹，再执行 `reward - group_mean`。
 
 它同时统计 reward 全同的退化组。退化组中的所有轨迹 advantage 都为 0，后续不会提交无效 backward。
 
-核心入口：[`assign_advantages()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py#L18)。
+核心入口：[`assign_advantages()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py#L18)。
 
 ### 6. `train.py`：Datum、PPO 与 checkpoint
 
-[`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py) 把 rollout 与 PyTRIO 串起来。
+[`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py) 把 rollout 与 PyTRIO 串起来。
 
-[`build_trajectory_datum()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L249) 将完整多轮轨迹统一做一次自回归右移：
+[`build_trajectory_datum()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L249) 将完整多轮轨迹统一做一次自回归右移：
 
 ```text
 model_input   = full_tokens[:-1]
@@ -551,13 +551,13 @@ target_tokens = full_tokens[1:]
 assistant token:  使用 rollout old_logprob 与 trajectory advantage
 ```
 
-[`main()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L489) 每个 update 获取最新 LoRA sampler、执行 rollout、过滤零 advantage 轨迹、调用一次 PPO backward 和一次 optimizer step，再记录 SwanLab 指标。
+[`main()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py#L489) 每个 update 获取最新 LoRA sampler、执行 rollout、过滤零 advantage 轨迹、调用一次 PPO backward 和一次 optimizer step，再记录 SwanLab 指标。
 
 保存 checkpoint 时，`save_checkpoint()` 会同时保存 state 和 sampler weights。训练轨迹只保留在当前进程内存中，不额外写入磁盘。
 
 ### 7. `eval.py`：并发评测并保存完整轨迹
 
-[`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) 与训练共用相同的 prompt、工具协议、环境和 rollout 实现。
+[`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) 与训练共用相同的 prompt、工具协议、环境和 rollout 实现。
 
 Base Model 的 `model_path` 留空；checkpoint 通过 `trio://.../sampler_weights/...` 加载。评测以 `games-per-batch` 为单位并发执行，每个游戏只采样一条轨迹，最后分别统计 `valid_seen` 与 `valid_unseen` 的：
 
@@ -572,11 +572,11 @@ admissible action rate
 六类任务成功率
 ```
 
-训练阶段不保存轨迹，评测阶段会通过 [`trajectory_record()`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L585) 把每一局完整写入 JSONL，方便后续人工 review。
+训练阶段不保存轨迹，评测阶段会通过 [`trajectory_record()`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py#L585) 把每一局完整写入 JSONL，方便后续人工 review。
 
 ### 8. `analysis.py`：从 JSONL 生成结果图
 
-[`analysis.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) 读取三份评测 JSONL 最后的 `type=summary` 记录，校验模型名和游戏数量一致，再生成本文反复使用的 1×2 checkpoint 图。
+[`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) 读取三份评测 JSONL 最后的 `type=summary` 记录，校验模型名和游戏数量一致，再生成本文反复使用的 1×2 checkpoint 图。
 
 左图比较 `valid_seen / valid_unseen` 成功率，右图同时展示总体成功率与平均非法动作数。
 
@@ -584,14 +584,14 @@ admissible action rate
 
 | 文件 | 作用 |
 | --- | --- |
-| [`data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/data.py) | 发现、过滤、打乱并循环读取 ALFWorld 游戏 |
-| [`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) | 单工具协议、完整消息历史、工具调用解析与 token 前缀扩展 |
-| [`environment.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) | 同游戏 K 环境、状态推进、TextWorld 兼容与资源清理 |
-| [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) | 异步采样、环境交互、轨迹状态、reward 与 JSONL 记录 |
-| [`advantages.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) | 同游戏组内的轨迹级 relative advantage |
-| [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/train.py) | Datum、token mask、PPO、优化器、SwanLab 与 checkpoint |
-| [`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint 评测、指标聚合和逐轨迹 JSONL |
-| [`analysis.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | 读取评测 summary 并绘制 checkpoint 对比图 |
+| [`data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/data.py) | 发现、过滤、打乱并循环读取 ALFWorld 游戏 |
+| [`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/protocol.py) | 单工具协议、完整消息历史、工具调用解析与 token 前缀扩展 |
+| [`environment.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/environment.py) | 同游戏 K 环境、状态推进、TextWorld 兼容与资源清理 |
+| [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/rollout.py) | 异步采样、环境交互、轨迹状态、reward 与 JSONL 记录 |
+| [`advantages.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/advantages.py) | 同游戏组内的轨迹级 relative advantage |
+| [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/train.py) | Datum、token mask、PPO、优化器、SwanLab 与 checkpoint |
+| [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint 评测、指标聚合和逐轨迹 JSONL |
+| [`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | 读取评测 summary 并绘制 checkpoint 对比图 |
 
 八个文件串起来后，整个实验就形成了从游戏发现、在线交互、组内信用分配到独立评测的完整闭环，最后可以回到最初的问题：这次长轨迹 Agentic RL 到底验证了什么？
 

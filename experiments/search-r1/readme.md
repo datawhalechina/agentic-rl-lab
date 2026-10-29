@@ -7,12 +7,12 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-search-r1&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-search-r1&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/search-r1](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/search-r1)
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/search-r1](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/search-r1)
 > - SwanLab · 本次 DeepSeek 官方搜索训练：[30-step 训练记录](https://swanlab.cn/@kmno4/agentic-rl-lab-search-r1/runs/2rxzhig0/chart)
 > - SwanLab · 旧 DeepSeek Evidence 训练：[20-step 历史记录](https://swanlab.cn/@kmno4/llm-agent-rl-lab-search-r1/runs/06e4gw6a/chart)
 > - Search-R1 论文：[Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning](https://arxiv.org/abs/2503.09516)
@@ -23,9 +23,9 @@
 
 前面三篇分别讲了：
 
-- [第 0 篇：强化学习基础——损失函数](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [第 1 篇：GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [第 2 篇：OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [第 0 篇：强化学习基础——损失函数](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [第 1 篇：GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [第 2 篇：OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
 
 这一次终于轮到我一直很想做的 Agentic RL：让模型在回答问题的过程中，自己决定什么时候搜索、搜索什么、看到搜索结果后要不要继续搜，最后再给出答案。
 
@@ -235,7 +235,7 @@ training_client.forward_backward(
 training_client.optim_step(adam_params).result()
 ```
 
-完整训练循环在 [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py)。
+完整训练循环在 [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py)。
 
 这样一来，我可以直接使用远端训练服务，也可以让 rollout 和 trainer 保持清晰分工。对这类“生成和工具调用耗时较长、backward 时间相对较短”的任务，按实际训练 Token 使用远端训练服务会自然很多。
 
@@ -290,7 +290,7 @@ Format:   88.57% → 97.14%（+8.57 pp）
 
 ## Search-R1 的训练闭环详细拆解
 
-到这里，如果只想知道 Search-R1 是什么，其实已经够了。想直接跑代码的朋友可以直接去 GitHub 仓库 ：https://github.com/KMnO4-zx/agentic-rl-lab
+到这里，如果只想知道 Search-R1 是什么，其实已经够了。想直接跑代码的朋友可以直接去 GitHub 仓库 ：https://github.com/datawhalechina/agentic-rl-lab
 
 后面这一部分会按真实代码，把一次训练 step 拆开。完整目录如下：
 
@@ -311,7 +311,7 @@ experiments/search-r1/
 
 数据来自 Search-R1 官方公开的 [`PeterJinGo/nq_hotpotqa_train`](https://huggingface.co/datasets/PeterJinGo/nq_hotpotqa_train)，我们通过 ModelScope 镜像下载固定版本。
 
-准备脚本在 [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/prepare_data.py)。
+准备脚本在 [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/prepare_data.py)。
 
 训练集包含：
 
@@ -340,7 +340,7 @@ experiments/search-r1/
 
 ## 第二步：把搜索声明成模型工具
 
-工具协议在 [`protocol.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/protocol.py)。
+工具协议在 [`protocol.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/protocol.py)。
 
 搜索工具的 schema 很短：
 
@@ -378,7 +378,7 @@ prompt_tokens = tokenizer.apply_chat_template(
 
 这里无需靠 stop word 猜模型是否想搜索。模型会生成结构化的 `<tool_call>`，`protocol.py` 再把它解析成 query；环境执行真实搜索后，以 `role="tool"` 把 observation 写回对话。
 
-两个搜索后端都实现在 [`search.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/search.py)，训练和评测通过同一个工厂函数创建客户端：
+两个搜索后端都实现在 [`search.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/search.py)，训练和评测通过同一个工厂函数创建客户端：
 
 ```python
 search_client = create_search_client(
@@ -418,7 +418,7 @@ query_i 不同
 
 ![](<./images/Group Rollout · Shared Root and Diverged Contexts.png>)
 
-完整状态机在 [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py)。核心结构是：
+完整状态机在 [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py)。核心结构是：
 
 ```text
 第一轮：
@@ -446,7 +446,7 @@ assistant generation
 
 ## 第四步：只用最终答案计算 Reward
 
-Reward 实现在 [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/reward.py)。
+Reward 实现在 [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/reward.py)。
 
 模型最终必须留下且只留下一个非空答案：
 
@@ -488,7 +488,7 @@ def score_answer(text: str, references: list[str]) -> RewardResult:
 A_i = r_i - \frac{1}{8}\sum_{j=1}^{8} r_j
 ```
 
-代码在 [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py)：
+代码在 [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/rollout.py)：
 
 ```python
 mean_reward = sum(item.reward for item in group) / len(group)
@@ -538,7 +538,7 @@ system / user / tool observation: advantage = 0
 assistant tool call / final answer: advantage = trajectory_advantage
 ```
 
-完整实现位于 [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py) 的 `build_datum()`。
+完整实现位于 [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py) 的 `build_datum()`。
 
 核心逻辑如下：
 
@@ -597,7 +597,7 @@ PyTRIO `0.2.9` 已支持自动梯度累加：SDK 根据服务端限制拆分物�
 
 advantage 为零的轨迹也保留在完整 batch 中，使 SDK 使用完整 rollout 的归一化分母；整批都没有训练信号时跳过参数更新。每个有效训练 step 调用一次 `forward_backward` 和一次 `optim_step`。
 
-相关实现位于 [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/train.py) 的 `build_datum()` 和训练主循环。
+相关实现位于 [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py) 的 `build_datum()` 和训练主循环。
 
 ## 如何用 20 step 跑出效果？
 
@@ -606,7 +606,7 @@ advantage 为零的轨迹也保留在完整 batch 中，使 SDK 使用完整 rol
 ### 1. 安装项目并登录
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -737,7 +737,7 @@ uv run python eval.py \
 
 如果只想先检查整条链路，可以添加 `--limit 20`，再决定是否运行固定 70 题评测。
 
-评测代码在 [`eval.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/eval.py)。它对 Base 和 checkpoint 使用相同的 tokenizer、工具协议、搜索环境、轨迹限制和 EM 规则。
+评测代码在 [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/eval.py)。它对 Base 和 checkpoint 使用相同的 tokenizer、工具协议、搜索环境、轨迹限制和 EM 规则。
 
 ### 6. 绘制评测结果
 
@@ -755,7 +755,7 @@ uv run python analyse.py --preset deepseek-api
 uv run python analyse.py --preset deepseek
 ```
 
-绘图代码在 [`analyse.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/analyse.py)，直接读取每个 JSONL 末尾的 `summary.metrics`，并核对固定 70 题、搜索 API 或模型、摘要字段和搜索配置是否一致。
+绘图代码在 [`analyse.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/analyse.py)，直接读取每个 JSONL 末尾的 `summary.metrics`，并核对固定 70 题、搜索 API 或模型、摘要字段和搜索配置是否一致。
 
 ## 训练时最应该看哪些指标？
 
@@ -836,6 +836,6 @@ Search-R1 看起来像一个复杂的 Agent 训练系统，但拆开以后，它
 
 ### 本文实现
 
-1. [Search-R1 PyTRIO 完整代码](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/search-r1)
+1. [Search-R1 PyTRIO 完整代码](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/search-r1)
 2. [PyTRIO 文档](https://docs.pytrio.cn/)
 3. [SwanLab 文档](https://docs.swanlab.cn/)

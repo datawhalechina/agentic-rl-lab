@@ -22,7 +22,7 @@ DEEPSEEK_SEARCH_ENDPOINT = "https://api.deepseek.com/v1/tools/search"
 WIKIPEDIA_SEARCH_ENDPOINT = "https://en.wikipedia.org/w/api.php"
 WIKIPEDIA_USER_AGENT = (
     "agentic-rl-lab/0.1 "
-    "(https://github.com/KMnO4-zx/agentic-rl-lab)"
+    "(https://github.com/datawhalechina/agentic-rl-lab)"
 )
 DEFAULT_SEARCH_CONCURRENCY = {"deepseek": 16, "wikipedia": 3}
 DEFAULT_SEARCH_TIMEOUT = {"deepseek": 60.0, "wikipedia": 15.0}

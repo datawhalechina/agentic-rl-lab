@@ -7,18 +7,18 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/agentopsd"><img alt="Code" src="https://img.shields.io/badge/Code-09--AgentOPSD-2563eb?style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/agentopsd"><img alt="Code" src="https://img.shields.io/badge/Code-09--AgentOPSD-2563eb?style=flat"></a>
   <a href="https://arxiv.org/abs/2608.05987"><img alt="AgentOPSD" src="https://img.shields.io/badge/Paper-AgentOPSD-d94a45?style=flat"></a>
   <a href="https://arxiv.org/abs/2010.03768"><img alt="ALFWorld" src="https://img.shields.io/badge/Env-ALFWorld-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.8-7c3aed?style=flat"></a>
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.agentopsd"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.agentopsd"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 完整代码：[KMnO4-zx/agentic-rl-lab/experiments/agentopsd](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/agentopsd)
+> - 完整代码：[datawhalechina/agentic-rl-lab/experiments/agentopsd](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/agentopsd)
 > - AgentOPSD 论文：[Fine-Grained Agentic Reinforcement Learning via On-Policy Self-Distillation](https://arxiv.org/abs/2608.05987)
 > - 上游实现：[ZethWang/AgentOPSD](https://github.com/ZethWang/AgentOPSD/tree/0c478b2d7cdc201d9b1f076ec5b3dec7e88a161b)
 > - ALFWorld：[论文](https://arxiv.org/abs/2010.03768) / [官方仓库](https://github.com/alfworld/alfworld)
@@ -191,7 +191,7 @@ AgentOPSD 的核心变化发生在 loss 之前：我们先在本地把 Teacher g
 ### 4.1 安装依赖并下载 ALFWorld
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync --extra alfworld

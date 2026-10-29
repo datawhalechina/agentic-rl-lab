@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://github.com/KMnO4-zx/agentic-rl-lab">
+<a href="https://github.com/datawhalechina/agentic-rl-lab">
   <img src="images/agentic-rl-lab.png" alt="Agentic-RL Lab" width=100% />
 </a>
 
@@ -19,7 +19,7 @@
   <a href="https://swanlab.cn/"><img alt="SwanLab" src="https://img.shields.io/badge/SwanLab-Experiment%20Tracking-258f4b?style=flat" /></a>
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6?style=flat" /></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat" /></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab&amp;label=visitors&amp;color=1283c3&amp;style=flat" /></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab&amp;label=visitors&amp;color=1283c3&amp;style=flat" /></a>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.13%2B-306998?style=flat" />
 </p>
 
@@ -27,13 +27,13 @@
 
 <p align="center">
   💬 <strong>微信交流群：</strong>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/issues/13">点击查看群二维码</a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab/issues/13">点击查看群二维码</a>
 </p>
 
 <p align="center">
   📖 <strong>在线阅读：</strong>
-  <a href="https://kmno4-zx.github.io/agentic-rl-lab/">中文实验手册</a> ·
-  <a href="https://kmno4-zx.github.io/agentic-rl-lab/en/">English</a>
+  <a href="https://datawhalechina.github.io/agentic-rl-lab/">中文实验手册</a> ·
+  <a href="https://datawhalechina.github.io/agentic-rl-lab/en/">English</a>
 </p>
 
 ## 项目介绍
@@ -55,33 +55,33 @@
 
 | 主题 | 内容 | 在线版 |
 | --- | --- | --- |
-| [Loss Function](./experiments/loss-functions/readme.md) | 用直觉解释 `importance_sampling`、`ppo`、`cispo` 分别在优化什么 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/loss-functions/) |
-| [GRPO](./experiments/grpo/readme.md) | 复现 GSM8K 上的 GRPO，并比较 `importance_sampling` / `ppo` / `cispo` 三个 loss | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/grpo/) |
-| [Vision GRPO](./experiments/vision-grpo/readme.md) | 在 GeoQA 上接入图片输入，解决几何数学题 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/vision-grpo/) |
-| [PyTrio-Jev](./experiments/pytrio-jev/readme.md) | 一顿麦当劳早餐，人人皆可训练自己的 Jev 决策模型 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/pytrio-jev/) |
-| [General OPD](./experiments/general-opd/readme.md) | 用 DeepMath-103K 跑通 Student 采样、Teacher 打分与 reverse KL 的最小闭环 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/general-opd/) |
-| [Medical OPD](./experiments/medical-opd/readme.md) | 从 Medical SFT 出发，用 SAR-OPD 和 IDT-OPD 增强医疗能力，同时保持通用能力 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/medical-opd/) |
-| [DAPO](./experiments/dapo/readme.md) | 拆解四项核心改进，并记录 Dynamic Sampling 在真实训练中的时间成本 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/dapo/) |
-| [GSPO](./experiments/gspo/readme.md) | 将重要性比率与裁剪从 token 级提升到 sequence 级 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/gspo/) |
-| [OPSD](./experiments/opsd/readme.md) | 用固定的 step-0 Teacher 蒸馏 Student 自采样轨迹 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/opsd/) |
-| [AgentOPSD](./experiments/agentopsd/readme.md) | 用带 Skill 的 Self-Teacher 分配 turn-level credit | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/agentopsd/) |
-| [Search-R1](./experiments/search-r1/readme.md) | 用 Qwen3.5-4B、PyTRIO 和可切换的在线搜索后端复现多轮搜索 RL | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/search-r1/) |
-| [ReTool](./experiments/retool/readme.md) | 用 Qwen3.5-4B、PyTRIO 和本地代码沙箱复现代码交织的 Agentic RL | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/retool/) |
-| [ALFWorld](./experiments/alfworld/readme.md) | 用 12K 长轨迹、真实 TextWorld 环境和 group-relative advantage 训练家务 Agent | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/alfworld/) |
-| [TEMPO](./experiments/tempo/readme.md) | 算法级复现 macro-step 优化与生成式 critic | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/tempo/) |
-| [Spec-o3](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://kmno4-zx.github.io/agentic-rl-lab/experiments/spec-o3/) |
+| [Loss Function](./experiments/loss-functions/readme.md) | 用直觉解释 `importance_sampling`、`ppo`、`cispo` 分别在优化什么 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/loss-functions/) |
+| [GRPO](./experiments/grpo/readme.md) | 复现 GSM8K 上的 GRPO，并比较 `importance_sampling` / `ppo` / `cispo` 三个 loss | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/grpo/) |
+| [Vision GRPO](./experiments/vision-grpo/readme.md) | 在 GeoQA 上接入图片输入，解决几何数学题 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/vision-grpo/) |
+| [PyTrio-Jev](./experiments/pytrio-jev/readme.md) | 一顿麦当劳早餐，人人皆可训练自己的 Jev 决策模型 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/pytrio-jev/) |
+| [General OPD](./experiments/general-opd/readme.md) | 用 DeepMath-103K 跑通 Student 采样、Teacher 打分与 reverse KL 的最小闭环 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/general-opd/) |
+| [Medical OPD](./experiments/medical-opd/readme.md) | 从 Medical SFT 出发，用 SAR-OPD 和 IDT-OPD 增强医疗能力，同时保持通用能力 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/medical-opd/) |
+| [DAPO](./experiments/dapo/readme.md) | 拆解四项核心改进，并记录 Dynamic Sampling 在真实训练中的时间成本 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/dapo/) |
+| [GSPO](./experiments/gspo/readme.md) | 将重要性比率与裁剪从 token 级提升到 sequence 级 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/gspo/) |
+| [OPSD](./experiments/opsd/readme.md) | 用固定的 step-0 Teacher 蒸馏 Student 自采样轨迹 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/opsd/) |
+| [AgentOPSD](./experiments/agentopsd/readme.md) | 用带 Skill 的 Self-Teacher 分配 turn-level credit | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/agentopsd/) |
+| [Search-R1](./experiments/search-r1/readme.md) | 用 Qwen3.5-4B、PyTRIO 和可切换的在线搜索后端复现多轮搜索 RL | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/search-r1/) |
+| [ReTool](./experiments/retool/readme.md) | 用 Qwen3.5-4B、PyTRIO 和本地代码沙箱复现代码交织的 Agentic RL | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/retool/) |
+| [ALFWorld](./experiments/alfworld/readme.md) | 用 12K 长轨迹、真实 TextWorld 环境和 group-relative advantage 训练家务 Agent | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/alfworld/) |
+| [TEMPO](./experiments/tempo/readme.md) | 算法级复现 macro-step 优化与生成式 critic | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tempo/) |
+| [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/spec-o3/) |
 
 ## 快速启动
 
 &emsp;&emsp;如果是直接 clone 这个仓库：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 ```
 
-&emsp;&emsp;运行 Spec-o3 的数据下载、SFT、GRPO、评测和绘图命令，见 [Spec-o3 快速开始](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/spec-o3/start.md)。
+&emsp;&emsp;运行 Spec-o3 的数据下载、SFT、GRPO、评测和绘图命令，见 [Spec-o3 快速开始](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/start.md)。
 
 &emsp;&emsp;Spec-o3 新增 RL epoch 3 开发集结果：同一批 256 题，Qwen3.5-4B 答对 **175 题（68.36%）**，Qwen3.5-9B 答对 **191 题（74.61%）**，Macro F1 分别为 **70.93% / 75.94%**。完整对照与评测设置见 [Spec-o3 Blog](./experiments/spec-o3/readme.md)。
 
@@ -129,8 +129,8 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 &emsp;&emsp;想为这个仓库贡献内容？欢迎！请先阅读 [贡献指南](./CONTRIBUTING.md)：新增算法章节请先开 Issue 提案，修复和文档改进可以直接提 PR。
 
 <div align=center style="margin-top: 30px;">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=KMnO4-zx/agentic-rl-lab" />
+  <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=datawhalechina/agentic-rl-lab" />
   </a>
 </div>
 

@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: 📖 贡献指南
-    url: https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/CONTRIBUTING.md
+    url: https://github.com/datawhalechina/agentic-rl-lab/blob/main/CONTRIBUTING.md
     about: 想为仓库贡献算法章节？请先阅读贡献指南
   - name: 💬 微信交流群
-    url: https://github.com/KMnO4-zx/agentic-rl-lab/issues/13
+    url: https://github.com/datawhalechina/agentic-rl-lab/issues/13
     about: 不确定选题是否合适？先进群聊聊

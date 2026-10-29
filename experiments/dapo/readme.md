@@ -7,13 +7,13 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-dapo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-dapo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 本文完整代码：[KMnO4-zx/agentic-rl-lab/experiments/dapo](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
-> - 统一训练入口：[experiments/dapo/train.py](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py)
+> - 本文完整代码：[datawhalechina/agentic-rl-lab/experiments/dapo](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/dapo)
+> - 统一训练入口：[experiments/dapo/train.py](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py)
 > - DAPO 论文：[DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://arxiv.org/abs/2503.14476)
 > - 官方项目页：[dapo-sia.github.io](https://dapo-sia.github.io/)
 > - 官方实现：[BytedTsinghua-SIA/DAPO](https://github.com/BytedTsinghua-SIA/DAPO)
@@ -23,12 +23,12 @@
 
 前面几篇分别讲了：
 
-- [第 0 篇：强化学习基础——损失函数](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
-- [第 1 篇：GRPO](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
-- [第 2 篇：OPD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
-- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
-- [第 4 篇：一顿疯狂星期四，搞定 OPSD](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
-- [第 5 篇：两杯瑞幸，搞定 ReTool](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/retool/readme.md)
+- [第 0 篇：强化学习基础——损失函数](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/loss-functions/readme.md)
+- [第 1 篇：GRPO](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/grpo/readme.md)
+- [第 2 篇：OPD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/medical-opd/readme.md)
+- [第 3 篇：一杯喜茶，搞定 Search-R1](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md)
+- [第 4 篇：一顿疯狂星期四，搞定 OPSD](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/opsd/readme.md)
+- [第 5 篇：两杯瑞幸，搞定 ReTool](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/readme.md)
 
 这篇一开始也准备按熟悉的路线写：介绍算法、跑完训练，再整理结果。
 
@@ -67,7 +67,7 @@ DAPO 的全名是 **Decoupled Clip and Dynamic sAmpling Policy Optimization**。
 
 ![](./images/01 · DAPO vs GRPO Overview.png)
 
-这次实现没有写一份“看起来像 DAPO”的独立训练脚本，而是在同一个 [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py) 中保留两个 preset：
+这次实现没有写一份“看起来像 DAPO”的独立训练脚本，而是在同一个 [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py) 中保留两个 preset：
 
 | 项目 | GRPO | DAPO |
 | --- | --- | --- |
@@ -181,7 +181,7 @@ shaped_reward = correctness_reward + length_penalty
 先把项目拉到本地并进入 DAPO 目录：
 
 ```bash
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 
 uv sync
@@ -233,10 +233,10 @@ uv run python train.py \
 
 整套复现主要拆成四个文件：
 
-- [`prepare_data.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/prepare_data.py)：下载、清洗和固定版本的数据；
-- [`rollout.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/rollout.py)：group rollout、组内 advantage 和 Dynamic Sampling；
-- [`reward.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/reward.py)：数学答案判定和 Soft Overlong Punishment；
-- [`train.py`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/dapo/train.py)：统一的 GRPO/DAPO PPO 更新。
+- [`prepare_data.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/prepare_data.py)：下载、清洗和固定版本的数据；
+- [`rollout.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/rollout.py)：group rollout、组内 advantage 和 Dynamic Sampling；
+- [`reward.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/reward.py)：数学答案判定和 Soft Overlong Punishment；
+- [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py)：统一的 GRPO/DAPO PPO 更新。
 
 ### 数据
 
@@ -470,5 +470,5 @@ rollout 会反复补采、反复等待，
 
 ### 本文实现与实验
 
-1. [DAPO PyTRIO 完整代码](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/dapo)
+1. [DAPO PyTRIO 完整代码](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/dapo)
 2. [PyTRIO 文档](https://docs.pytrio.com/docs)

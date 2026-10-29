@@ -5,7 +5,7 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-loss-function&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-loss-function&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 - 左边：Importance Sampling。模型走过一串 token，有的选择被奖励，有的选择被惩罚；loss 的工作就是把好选择的概率推高，把坏选择的概率压低。

@@ -77,7 +77,7 @@ Chapter text is primarily in Chinese (consistent with existing chapters); if an 
 
 ## Community
 
-- WeChat group: see [Issue #13](https://github.com/KMnO4-zx/agentic-rl-lab/issues/13)
+- WeChat group: see [Issue #13](https://github.com/datawhalechina/agentic-rl-lab/issues/13)
 - Not sure whether a topic fits? Open an Issue and ask, or chat in the group — you don't need a complete plan before reaching out.
 
 Looking forward to your contribution — let's lower the barrier to Agentic RL together!

@@ -9,7 +9,7 @@
 <div align="center">
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian" target="_blank"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-grpo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://komarev.com/ghpvc/?username=KMnO4-zx-agentic-rl-lab-grpo&amp;label=visitors&amp;color=1283c3&amp;style=flat"></a>
 </div>
 
 下一篇会写 OPD，也就是 On-Policy Distillation。它和 GRPO 很像，都是拿当前策略自己采样出来的轨迹继续训练；区别是 GRPO 的信号来自 reward，OPD 的信号来自 teacher 对 student 轨迹的评价。这个我们下一篇再详细的解释。
@@ -58,7 +58,7 @@ $$
 
 ## 这次复现什么？
 
-代码在这里：https://github.com/KMnO4-zx/agentic-rl-lab
+代码在这里：https://github.com/datawhalechina/agentic-rl-lab
 
 注册 PyTRIO 账号和 SwanLab，就能直接跑。
 

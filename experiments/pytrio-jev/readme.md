@@ -5,17 +5,17 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/pytrio-jev"><img alt="Code" src="https://img.shields.io/badge/Code-09--pytrio--jev-2563eb?style=flat"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/pytrio-jev"><img alt="Code" src="https://img.shields.io/badge/Code-09--pytrio--jev-2563eb?style=flat"></a>
   <a href="https://huggingface.co/datasets/LocalLLaMA/typed-decisions"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-Typed--Decisions-f59e0b?style=flat"></a>
   <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.9-7c3aed?style=flat"></a>
   <a href="https://www.zhihu.com/people/feng-qi-xia-pian"><img alt="Zhihu" src="https://img.shields.io/badge/Zhihu-知乎-4362f6?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
-  <a href="https://github.com/KMnO4-zx/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.pytrio-jev"></a>
+  <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.pytrio-jev"></a>
 </div>
 
 > **代码与复现资源**
 >
-> - 完整代码：[`experiments/pytrio-jev`](https://github.com/KMnO4-zx/agentic-rl-lab/tree/main/experiments/pytrio-jev) / 快速启动：[`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)
+> - 完整代码：[`experiments/pytrio-jev`](https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/pytrio-jev) / 快速启动：[`start.md`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)
 > - 方法参考：[Intern-Decision](https://github.com/InternLM/Intern-Decision)、[Jev 架构逆向](https://archerhume.com/posts/jevs-architecture-unmasked)、[Datawhale AgentJev 教程](https://mp.weixin.qq.com/s/F7i83rn8oDzQ-sg13MKwWA)
 > - 训练数据：[`LocalLLaMA/typed-decisions`](https://huggingface.co/datasets/LocalLLaMA/typed-decisions)、[`Team-ACE/ToolACE`](https://huggingface.co/datasets/Team-ACE/ToolACE)
 > - SwanLab：[查看本次实验公开的训练记录](https://swanlab.cn/@kmno4/agentic-rl-lab-pytrio-jev/v1/qt5fzd/runs/g4i73a65/chart)
@@ -72,7 +72,7 @@
 
 普通 SFT 教模型把答案一个字一个字写出来；决策模型的做法完全不同。assistant 侧的输入是一个**含占位符的 JSON 骨架**，每个问题字段对应一个 marker token；真正的监督只落在 marker 前一个位置，模型在那里应该预测出正确答案对应的符号（A/B/C、Yes/No、1-5）。
 
-下面是一张真实的训练输入（chat template 渲染后），高亮处就是计算 loss 的位置。为了去除系统提示词等额外文本对决策的干扰，我们没有沿用模型自带的 chat template，而是专门写了一个干净的模板（[`templates/qwen3_5_jev.jinja`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/templates/qwen3_5_jev.jinja)）——除了对话结构本身，不多塞一个字：
+下面是一张真实的训练输入（chat template 渲染后），高亮处就是计算 loss 的位置。为了去除系统提示词等额外文本对决策的干扰，我们没有沿用模型自带的 chat template，而是专门写了一个干净的模板（[`templates/qwen3_5_jev.jinja`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/pytrio-jev/templates/qwen3_5_jev.jinja)）——除了对话结构本身，不多塞一个字：
 
 ![训练输入：marker 位置高亮](./images/train-chat-template.png)
 
@@ -102,7 +102,7 @@
 
 ```bash
 # 0. 克隆仓库 + 安装依赖 + 登录
-git clone https://github.com/KMnO4-zx/agentic-rl-lab.git
+git clone https://github.com/datawhalechina/agentic-rl-lab.git
 cd agentic-rl-lab
 uv sync
 trio login       # PyTRIO 训练服务（必需）
@@ -118,7 +118,7 @@ uv run python experiments/pytrio-jev/train.py --max-samples 64 --epochs 1 --save
 uv run python experiments/pytrio-jev/train.py --epochs 2 --batch-size 16 --save-every 60 --swanlab-mode online
 ```
 
-训练结束会打印 `trio://` 开头的权重路径，之后依次做温度校准（`calibrate.py`，见第 5 节）和五项评测（`eval.py`）；推理、校准、评测的完整命令清单都在 [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)。
+训练结束会打印 `trio://` 开头的权重路径，之后依次做温度校准（`calibrate.py`，见第 5 节）和五项评测（`eval.py`）；推理、校准、评测的完整命令清单都在 [`start.md`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)。
 
 ## 3. 数据：训练 2160 条，评测与 Intern-Decision 完全一致
 
@@ -234,7 +234,7 @@ experiments/pytrio-jev/
 └── images/
 ```
 
-完整命令清单见 [`start.md`](https://github.com/KMnO4-zx/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)
+完整命令清单见 [`start.md`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/pytrio-jev/start.md)
 
 ## 总结
 
