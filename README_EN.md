@@ -42,8 +42,7 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 
 1. Explain each algorithm clearly first: which paper it comes from, what problem it solves, and what its core variables are.
 2. Then reproduce it with runnable code: data, reward, loss, training loop, and SwanLab tracking are all in this repo.
-3. Maybe build a friendlier and more lightweight Agent RL training framework in the future~
-4. ***For the tenth article, I will reproduce and dissect Harness-RL.***
+3. Maybe build a friendlier and more lightweight training framework for Agent RL and Harness RL in the future~
 
 > *Why PyTRIO? I had long wanted to dig deep into Agentic-RL algorithms, but kept being held back by practical obstacles: no GPUs, the complexity of tightly coupled training-and-inference codebases, the highly coupled engineering of Verl, and so on. PyTRIO changed that — it lets me study Agentic-RL algorithms with much simpler code and a much lower barrier. I learned and reproduced everything in this repository in less than a month.*
 
