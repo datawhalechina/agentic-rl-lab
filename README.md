@@ -120,7 +120,7 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ## Star History
 
 <div align="center">
-  <img src="./images/star-history-2026826.png" alt="GitHub Star History" width="700" />
+  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
 </div>
 
 ## 🙏 致谢
@@ -136,6 +136,7 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ### 特别感谢
 
 - 感谢 [@Sm1les](https://github.com/Sm1les) 对本项目的帮助与支持
+- 感谢 [PyTRIO 官方团队](https://pytrio.com) 对本项目的支持
 - 感谢 [Kimi 全球大使计划](https://www.kimi.com/zh-cn/lp/kimi-ambassador) 对项目作者的支持
 - 感谢 [OpenAI Codex for Open Source 计划](https://developers.openai.com/community/codex-for-oss) 为项目作者提供的 ChatGPT Pro 订阅支持
 - 感谢 [火山 Hero 计划](https://www.volcengine.com/) 对项目作者的支持
