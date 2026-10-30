@@ -11,7 +11,7 @@
 </p>
 
 <p>
-  Reproduce and dissect frontier LLM reinforcement learning algorithms — GRPO, OPD, OPSD, GSPO, DAPO, Search-R1, ReTool, ALFWorld, Vision GRPO, TEMPO, AgentOPSD, Spec-o3, PyTrio-Jev, Slime and more — with simpler code and a lower GPU barrier.
+  Reproduce and dissect frontier LLM reinforcement learning algorithms — GRPO, OPD, OPSD, GSPO, DAPO, Search-R1, ReTool, ALFWorld, Vision GRPO, TEMPO, AgentOPSD, Spec-o3, PyTrio-Jev and more — with simpler code and lower barriers to accessing compute.
 </p>
 
 <p>
@@ -44,9 +44,11 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 2. Then reproduce it with runnable code: data, reward, loss, training loop, and SwanLab tracking are all in this repo.
 3. Maybe build a friendlier and more lightweight training framework for Agent RL and Harness RL in the future~
 
-> *Why PyTRIO? I had long wanted to dig deep into Agentic-RL algorithms, but kept being held back by practical obstacles: no GPUs, the complexity of tightly coupled training-and-inference codebases, the highly coupled engineering of Verl, and so on. PyTRIO changed that — it lets me study Agentic-RL algorithms with much simpler code and a much lower barrier. I learned and reproduced everything in this repository in less than a month.*
+> *I had long wanted to dig deep into Agentic RL, but the training setups I saw at the time routinely called for four or eight GPUs. The complexity of combining training and inference, along with the tightly coupled code in existing frameworks such as verl, Slime, and Areal, kept me from getting started. After discovering Tinker and PyTRIO, I became increasingly convinced that Train APIs are infrastructure for the future of large language models. They gave me a way to reproduce, understand, and run these Agentic RL algorithms with an exceptionally low barrier to entry. I reproduced the algorithms from these 14 Agentic RL papers in less than two months. Now, when I read a paper, its essence comes down to just a few lines of equations. That is the real appeal of Train APIs: stripping away all the noise and distractions so researchers and learners can focus on the core algorithms.*
 
-> *I believe products like PyTRIO or Tinker are future-facing infrastructure for LLM post-training. Getting hands-on with them early is valuable for both algorithm engineers and researchers.*
+> *So I wondered: could more people like me get started sooner? Explain the algorithms clearly, simplify the code, and lower the cost of getting started with experiments, so anyone who wants to learn can try them hands-on. I believe the opportunity to study and research frontier technology should not depend on which school you attend, which company you work for, or how many GPUs you have. What we can do may be small, but there is still no systematic collection of Agentic RL learning materials. Only Datawhale can do it!*
+
+> *I want the sky to be within everyone's reach. Agentic RL belongs to everyone who wants to learn about it and research it!*
 
 If you have a promising Agentic-RL idea and want to turn it into a paper or a project, you are welcome to email us to apply for PyTRIO credits. The review process is fairly strict, so please write your proposal carefully and clearly in the email. PyTRIO is also happy to sponsor Agentic RL projects and papers — contact: violin@pytrio.com
 

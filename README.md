@@ -11,7 +11,7 @@
 </p>
 
 <p>
-  复现和拆解前沿 LLM 强化学习算法，用更简单的代码和更低的 GPU 门槛，把 GRPO、OPD、OPSD、GSPO、DAPO、Search-R1、ReTool、ALFWorld、Vision GRPO、TEMPO、AgentOPSD、Spec-o3、PyTrio-Jev、Slime 等方法跑起来，方便复现。
+  复现和拆解前沿 LLM 强化学习算法，用更简单的代码和更低的算力门槛，把 GRPO、OPD、OPSD、GSPO、DAPO、Search-R1、ReTool、ALFWorld、Vision GRPO、TEMPO、AgentOPSD、Spec-o3、PyTrio-Jev 等方法跑起来，方便复现。
 </p>
 
 <p>
@@ -44,9 +44,11 @@
 2. 再用可运行代码复现：数据、reward、loss、训练循环、SwanLab 记录都放在仓库里。
 3. 可能未来会做一个更友好和轻量的 Agent RL 和 Harness RL 训练框架～
 
-> *&emsp;&emsp;选择 PyTRIO 的原因很简单，我曾很想要深度研究一下 Agentic-RL 算法，但一直受一些阻力困扰。比如：没卡、训推一体的代码复杂度、Verl 的高耦合工程代码等等。让我一直迟迟没有动手研究。PyTRIO 的出现，让我可以用更简单的代码和更低的门槛来研究 Agentic-RL 算法。仓库的全部内容我仅仅花了不到一个月时间就全部学习和复现完了。*
+> *&emsp;&emsp;我曾经很想深入研究 Agentic RL，但我当时看到的训练方案，动不动就要 4 卡、8 卡，训推一体的复杂度、现有框架（verl、Slime、Areal）高耦合的工程代码，让我迟迟没有动手。后来接触到 Tinker 和 PyTrio 之后才愈发觉得 Train API 是一个面向未来的大模型基础设施，才有机会以极低的门槛把这些 Agentic RL 算法复现学会并跑起来。我复现这 14 篇 Agentic RL 论文中的算法只用了不到两个月时间。现在的论文对我而言，最核心的内容只有几行公式而已，这就是 Train API 的真正魅力，可以剥离所有噪声和干扰项，为研究员和学习者留下最为核心的算法内容。*
 
-> *&emsp;&emsp;我认为 PyTrio 或 Tinker 这类产品是面向未来的大模型后训练基础设施，早一点接触对算法工程师或是 Researcher 而言都是很有价值的。*
+> *&emsp;&emsp;所以我想，能不能让更多和我一样的人，也能早点开始？把算法讲明白，把代码写简单，把实验的入门成本降下来，让每一个有学习想法的人，可以动手试一试。我觉得研究和学习前沿技术的机会，不该取决于你在哪所学校、哪家公司，或者手里有多少张卡。我们能做的事情可能很小，但目前确实没有成体系的 Agentic RL 学习内容，Only datawhale can do！*
+
+> *&emsp;&emsp;我要这天，不再高高在上。Agentic RL 属于每一个想要研究和学习它的人！*
 
 &emsp;&emsp;如果你有不错的 Agentic-RL idea，想做论文或者做项目，可以写一封邮件来申请 PyTrio 的代金券。审核会比较严格，希望大家在邮件里认真写清楚自己的 proposal。PyTrio 也很乐意赞助大家做 Agentic RL 的项目和论文，邮箱：violin@pytrio.com
 
