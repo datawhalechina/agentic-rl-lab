@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#101b32"/>
+  <g font-family="Arial, sans-serif">
+    <text x="80" y="102" fill="#a5b9d9" font-size="22" letter-spacing="3">AGENTIC RL LAB · EXPERIMENT DESIGN</text>
+    <text x="80" y="185" fill="#fff" font-size="64" font-weight="700">GiGPO × ALFWorld</text>
+    <text x="80" y="237" fill="#a5b9d9" font-size="26">Same tasks. Same budget. Step-level credit assignment.</text>
+    <rect x="80" y="302" width="520" height="247" rx="18" fill="#1b2e4d" stroke="#6096ff" stroke-width="2"/>
+    <rect x="680" y="302" width="520" height="247" rx="18" fill="#173b3d" stroke="#5ee7be" stroke-width="2"/>
+    <text x="112" y="353" fill="#92b8ff" font-size="30" font-weight="700">GRPO</text>
+    <text x="712" y="353" fill="#7ceaca" font-size="30" font-weight="700">GiGPO</text>
+    <text x="112" y="414" fill="#fff" font-size="24">Episode return − group mean</text>
+    <text x="712" y="414" fill="#fff" font-size="24">Episode advantage</text>
+    <text x="712" y="457" fill="#fff" font-size="24">+ matched-observation advantage</text>
+    <text x="112" y="510" fill="#a5b9d9" font-size="20">One signal for the whole trajectory</text>
+    <text x="712" y="510" fill="#b3d9d0" font-size="20">A distinct signal for each action</text>
+    <text x="80" y="615" fill="#fff" font-size="24">80 iterations / arm · 8 games × 8 rollouts · max 50 actions</text>
+    <text x="80" y="658" fill="#a5b9d9" font-size="19">Qwen3.5-4B · PyTRIO · Full history · No measured results yet</text>
+  </g>
+</svg>
