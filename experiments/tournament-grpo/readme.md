@@ -129,8 +129,10 @@ r_i = r_i^{\text{tour}} + r_i^{\text{fmt}}
 advantage 按作者实现使用组内样本标准差（`ddof=1`）：
 
 ```math
-A_i = \frac{r_i - \operatorname{mean}(r_{1..K})}{\operatorname{std}(r_{1..K}) + 10^{-6}}
+A_i = \frac{r_i - \bar{r}}{s_r + 10^{-6}}
 ```
+
+其中 $\bar{r}$ 是组内 reward 的均值，$s_r$ 是以 $K-1$ 为分母计算的样本标准差。
 
 下面是训练中真实的一组打分，题目就是开头那道材料科学题：
 
