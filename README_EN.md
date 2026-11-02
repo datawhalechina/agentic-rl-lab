@@ -71,6 +71,7 @@ If you have a promising Agentic-RL idea and want to turn it into a paper or a pr
 | [ALFWorld](./experiments/alfworld/readme.md) | Train a household agent with 12K-token long trajectories, a real TextWorld environment, and group-relative advantage | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/alfworld/) |
 | [TEMPO](./experiments/tempo/readme.md) | Algorithm-level reproduction of macro-step optimization with a generative critic | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
+| [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | Compare research reports for the same query in knockout tournaments and use wins as GRPO rewards | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tournament-grpo/) |
 
 ## Quick Start
 

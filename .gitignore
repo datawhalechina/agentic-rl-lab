@@ -44,6 +44,11 @@ htmlcov/
 .coverage.*
 .cache
 experiments/search-r1/datasets/
+experiments/tournament-grpo/datasets/
+experiments/tournament-grpo/.env
+experiments/tournament-grpo/outputs/
+experiments/tournament-grpo/dev.md
+experiments/tournament-grpo/configure_judge.py
 experiments/search-r1/eval_result/
 experiments/search-r1/.env*
 !experiments/search-r1/.env.example
@@ -254,3 +259,7 @@ experiments/tempo/datasets/
 **/swanlog/*
 !**/swanlog/.gitignore
 *.swanlab
+
+# Local agent instructions
+/AGENTS.md
+/AGENT.md

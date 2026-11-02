@@ -71,6 +71,7 @@
 | [ALFWorld](./experiments/alfworld/readme.md) | 用 12K 长轨迹、真实 TextWorld 环境和 group-relative advantage 训练家务 Agent | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/alfworld/) |
 | [TEMPO](./experiments/tempo/readme.md) | 算法级复现 macro-step 优化与生成式 critic | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/spec-o3/) |
+| [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | 让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tournament-grpo/) |
 
 ## 快速启动
 
