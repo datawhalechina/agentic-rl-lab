@@ -11,7 +11,7 @@
 </p>
 
 <p>
-  Reproduce and dissect frontier LLM reinforcement learning algorithms — GRPO, OPD, OPSD, GSPO, DAPO, Search-R1, ReTool, ALFWorld, Vision GRPO, TEMPO, AgentOPSD, Spec-o3, PyTrio-Jev, Slime and more — with simpler code and a lower GPU barrier.
+  Reproduce and dissect frontier LLM reinforcement learning algorithms — GRPO, OPD, OPSD, GSPO, DAPO, Search-R1, ReTool, ALFWorld, Vision GRPO, TEMPO, AgentOPSD, Spec-o3, PyTrio-Jev and more — with simpler code and lower barriers to accessing compute.
 </p>
 
 <p>
@@ -44,9 +44,11 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 2. Then reproduce it with runnable code: data, reward, loss, training loop, and SwanLab tracking are all in this repo.
 3. Maybe build a friendlier and more lightweight training framework for Agent RL and Harness RL in the future~
 
-> *Why PyTRIO? I had long wanted to dig deep into Agentic-RL algorithms, but kept being held back by practical obstacles: no GPUs, the complexity of tightly coupled training-and-inference codebases, the highly coupled engineering of Verl, and so on. PyTRIO changed that — it lets me study Agentic-RL algorithms with much simpler code and a much lower barrier. I learned and reproduced everything in this repository in less than a month.*
+> *I had long wanted to dig deep into Agentic RL, but the training setups I saw at the time routinely called for four or eight GPUs. The complexity of combining training and inference, along with the tightly coupled code in existing frameworks such as verl, Slime, and Areal, kept me from getting started. After discovering Tinker and PyTRIO, I became increasingly convinced that Train APIs are infrastructure for the future of large language models. They gave me a way to reproduce, understand, and run these Agentic RL algorithms with an exceptionally low barrier to entry. I reproduced the algorithms from these 14 Agentic RL papers in less than two months. Now, when I read a paper, its essence comes down to just a few lines of equations. That is the real appeal of Train APIs: stripping away all the noise and distractions so researchers and learners can focus on the core algorithms.*
 
-> *I believe products like PyTRIO or Tinker are future-facing infrastructure for LLM post-training. Getting hands-on with them early is valuable for both algorithm engineers and researchers.*
+> *So I wondered: could more people like me get started sooner? Explain the algorithms clearly, simplify the code, and lower the cost of getting started with experiments, so anyone who wants to learn can try them hands-on. I believe the opportunity to study and research frontier technology should not depend on which school you attend, which company you work for, or how many GPUs you have. What we can do may be small, but there is still no systematic collection of Agentic RL learning materials. Only Datawhale can do it!*
+
+> *I want the sky to be within everyone's reach. Agentic RL belongs to everyone who wants to learn about it and research it!*
 
 If you have a promising Agentic-RL idea and want to turn it into a paper or a project, you are welcome to email us to apply for PyTRIO credits. The review process is fairly strict, so please write your proposal carefully and clearly in the email. PyTRIO is also happy to sponsor Agentic RL projects and papers — contact: violin@pytrio.com
 
@@ -69,6 +71,7 @@ If you have a promising Agentic-RL idea and want to turn it into a paper or a pr
 | [ALFWorld](./experiments/alfworld/readme.md) | Train a household agent with 12K-token long trajectories, a real TextWorld environment, and group-relative advantage | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/alfworld/) |
 | [TEMPO](./experiments/tempo/readme.md) | Algorithm-level reproduction of macro-step optimization with a generative critic | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
+| [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | Compare research reports for the same query in knockout tournaments and use wins as GRPO rewards | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tournament-grpo/) |
 
 ## Quick Start
 
@@ -117,11 +120,11 @@ The ALFWorld optional extra corresponds to:
 uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ```
 
-## Star History
+## User Stories
 
-<div align="center">
-  <img src="./images/star-history-2026826.png" alt="GitHub Star History" width="700" />
-</div>
+A few days ago, I shared a MemTensor paper on Xiaohongshu. A reader commented that they'd joined the company, and [AgentOPSD](./experiments/agentopsd/readme.md) from this repo was the project on their interview résumé! After we connected, we discovered that Siyu from Datawhale, who had patiently helped them get started, is also a good friend of mine. Haha, small world! Looks like learning Agentic RL really can help you land a job 🤔. There really isn't a better Agentic RL tutorial out there right now. Only Datawhale can do it!
+
+A quick shout-out to their open-source native-memory model, [MemT-1.0](https://github.com/MemTensor/MemT-1.0): [download it and give it a try](https://huggingface.co/collections/MemTensor/memt-1)!
 
 ## 🙏 Acknowledgments
 
@@ -129,13 +132,16 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 
 - [Song Zhixue - Project Lead](https://github.com/KMnO4-zx) (Datawhale Member)
 
-### Contributors
+### Content Contributors
+
+- [MRLE](https://github.com/mrle0429) (Beijing Jiaotong University): [Tournament-GRPO](./experiments/tournament-grpo/readme.md)
 
 Want to contribute to this repo? Welcome! Please read the [Contributing Guide](./CONTRIBUTING_EN.md) first: open an Issue proposal before starting a new algorithm chapter; fixes and docs improvements can go straight to a PR.
 
 ### Special Thanks
 
 - Thank you to [@Sm1les](https://github.com/Sm1les) for helping and supporting this project.
+- Thank you to the [PyTRIO team](https://pytrio.com) for supporting this project.
 - Thank you to the [Kimi Ambassador Program](https://www.kimi.com/zh-cn/lp/kimi-ambassador) for supporting the project author.
 - Thank you to the [OpenAI Codex for Open Source program](https://developers.openai.com/community/codex-for-oss) for providing the project author with a ChatGPT Pro subscription.
 - Thank you to the [Volcano Engine Hero Program](https://www.volcengine.com/) for supporting the project author.
@@ -145,6 +151,12 @@ Want to contribute to this repo? Welcome! Please read the [Contributing Guide](.
   <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=datawhalechina/agentic-rl-lab" />
   </a>
+</div>
+
+## Star History
+
+<div align="center">
+  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
 </div>
 
 ## License

@@ -60,6 +60,8 @@ experiments/algorithm-name/
 3. **Cost transparency**: state the actual cost (in CNY) and wall-clock time of a single training run, so readers can judge whether they can afford to reproduce it.
 4. **Low barrier first**: prefer configurations where a small model and a small number of steps already show metric movement. The spirit of this repo is that a learner should be able to confirm "the code works" within 20 steps.
 5. **Honest boundaries**: state clearly which conclusions a single small-scale run can support, and which it cannot.
+6. **Explain it in your own words**: AI may help organize and polish the text, but the blog's explanation must not be written entirely by AI. Authors must organize the content based on their own understanding; articles with a strong AI-generated feel will not be merged.
+7. **Make the core principle clear**: use two or three plain-language sentences, supported by the key formulas, to explain what problem the algorithm solves, what its key change is, and how it works. A collection of formulas, jargon, or a walkthrough of the code is not sufficient.
 
 ## Engineering Conventions
 

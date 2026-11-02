@@ -32,11 +32,12 @@ export function addSeo(page) {
   const { published, modified } = page.frontmatter.sourceDates || sourceDates('docs/content/' + path)
   pageDates.set(routePath(path), modified)
   const isArticle = page.frontmatter.layout !== 'page'
+  const pageAuthor = page.frontmatter.author || author
   const schema = isArticle ? {
     '@context': 'https://schema.org', '@type': 'BlogPosting', '@id': url + '#article',
     headline: page.title, description, inLanguage: en ? 'en' : 'zh-CN',
     url, mainEntityOfPage: url, image: [image],
-    author: { '@type': 'Person', ...author }, datePublished: published, dateModified: modified,
+    author: { '@type': 'Person', ...pageAuthor }, datePublished: published, dateModified: modified,
     isPartOf: { '@type': 'WebSite', name: 'Agentic RL Lab', url: en ? siteUrl + 'en/' : siteUrl },
   } : { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Agentic RL Lab', url: en ? siteUrl + 'en/' : siteUrl, inLanguage: en ? 'en' : 'zh-CN', description }
   const breadcrumbs = {
@@ -48,7 +49,8 @@ export function addSeo(page) {
     ],
   }
   const json = (data) => JSON.stringify(data).replace(/</g, '\\u003c')
-  page.frontmatter.author = author.name
+  page.frontmatter.author = pageAuthor.name
+  page.frontmatter.authorUrl = pageAuthor.url
   page.frontmatter.modified = modified.slice(0, 10)
   page.frontmatter.head = [
     ...(page.frontmatter.head || []),

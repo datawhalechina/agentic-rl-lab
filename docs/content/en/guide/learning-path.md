@@ -29,6 +29,8 @@ Start with student sampling and teacher scores to understand token-level feedbac
 
 Introduce search, a Python sandbox and a TextWorld environment in turn. Watch how multi-turn trajectories are stored, how environment observations enter the context, and how training distinguishes model actions from observations.
 
+Then explore [Tournament-GRPO](/en/experiments/tournament-grpo/): when a model's research report has no single correct answer, how can judge comparisons and tournament wins provide rewards?
+
 ## 04 · Explore more complex tasks
 
 After GRPO and tool interaction, continue with one of these directions:

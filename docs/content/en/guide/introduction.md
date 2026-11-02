@@ -13,6 +13,10 @@ I use PyTRIO to reproduce and study LLM and agent reinforcement learning methods
 
 This lab is maintained by [KMnO4-zx](https://github.com/KMnO4-zx). Notes link to their papers, implementation and public experiment records so that readers can trace the evidence behind a conclusion. The Chinese and English editions share the same experiment code and original figures. Original code comments, logs and text inside figures may remain in Chinese. Report translation or reproduction issues through GitHub Issues or the edit link on each page.
 
+### Content Contributors
+
+- [MRLE](https://github.com/mrle0429) (Beijing Jiaotong University): [Tournament-GRPO](/en/experiments/tournament-grpo/)
+
 ## What an experiment note contains
 
 Between a paper and a working experiment lie many practical details: how sampling is organized, how rewards are computed, which tokens receive updates, and how evaluation differs from training.

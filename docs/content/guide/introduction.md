@@ -13,6 +13,10 @@ description: 一个从论文、代码和真实实验出发的 Agent 强化学习
 
 这个 Lab 由 [KMnO4-zx](https://github.com/KMnO4-zx) 维护。每篇笔记尽量保留论文出处、代码入口、训练记录和评测条件，方便读者追查结论。中英文版本共用实验代码与原始结果图；代码中的原始注释、日志和图内文字可能保留中文。发现翻译或复现问题时，可以通过页面底部的编辑链接或 GitHub Issues 反馈。
 
+### 内容贡献者
+
+- [MRLE](https://github.com/mrle0429)（北京交通大学）：[Tournament-GRPO](/experiments/tournament-grpo/)
+
 ## 每篇实验里有什么
 
 一篇论文从提出想法到真正跑起来，中间往往藏着不少细节：采样怎样组织，奖励怎样计算，哪些 token 参与更新，评测又和训练有什么区别。

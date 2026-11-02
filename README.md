@@ -11,7 +11,7 @@
 </p>
 
 <p>
-  复现和拆解前沿 LLM 强化学习算法，用更简单的代码和更低的 GPU 门槛，把 GRPO、OPD、OPSD、GSPO、DAPO、Search-R1、ReTool、ALFWorld、Vision GRPO、TEMPO、AgentOPSD、Spec-o3、PyTrio-Jev、Slime 等方法跑起来，方便复现。
+  复现和拆解前沿 LLM 强化学习算法，用更简单的代码和更低的算力门槛，把 GRPO、OPD、OPSD、GSPO、DAPO、Search-R1、ReTool、ALFWorld、Vision GRPO、TEMPO、AgentOPSD、Spec-o3、PyTrio-Jev 等方法跑起来，方便复现。
 </p>
 
 <p>
@@ -44,9 +44,11 @@
 2. 再用可运行代码复现：数据、reward、loss、训练循环、SwanLab 记录都放在仓库里。
 3. 可能未来会做一个更友好和轻量的 Agent RL 和 Harness RL 训练框架～
 
-> *&emsp;&emsp;选择 PyTRIO 的原因很简单，我曾很想要深度研究一下 Agentic-RL 算法，但一直受一些阻力困扰。比如：没卡、训推一体的代码复杂度、Verl 的高耦合工程代码等等。让我一直迟迟没有动手研究。PyTRIO 的出现，让我可以用更简单的代码和更低的门槛来研究 Agentic-RL 算法。仓库的全部内容我仅仅花了不到一个月时间就全部学习和复现完了。*
+> *&emsp;&emsp;我曾经很想深入研究 Agentic RL，但我当时看到的训练方案，动不动就要 4 卡、8 卡，训推一体的复杂度、现有框架（verl、Slime、Areal）高耦合的工程代码，让我迟迟没有动手。后来接触到 Tinker 和 PyTrio 之后才愈发觉得 Train API 是一个面向未来的大模型基础设施，才有机会以极低的门槛把这些 Agentic RL 算法复现学会并跑起来。我复现这 14 篇 Agentic RL 论文中的算法只用了不到两个月时间。现在的论文对我而言，最核心的内容只有几行公式而已，这就是 Train API 的真正魅力，可以剥离所有噪声和干扰项，为研究员和学习者留下最为核心的算法内容。*
 
-> *&emsp;&emsp;我认为 PyTrio 或 Tinker 这类产品是面向未来的大模型后训练基础设施，早一点接触对算法工程师或是 Researcher 而言都是很有价值的。*
+> *&emsp;&emsp;所以我想，能不能让更多和我一样的人，也能早点开始？把算法讲明白，把代码写简单，把实验的入门成本降下来，让每一个有学习想法的人，可以动手试一试。我觉得研究和学习前沿技术的机会，不该取决于你在哪所学校、哪家公司，或者手里有多少张卡。我们能做的事情可能很小，但目前确实没有成体系的 Agentic RL 学习内容，Only datawhale can do！*
+
+> *&emsp;&emsp;我要这天，不再高高在上。Agentic RL 属于每一个想要研究和学习它的人！*
 
 &emsp;&emsp;如果你有不错的 Agentic-RL idea，想做论文或者做项目，可以写一封邮件来申请 PyTrio 的代金券。审核会比较严格，希望大家在邮件里认真写清楚自己的 proposal。PyTrio 也很乐意赞助大家做 Agentic RL 的项目和论文，邮箱：violin@pytrio.com
 
@@ -69,6 +71,7 @@
 | [ALFWorld](./experiments/alfworld/readme.md) | 用 12K 长轨迹、真实 TextWorld 环境和 group-relative advantage 训练家务 Agent | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/alfworld/) |
 | [TEMPO](./experiments/tempo/readme.md) | 算法级复现 macro-step 优化与生成式 critic | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/spec-o3/) |
+| [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | 让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tournament-grpo/) |
 
 ## 快速启动
 
@@ -117,11 +120,11 @@ uv add \
 uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 ```
 
-## Star History
+## 用户故事
 
-<div align="center">
-  <img src="./images/star-history-2026826.png" alt="GitHub Star History" width="700" />
-</div>
+&emsp;&emsp;前几天在小红书分享记忆张量（MemTensor）的论文，评论区有位朋友说，他已经入职这家公司，面试时简历里写的就是本仓库的 [AgentOPSD](./experiments/agentopsd/readme.md)！加上好友才发现，刚入门时耐心帮他答疑的 Datawhale 思语，也是我的好朋友。哈哈，世界真小。看来学会 Agentic RL 是真能找到工作啊🤔。目前确实没有其他更好 Agentic RL 教程，Only datawhale can do！
+
+&emsp;&emsp;顺便安利一下他们开源的原生记忆模型 [MemT-1.0](https://github.com/MemTensor/MemT-1.0)，欢迎[下载体验](https://huggingface.co/collections/MemTensor/memt-1)～
 
 ## 🙏 致谢
 
@@ -129,13 +132,16 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 
 - [宋志学-项目负责人](https://github.com/KMnO4-zx)（Datawhale 成员）
 
-### 贡献者
+### 内容贡献者
+
+- [MRLE](https://github.com/mrle0429)（北京交通大学）：[Tournament-GRPO](./experiments/tournament-grpo/readme.md)
 
 &emsp;&emsp;想为这个仓库贡献内容？欢迎！请先阅读 [贡献指南](./CONTRIBUTING.md)：新增算法章节请先开 Issue 提案，修复和文档改进可以直接提 PR。
 
 ### 特别感谢
 
 - 感谢 [@Sm1les](https://github.com/Sm1les) 对本项目的帮助与支持
+- 感谢 [PyTRIO 官方团队](https://pytrio.com) 对本项目的支持
 - 感谢 [Kimi 全球大使计划](https://www.kimi.com/zh-cn/lp/kimi-ambassador) 对项目作者的支持
 - 感谢 [OpenAI Codex for Open Source 计划](https://developers.openai.com/community/codex-for-oss) 为项目作者提供的 ChatGPT Pro 订阅支持
 - 感谢 [火山 Hero 计划](https://www.volcengine.com/) 对项目作者的支持
@@ -145,6 +151,12 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
   <a href="https://github.com/datawhalechina/agentic-rl-lab/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=datawhalechina/agentic-rl-lab" />
   </a>
+</div>
+
+## Star History
+
+<div align="center">
+  <img src="./images/star-history-20261029.png" alt="GitHub Star History" width="700" />
 </div>
 
 ## License

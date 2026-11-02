@@ -134,6 +134,7 @@ for (const locale of ['zh', 'en']) for (const chapter of localizedChapters(local
       title: isRun ? `${chapter.title} ${locale === 'en' ? 'Quick Start: Setup and Training Commands' : '快速启动：环境、配置与运行命令'}` : chapter.seoTitle,
       description: isRun ? chapter.runDescription : chapter.description,
       chapter: chapter.id, source, ...(locale === 'en' ? { translationSource } : {}), isRun,
+      ...(chapter.author ? { author: chapter.author } : {}),
       sourceDates: locale === 'en' ? { published: translationDate, modified: translationDate } : dates,
       readingTime: Math.max(1, Math.ceil(locale === 'en' ? body.replace(/```[\s\S]*?```/g, '').split(/\s+/).length / 220 : body.replace(/```[\s\S]*?```/g, '').length / 450)),
       group: localizedGroups(locale).find(g => g.id === chapter.group).label,

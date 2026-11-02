@@ -1,5 +1,11 @@
 // Page metadata is kept separate from the original research notes.
 export const metadata = {
+  'tournament-grpo': {
+    author: { name: 'MRLE', url: 'https://github.com/mrle0429' },
+    seoTitle: 'Tournament-GRPO 原理与复现：研究报告淘汰赛奖励',
+    runDescription: '准备研究数据，配置 DeepSeek 搜索、Jina Reader 与裁判，运行 Tournament-GRPO 训练和 Deep Research Bench 评测。',
+    en: { subtitle: 'Put research reports through a tournament', seoTitle: 'Tournament-GRPO: Tournament Rewards for Research Reports with PyTRIO', description: 'Compare research reports for the same query in tournaments, turn wins into GRPO rewards, and examine a 20-step PyTRIO run with independent evaluation.', runDescription: 'Prepare research data, configure DeepSeek Search, Jina Reader and the judges, then run Tournament-GRPO training and Deep Research Bench evaluation.', tags: ['Tournament rewards', 'Deep Research'] },
+  },
   'loss-functions': {
     seoTitle: '强化学习损失函数：Importance Sampling、PPO 与 CISPO',
     en: { subtitle: 'An intuition for reinforcement learning losses', seoTitle: 'RL Loss Functions: Importance Sampling, PPO and CISPO', description: 'Understand importance sampling, PPO clipping and CISPO through intuitive examples, equations and the policy updates used in this lab.', tags: ['Foundations', 'Objectives'] },

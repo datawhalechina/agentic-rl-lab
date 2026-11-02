@@ -160,5 +160,17 @@
     "sourceSha256": "cf00b439283a6974c923beec9bf195807c74cfc4c7cf72e171b28343a8a49e85",
     "translatedAt": "2026-09-28",
     "engine": "Manual English translation; original code and equations preserved"
+  },
+  "docs/translations/en/tournament-grpo.md": {
+    "source": "experiments/tournament-grpo/readme.md",
+    "sourceSha256": "739963923cd26b583918187bf78fd743e7a19e009d52bae1dcab9fbddd1c43eb",
+    "translatedAt": "2026-11-02",
+    "engine": "English translation reviewed against source; original code and equations preserved"
+  },
+  "docs/translations/en/tournament-grpo.run.md": {
+    "source": "experiments/tournament-grpo/start.md",
+    "sourceSha256": "6dbc59a22417aee362923bc0cf8f171d96e0821caa26b025635e79ede2841db7",
+    "translatedAt": "2026-11-02",
+    "engine": "English translation reviewed against source; original code and equations preserved"
   }
 }

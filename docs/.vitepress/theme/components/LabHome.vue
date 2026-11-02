@@ -20,7 +20,7 @@ const tilt = (i) => `${tilts[i % tilts.length]}deg`
       <div class="hero-copy">
         <p class="eyebrow"><span class="status-dot" /> AN OPEN RESEARCH NOTEBOOK</p>
         <h1>{{ t('从一篇论文，', 'From a paper, ') }}<br>{{ t('到一次', 'to a real ') }}<span class="hero-emphasis">{{ t('真实的训练', 'training run') }}<span class="hero-period">{{ t('。', '.') }}</span></span></h1>
-        <p class="hero-description">{{ t('用 PyTRIO 实践 LLM 与 Agent 强化学习。', 'Hands-on LLM and agent reinforcement learning with PyTRIO. ') }}<br>{{ t('15 篇可运行的实验笔记：从 GRPO / DAPO / GSPO，到 Search-R1、ReTool 与多模态 Agent。', '15 runnable experiment notes: from GRPO, DAPO and GSPO to Search-R1, ReTool and multimodal agents.') }}</p>
+        <p class="hero-description">{{ t('用 PyTRIO 实践 LLM 与 Agent 强化学习。', 'Hands-on LLM and agent reinforcement learning with PyTRIO. ') }}<br>{{ chapters.length }} {{ t('篇可运行的实验笔记：从 GRPO / DAPO / GSPO，到 Search-R1、ReTool 与多模态 Agent。', 'runnable experiment notes: from GRPO, DAPO and GSPO to Search-R1, ReTool and multimodal agents.') }}</p>
         <div class="hero-actions">
           <a class="lab-button primary" :href="withBase(path('/guide/quickstart.html'))">{{ t('开始第一个实验', 'Run your first experiment') }} <LabIcon name="arrow" :size="17" /></a>
           <a class="lab-button secondary" :href="withBase(path('/experiments/'))">{{ t('浏览实验手册', 'Browse experiments') }} <LabIcon name="book" :size="17" /></a>

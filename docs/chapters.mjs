@@ -23,6 +23,7 @@ export const chapters = [
   { id: 'alfworld', number: '13', title: 'ALFWorld', subtitle: '训练一个会做家务的 Agent', group: 'agents', source: 'experiments/alfworld/readme.md', start: 'experiments/alfworld/start.md', description: '在真实 TextWorld 环境里，处理长轨迹、环境反馈与家务任务。', tags: ['具身环境', '长轨迹'] },
   { id: 'tempo', number: '14', title: 'TEMPO', subtitle: '用小段轨迹学习长程任务', group: 'frontiers', source: 'experiments/tempo/readme.md', description: '在 ALFWorld 中探索 macro-step 优化与生成式 critic，记录算法级复现的边界。', tags: ['Macro-step', '生成式 Critic'] },
   { id: 'spec-o3', number: '15', title: 'Spec-o3', subtitle: '用强化学习寻找天上的星星', group: 'frontiers', source: 'experiments/spec-o3/readme.md', start: 'experiments/spec-o3/start.md', description: '从 SFT 到 GRPO，让模型边看光谱、边思考、边调用工具完成天体候选审核。', tags: ['光谱分析', '多模态工具'] },
+  { id: 'tournament-grpo', number: '16', title: 'Tournament-GRPO', subtitle: '让研究报告打一场淘汰赛', group: 'agents', source: 'experiments/tournament-grpo/readme.md', start: 'experiments/tournament-grpo/start.md', description: '让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励，记录 PyTRIO 上的 20 步训练与独立评测。', tags: ['淘汰赛奖励', 'Deep Research'] },
 ]
 
 export const repoUrl = 'https://github.com/datawhalechina/agentic-rl-lab'
@@ -46,4 +47,5 @@ export const articleCovers = {
   agentopsd: './images/封面.png',
   'spec-o3': './images/封面.png',
   'pytrio-jev': './images/head.png',
+  'tournament-grpo': './images/封面.png',
 }
