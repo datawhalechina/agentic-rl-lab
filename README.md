@@ -132,7 +132,9 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 
 - [宋志学-项目负责人](https://github.com/KMnO4-zx)（Datawhale 成员）
 
-### 贡献者
+### 内容贡献者
+
+- [MRLE](https://github.com/mrle0429)（北京交通大学）：[Tournament-GRPO](./experiments/tournament-grpo/readme.md)
 
 &emsp;&emsp;想为这个仓库贡献内容？欢迎！请先阅读 [贡献指南](./CONTRIBUTING.md)：新增算法章节请先开 Issue 提案，修复和文档改进可以直接提 PR。
 

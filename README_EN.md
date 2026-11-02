@@ -132,7 +132,9 @@ A quick shout-out to their open-source native-memory model, [MemT-1.0](https://g
 
 - [Song Zhixue - Project Lead](https://github.com/KMnO4-zx) (Datawhale Member)
 
-### Contributors
+### Content Contributors
+
+- [MRLE](https://github.com/mrle0429) (Beijing Jiaotong University): [Tournament-GRPO](./experiments/tournament-grpo/readme.md)
 
 Want to contribute to this repo? Welcome! Please read the [Contributing Guide](./CONTRIBUTING_EN.md) first: open an Issue proposal before starting a new algorithm chapter; fixes and docs improvements can go straight to a PR.
 
