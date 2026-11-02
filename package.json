@@ -10,6 +10,7 @@
     "docs:dev": "npm run docs:prepare && vitepress dev docs --host 127.0.0.1",
     "docs:build": "npm run docs:prepare && vitepress build docs",
     "docs:preview": "vitepress preview docs --host 127.0.0.1",
+    "docs:test": "node --test scripts/docs/*.test.mjs",
     "docs:check": "node scripts/docs/check.mjs"
   },
   "devDependencies": {

@@ -6,24 +6,32 @@ import { localizedChapters, repoUrl, chapterLink } from '../chapters.mjs'
 import { siteUrl, siteBase } from '../site.mjs'
 import { addSeo, pageDates } from './seo.mjs'
 import { imageSize, imageHints } from './images.mjs'
+import { rewriteRawMarkdown } from './raw-markdown.mjs'
 
 // Serve every page's raw markdown next to its HTML so readers can copy it
 // or hand the URL to an LLM (mirrors the page path, e.g. /experiments/grpo/index.md).
 // A UTF-8 BOM keeps browsers from misdetecting the encoding when the
 // static host serves .md without a charset header.
-function copyRawMarkdown(srcDir: string, outDir: string) {
+function markdownFiles(srcDir: string) {
+  const files: string[] = []
   const walk = (dir: string) => {
     for (const entry of readdirSync(dir)) {
       const full = join(dir, entry)
       if (statSync(full).isDirectory()) { if (entry !== 'public') walk(full); continue }
-      if (entry.endsWith('.md')) {
-        const dest = join(outDir, relative(srcDir, full))
-        mkdirSync(dirname(dest), { recursive: true })
-        writeFileSync(dest, '﻿' + readFileSync(full, 'utf8'))
-      }
+      if (entry.endsWith('.md')) files.push(relative(srcDir, full).replaceAll('\\', '/'))
     }
   }
   walk(srcDir)
+  return files
+}
+
+function copyRawMarkdown(srcDir: string, outDir: string) {
+  const pages = markdownFiles(srcDir)
+  for (const page of pages) {
+    const dest = join(outDir, page)
+    mkdirSync(dirname(dest), { recursive: true })
+    writeFileSync(dest, '\uFEFF' + rewriteRawMarkdown(readFileSync(join(srcDir, page), 'utf8'), page, pages))
+  }
 }
 
 function navigation(locale: 'zh' | 'en') {  const en = locale === 'en'

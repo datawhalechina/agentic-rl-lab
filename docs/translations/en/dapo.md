@@ -65,7 +65,7 @@ The official description highlights four changes:
 
 This overview compares the four changes with GRPO:
 
-![](./images/01 · DAPO vs GRPO Overview.png)
+![](<./images/01 · DAPO vs GRPO Overview.png>)
 
 The implementation keeps two presets in the same [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py):
 
@@ -92,7 +92,7 @@ GRPO samples multiple answers to one question and computes within-group advantag
 
 DAPO removes groups that are entirely correct or entirely incorrect, then samples another question. [Section 3.2 of the paper](https://arxiv.org/pdf/2503.14476#page=5) continues sampling before training until the batch contains only informative groups with `accuracy ∈ (0, 1)`.
 
-![](./images/02 · Bounded Dynamic Sampling.png)
+![](<./images/02 · Bounded Dynamic Sampling.png>)
 
 The motivation is reasonable. If many prompts become too easy or too hard, fewer examples in a fixed batch contribute gradients. Dynamic Sampling performs online difficulty selection, concentrating training near the current policy's capability boundary.
 
@@ -139,7 +139,7 @@ DAPO's token mean is:
 
 Every token has equal weight, so longer reasoning contributes more gradient terms. This avoids diluting long trajectories through sequence averaging, but also gives long responses more optimization weight. Interpret it alongside length shaping.
 
-![](./images/03 · Clip-Higher and Token Mean.png)
+![](<./images/03 · Clip-Higher and Token Mean.png>)
 
 ### 4. Soft Overlong Punishment: penalize before abrupt truncation
 
@@ -156,7 +156,7 @@ length > max_tokens:      penalty = -1
 shaped_reward = correctness_reward + length_penalty
 ```
 
-![](./images/04 · Soft Overlong Punishment.png)
+![](<./images/04 · Soft Overlong Punishment.png>)
 
 The figure uses the original configuration, `max_tokens=8192` and `overlong_cache=2048`. The penalty starts at 6,144 tokens and reaches −1 at 8,192.
 

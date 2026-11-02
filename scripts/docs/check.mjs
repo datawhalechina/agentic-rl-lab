@@ -2,11 +2,13 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { load } from 'cheerio'
+import { unrenderedMarkdownImages } from './rendered-images.mjs'
+import { collectMarkdownUrls } from '../../docs/.vitepress/raw-markdown.mjs'
 import { chapters } from '../../docs/chapters.mjs'
-import { siteUrl, routePath } from '../../docs/site.mjs'
+import { siteUrl, siteBase } from '../../docs/site.mjs'
 
 const dist = fileURLToPath(new URL('../../docs/.vitepress/dist/', import.meta.url))
-const base = '/agentic-rl-lab/'
+const base = siteBase
 const errors = new Set()
 const documents = new Map()
 async function walk(directory) {
@@ -82,6 +84,7 @@ for (const [file, $] of documents) {
 
   if (relative !== '404.html' && $('h1').length !== 1) errors.add(`${relative}: expected one h1, got ${$('h1').length}`)
   if ($('mjx-merror, [data-mjx-error]').length) errors.add(`${relative}: invalid math`)
+  for (const image of unrenderedMarkdownImages($)) errors.add(`${relative}: unrendered Markdown image: ${image}`)
   const current = new URL(base + relative, 'https://docs.local')
   for (const element of $('a[href], img[src], script[src], link[href]').toArray()) {
     const raw = $(element).attr('href') || $(element).attr('src')
@@ -99,10 +102,38 @@ for (const [file, $] of documents) {
     links++
   }
 }
+// The downloadable/copyable Markdown bypasses VitePress's HTML URL rewriting.
+// Audit it independently so missing Pages prefixes cannot hide behind valid HTML.
+let markdownPages = 0
+let markdownLinks = 0
+for (const file of documents.keys()) {
+  const relative = path.relative(dist, file)
+  if (relative === '404.html') continue
+  const markdownPath = relative.replace(/\.html$/, '.md')
+  const markdown = await readFile(path.join(dist, markdownPath), 'utf8').catch(() => null)
+  if (markdown === null) { errors.add(`${markdownPath}: missing Markdown export`); continue }
+  markdownPages++
+  for (const raw of collectMarkdownUrls(markdown)) {
+    if (!raw || /^(?:mailto:|tel:|data:|javascript:)/i.test(raw)) continue
+    if (!/^(?:[a-z]+:|\/\/|#)/i.test(raw)) errors.add(`${markdownPath}: non-portable Markdown URL: ${raw}`)
+    const url = new URL(raw, siteUrl + relative)
+    if (url.origin !== new URL(siteUrl).origin) continue
+    if (!url.pathname.startsWith(base)) { errors.add(`${markdownPath}: URL escapes Pages base: ${raw}`); continue }
+    let target = path.join(dist, decodeURIComponent(url.pathname.slice(base.length)))
+    if ((await stat(target).catch(() => null))?.isDirectory()) target = path.join(target, 'index.html')
+    if (!await stat(target).catch(() => null)) { errors.add(`${markdownPath}: missing target: ${raw}`); continue }
+    if (url.hash && documents.has(target)) {
+      const fragment = decodeURIComponent(url.hash.slice(1))
+      const targetDocument = documents.get(target)
+      if (fragment && !targetDocument('[id]').toArray().some(el => targetDocument(el).attr('id') === fragment)) errors.add(`${markdownPath}: missing anchor: ${raw}`)
+    }
+    markdownLinks++
+  }
+}
 if (new Set(locations).size !== locations.length) errors.add('Sitemap contains duplicate URLs')
 for (const url of locations) if (!canonicalUrls.has(url)) errors.add(`Sitemap URL has no canonical page: ${url}`)
 for (const url of canonicalUrls) if (!locations.includes(url)) errors.add(`Canonical page missing from sitemap: ${url}`)
 if (errors.size) {
   console.error([...errors].join('\n'))
   process.exitCode = 1
-} else console.log(`Verified ${documents.size} HTML pages, ${links} internal links/assets and ${searchSections} search sections, including both languages, ${chapters.length} chapters per language, canonical URLs, hreflang, unique metadata, structured data and sitemap coverage.`)
+} else console.log(`Verified ${documents.size} HTML pages, ${links} internal links/assets, ${markdownPages} Markdown exports with ${markdownLinks} internal references and ${searchSections} search sections, including both languages, ${chapters.length} chapters per language, canonical URLs, hreflang, unique metadata, structured data and sitemap coverage.`)

@@ -28,7 +28,7 @@ Using [PyTRIO](https://pytrio.com/), I completed 100 steps of LoRA training on `
 
 **Group Sequence Policy Optimization**, or GSPO, was introduced by the Qwen team in 2025. It samples a group of responses to each question and calculates advantages from their relative rewards, avoiding a separate value model. GSPO retains these group-relative advantages and changes the loss:
 
-![](./images/GSPO vs GRPO · Sequence Ratio.png)
+![](<./images/GSPO vs GRPO · Sequence Ratio.png>)
 
 > **GRPO: a response with T tokens has T ratios and T clipping decisions. GSPO: a response has one ratio and one clipping decision.**
 
@@ -226,7 +226,7 @@ The PyTRIO service performs model sampling, LoRA forward and backward passes, op
 
 This diagram outlines the pipeline using the current default of 4 prompt groups. The full experiment above overrides that default to 8 through the command line.
 
-![](./images/GSPO × PyTRIO · Training Loop.png)
+![](<./images/GSPO × PyTRIO · Training Loop.png>)
 
 ### 1. Prepare and pin the mathematical data
 

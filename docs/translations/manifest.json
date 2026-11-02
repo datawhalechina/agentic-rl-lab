@@ -85,7 +85,7 @@
   },
   "docs/translations/en/gspo.md": {
     "source": "experiments/gspo/readme.md",
-    "sourceSha256": "2ce1c79284dc710a24c65cd96930f786665380aed1d81c2df9f8fd39dca346fd",
+    "sourceSha256": "0b47637096d62a2a5d66bd5d43e64946bd924039ad7200ccac04b1daf0c42fad",
     "translatedAt": "2026-09-26",
     "engine": "Manual English translation; original code and equations preserved"
   },
@@ -115,7 +115,7 @@
   },
   "docs/translations/en/dapo.md": {
     "source": "experiments/dapo/readme.md",
-    "sourceSha256": "af8fdc2a2461ff115a2e2414520f2490639066ecef0ae9947c0ffa3131cf7b74",
+    "sourceSha256": "f11ffd897968a0ade79d831478d16afd8f8c050f3242a663ca85144745d04738",
     "translatedAt": "2026-09-26",
     "engine": "Manual English translation; original code and equations preserved"
   },

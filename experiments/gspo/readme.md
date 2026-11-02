@@ -28,7 +28,7 @@
 
 GSPO 的全称是 **Group Sequence Policy Optimization**，由 Qwen 团队在 2025 年提出。它对同一道题采样一组回答，用组内 reward 的相对高低计算 advantage，从而省掉单独的 value model。GSPO 保留了这套 group-relative advantage，核心变化落在 loss：
 
-![](./images/GSPO vs GRPO · Sequence Ratio.png)
+![](<./images/GSPO vs GRPO · Sequence Ratio.png>)
 
 > **GRPO：一条回答有 T 个 ratio、T 次 clipping；GSPO：一条回答只有 1 个 ratio、1 次 clipping。**
 
@@ -226,7 +226,7 @@ uv run python train.py \
 
 整条训练链路可以先看这张图。图里用当前默认的 4 个 prompt groups 做示意；上面的正式实验通过命令行把它改成了 8。
 
-![](./images/GSPO × PyTRIO · Training Loop.png)
+![](<./images/GSPO × PyTRIO · Training Loop.png>)
 
 ### 1. 准备并固定数学数据
 

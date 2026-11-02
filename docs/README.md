@@ -14,12 +14,13 @@ npm run docs:dev
 开发入口：`http://localhost:5173/agentic-rl-lab/`。修改章节原文后重新运行 `npm run docs:prepare`；首页、主题和手写指南支持开发服务器热更新。
 
 ```bash
+npm run docs:test
 npm run docs:build
 npm run docs:check
 npm run docs:preview
 ```
 
-`docs:check` 检查构建结果中的全部站内链接、图片、锚点、章节、页面标题和数学错误。Pages 项目路径已经固定为 `/agentic-rl-lab/`，深层页面使用 `.html`，不依赖托管平台重写 URL。
+`docs:test` 运行资源处理的回归测试；`docs:check` 检查构建结果中的全部站内链接、图片、锚点、章节、页面标题和数学错误，并拒绝正文中未渲染的 Markdown 图片语法；导出的 Markdown 也会逐页校验资源路径和站内锚点。Pages 项目路径已经固定为 `/agentic-rl-lab/`，深层页面使用 `.html`，不依赖托管平台重写 URL。
 
 ## 内容结构
 
@@ -30,7 +31,9 @@ npm run docs:preview
 - `docs/content/public/media/`：自动复制的正文配图，不提交。
 - `docs/.vitepress/theme/`：首页、阅读页、主题与响应式样式。
 
-新增文章时，在章节注册表增加一项即可。保留原文中的论文、实现与结果说明；网页仅替换页头、移除注册表明确列出的宣传封面、访问统计及 badge 区域，并转换链接、GitHub 数学块和图片路径。算法图与实验结果图全部保留，原始 Markdown 和图片不变。正文编辑入口直接指向 `main` 分支中的原始文件。
+新增文章时，在章节注册表增加一项即可。保留原文中的论文、实现与结果说明；网页仅替换页头、移除注册表明确列出的宣传封面、访问统计及 badge 区域，并转换链接、GitHub 数学块和图片路径。算法图与实验结果图全部保留，原始 Markdown 和图片不变。图片路径含空格时使用标准 Markdown 写法 `![说明](<./images/带空格的文件名.png>)`，或将空格编码为 `%20`，以免被渲染为普通文本。正文编辑入口直接指向 `main` 分支中的原始文件。
+
+构建时导出的 `.md` 文件会将正文中的图片和站内链接转换为包含部署前缀的完整网址，并补齐页面所需的 `.html` 后缀，让“复制 Markdown”“查看 Markdown”和外部工具读取时也能访问资源；代码示例与 frontmatter 保持原样。
 
 ## GitHub Pages
 

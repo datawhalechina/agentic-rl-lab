@@ -65,7 +65,7 @@ DAPO 的全名是 **Decoupled Clip and Dynamic sAmpling Policy Optimization**。
 
 这四个改动和 GRPO 的差别可以先看这张总览：
 
-![](./images/01 · DAPO vs GRPO Overview.png)
+![](<./images/01 · DAPO vs GRPO Overview.png>)
 
 这次实现没有写一份“看起来像 DAPO”的独立训练脚本，而是在同一个 [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/dapo/train.py) 中保留两个 preset：
 
@@ -92,7 +92,7 @@ GRPO 会对同一道题采样一组回答，再在组内做相对 advantage：
 
 DAPO 的做法是：如果一组回答全对或全错，就把它从训练 batch 里剔除，再换一道题补采。[原论文 3.2 节](https://arxiv.org/pdf/2503.14476#page=5)要求在训练前持续采样，直到整个 batch 都由 `accuracy ∈ (0, 1)` 的有效 group 填满。
 
-![](./images/02 · Bounded Dynamic Sampling.png)
+![](<./images/02 · Bounded Dynamic Sampling.png>)
 
 论文里的出发点很合理。固定 batch 中如果大量题目已经太简单或太难，实际能产生梯度的样本就会越来越少。Dynamic Sampling 相当于在线做了一次难度筛选，让当前策略更多地训练“正好处在能力边界上”的题。
 
@@ -139,7 +139,7 @@ DAPO 的 token mean 是：
 
 这样每个 token 等权，长 reasoning 会自然贡献更多梯度。对 long CoT 来说，这可以避免长轨迹被 sequence-level averaging 稀释；代价是长回答也会占据更大的优化权重，所以它需要和长度 shaping 一起看。
 
-![](./images/03 · Clip-Higher and Token Mean.png)
+![](<./images/03 · Clip-Higher and Token Mean.png>)
 
 ### 4. Soft Overlong Punishment：不要等截断后才突然判错
 
@@ -156,7 +156,7 @@ length > max_tokens:      penalty = -1
 shaped_reward = correctness_reward + length_penalty
 ```
 
-![](./images/04 · Soft Overlong Punishment.png)
+![](<./images/04 · Soft Overlong Punishment.png>)
 
 图中使用的是最初训练配置：`max_tokens=8192`、`overlong_cache=2048`，因此惩罚从 6,144 token 开始，在 8,192 token 达到 −1。
 
