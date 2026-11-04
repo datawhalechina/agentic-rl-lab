@@ -105,8 +105,6 @@ ALFWorld 原论文的主要贡献是文字环境与具身环境的对齐，官�
 
 因此，本文复现范围限定为一套“基于 ALFWorld 的 LLM Agentic RL recipe”。ALFWorld 原论文的训练算法与视觉 BUTLER 系统不在本次范围内。
 
-明确了环境与复现边界后，下一步就是把这套文字交互接进 LLM 能够稳定调用的工具协议。
-
 ## 1. 把做家务变成一个工具调用
 
 我们只给模型一个工具：
@@ -154,8 +152,6 @@ TextWorld / PDDL 执行动作并更新状态
 下一轮 prompt 保留从任务开始到当前时刻的完整记录。假设一条轨迹交互了 30 次，第 31 次生成时，模型仍能看到前 30 次真实的 assistant tool call 和 tool observation。
 
 这点很重要。做家务是一个强状态依赖任务：模型需要记得自己开过哪个柜门、苹果现在拿在手里还是已经放进微波炉、加热完成后又把它放到了哪里。丢掉早期历史，很容易让 Agent 重复搜索、拿错物体或忘记已经完成的中间步骤。
-
-知道一条轨迹如何产生后，我们先把整套系统真正跑起来，再回到训练算法内部看 reward 和 advantage 如何作用于这些轨迹。
 
 ## 2. 如何启动训练和评估
 
@@ -236,8 +232,6 @@ cd ..
 uv run python experiments/alfworld/analysis.py
 ```
 
-这些命令负责把实验跑起来；要理解模型究竟从 64 条长轨迹中学到了什么，还要继续拆开每个 rollout batch 里的 reward、advantage 与 PPO 更新。
-
 ## 3. 我们怎样加入 GRPO 的思想？
 
 GRPO 最有用的思想之一，是对同一个问题采样一组回答，再用组内相对 reward 计算 advantage。
@@ -256,9 +250,9 @@ Qwen3.5-4B 分别完成 8 条完整工具轨迹
 在这 8 条轨迹内部计算相对 advantage
 ```
 
-完整训练闭环如下：
+完整训练流程如下：
 
-![ALFWorld 与 PyTRIO 训练闭环](<./images/ALFWorld × PyTRIO · Training Loop.png>)
+![ALFWorld 与 PyTRIO 训练流程](<./images/ALFWorld × PyTRIO · Training Loop.png>)
 
 ### 1. 每条轨迹只计算一个 episode return
 
@@ -329,7 +323,7 @@ training_client.forward_backward(
 
 > **我们使用 GRPO-style 的同游戏 group rollout 和 group-relative advantage，再用 PPO loss 更新 Qwen3.5-4B 的 LoRA。**
 
-算法闭环到这里已经完整，而这些 advantage 对应的是一串会持续改变世界的决策，这正是本次实验与前几篇最大的不同。
+算法到这里就讲完了。这次特别的地方在于，每个 advantage 背后都是一串真的会改变环境的决策。
 
 ## 4. 这一次，Agentic RL 更像真的 Agent
 
@@ -346,8 +340,6 @@ training_client.forward_backward(
 评测中，一局平均需要约 22 次环境交互。每次生成前，模型都会接收不断增长的完整历史。这种长时序信用分配，比只调用一两次工具更接近真实 Agent 的工作方式。
 
 Text-only 也让实验保持了可运行性。TextWorld / PDDL 负责精确状态转移，PyTRIO 负责远端模型采样和训练，本地 Python 则专注于环境编排、reward、advantage 与轨迹记录。
-
-更长的决策链带来了更真实的 Agent 行为，也直接把上下文长度、采样量和训练成本推到了新的量级。
 
 ## 5. 训练配置与成本
 
@@ -446,9 +438,7 @@ Valid Unseen:    52.99% → 58.96%   +5.97 pp
 
 `valid_unseen` 中，Heat then place 提升 `26.1 pp`，Clean then place 提升 `9.7 pp`；Pick two & place 则下降 `11.8 pp`。`valid_seen` 中 Pick two & place 提升 `16.7 pp`，Look under light 和 Heat then place 出现回退。
 
-这组结果来自一次训练和单个评测 seed。它足够说明当前代码跑通了在线 Agentic RL 闭环，并给出了明确的正向信号；稳定结论还需要补充多 seed 训练、重复评测和更长的 checkpoint 曲线。
-
-这些结果回答了“训练有没有带来提升”，而它们究竟如何从环境交互一路变成可复核的 JSONL 与图表，还需要回到代码结构中逐层展开。
+这组结果来自一次训练和单个评测 seed。它足够说明当前代码跑通了在线 Agentic RL 的完整流程，并给出了明确的正向信号；稳定结论还需要补充多 seed 训练、重复评测和更长的 checkpoint 曲线。
 
 ## 7. 我们是怎么写代码的？
 
@@ -593,7 +583,7 @@ admissible action rate
 | [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint 评测、指标聚合和逐轨迹 JSONL |
 | [`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | 读取评测 summary 并绘制 checkpoint 对比图 |
 
-八个文件串起来后，整个实验就形成了从游戏发现、在线交互、组内信用分配到独立评测的完整闭环，最后可以回到最初的问题：这次长轨迹 Agentic RL 到底验证了什么？
+八个文件就是这些。把它们串起来，就是从找游戏到出评测图的整套流程。回到开头的问题：这次长轨迹 Agentic RL 到底让模型学到了什么？
 
 ## 8. 总结
 
@@ -601,4 +591,4 @@ admissible action rate
 
 我们让 Qwen3.5-4B 在同一个 ALFWorld 游戏中采样 8 条独立轨迹，用终局成功与非法动作次数计算 episode reward，再通过同游戏组内的 relative advantage 和 PPO 更新 LoRA。模型需要在最多 50 次环境交互、12K 完整上下文中持续记住自己做过什么，并让最终 PDDL 状态真正满足任务条件。
 
-这也为后续把 Agentic RL 推向更长轨迹、更多工具和更复杂环境留下了清晰的起点。
+这次算是把长轨迹 Agentic RL 的路跑通了。轨迹还能更长、工具还能更多，你们更想看哪个方向？

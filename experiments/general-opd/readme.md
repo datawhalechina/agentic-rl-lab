@@ -19,15 +19,15 @@
 > - PyTRIO Skill：[SwanHubX/pytrio-skill](https://github.com/SwanHubX/pytrio-skill)
 > - SwanLab Skill：[SwanHubX/swanlab-skill](https://github.com/SwanHubX/swanlab-skill)
 
-On-policy Distillation（OPD，在线策略蒸馏）可以看作知识蒸馏在自回归生成模型上的一次重要演进。传统蒸馏通常让学生模型学习固定数据或老师预先生成的答案，但学生真正推理时会进入自己的生成分布，训练与推理之间因此容易出现偏移。2023 年的 [Generalized Knowledge Distillation（GKD）](https://arxiv.org/abs/2306.13649) 明确提出让学生在自己生成的序列上接受老师反馈；同一时期的 [MiniLLM](https://arxiv.org/abs/2306.08543) 则系统研究了更适合生成式模型的 reverse KL。今天常说的 OPD，通常就是把这两个关键思想结合起来：轨迹由当前学生生成，老师只负责评价这些轨迹，再用反向 KL 把学生拉向老师。
+On-policy Distillation（OPD，在线策略蒸馏）是知识蒸馏用在自回归生成模型上的一种做法。传统蒸馏通常让学生模型学习固定数据或老师预先生成的答案，但学生真正推理时会进入自己的生成分布，训练与推理之间因此容易出现偏移。2023 年的 [Generalized Knowledge Distillation（GKD）](https://arxiv.org/abs/2306.13649) 明确提出让学生在自己生成的序列上接受老师反馈；同一时期的 [MiniLLM](https://arxiv.org/abs/2306.08543) 则系统研究了更适合生成式模型的 reverse KL。今天常说的 OPD，通常就是把这两个关键思想结合起来：轨迹由当前学生生成，老师只负责评价这些轨迹，再用反向 KL 把学生拉向老师。
 
 这个代码我用 [PyTRIO](https://pytrio.cn/) 来写的，原因很直接：OPD 最麻烦的地方，是 student 采样之后，还要让 teacher 给同一条 token 轨迹重新打分。PyTRIO 正好提供了 `sample()` 和 [`compute_logprobs()`](https://docs.pytrio.cn/docs/advanced/compute_logprobs)。其中 `compute_logprobs()` 不会让 teacher 重新生成答案，而是直接接收 `prompt + student completion`，返回和输入 token 一一对应的 logprobs。所以我们不需要自己部署训练和推理服务，只要在本地算 reverse KL、构造 advantage，再调用 `forward_backward()` 和 `optim_step()`，就能把 OPD 跑起来。而且 PyTrio 有 [PyTrio Skill](https://github.com/SwanHubX/pytrio-skill) 加持，我只需要把我的训练逻辑讲清楚，Codex 或 Claude code 就可以使用 PyTrio Skill 来帮我写好一份 Demo 代码，然后我再来 review 代码、改成我想要的样子。
 
-一次 OPD 训练的流程是：先从数据集中取出 prompt，再用当前 student 采样 completion，并保存每个 completion token 的旧策略 logprob；随后 teacher 不重新回答问题，而是对 `prompt + student completion` 这条完全相同的轨迹计算逐 token logprob；两者相减得到 `reverse_kl = student_logprob - teacher_logprob`，再把 `-reverse_kl` 作为 advantage，通过 importance sampling 更新 student。更新完成后重新导出 student sampler，进入下一轮采样，整个过程形成“学生生成—老师打分—学生更新”的 on-policy 闭环。
+一次 OPD 训练的流程是：先从数据集中取出 prompt，再用当前 student 采样 completion，并保存每个 completion token 的旧策略 logprob；随后 teacher 不重新回答问题，而是对 `prompt + student completion` 这条完全相同的轨迹计算逐 token logprob；两者相减得到 `reverse_kl = student_logprob - teacher_logprob`，再把 `-reverse_kl` 作为 advantage，通过 importance sampling 更新 student。更新完成后重新导出 student sampler，进入下一轮采样。整个过程就是转圈：学生生成，老师打分，学生更新。
 
 ![OPD 训练闭环：学生采样同一条轨迹，老师打分后通过反向 KL 更新学生](./images/opd-training-loop.png)
 
-## 一句话理解 OPD
+## OPD 和 SFT 有什么不同
 
 OPD 并不是让学生背老师提前写好的答案（这是 SFT 的逻辑），是让学生先暴露自己当前最可能犯的错误，再让老师沿着这些错误实际出现的路径逐 token 纠正它（相比 SFT 来说 OPD 的训练信号更加的“柔和”）。
 
@@ -420,7 +420,7 @@ uv run python experiments/general-opd/02-demo-async.py \
 
 ## 总结
 
-通用 OPD 的最小闭环只有五件事：
+通用 OPD 的最小流程只有五步：
 
 1. 当前 student 采样 completion；
 2. 保存 student 采样时的 token logprob；
@@ -428,7 +428,7 @@ uv run python experiments/general-opd/02-demo-async.py \
 4. 用两者之差构造 reverse-KL advantage；
 5. 通过 importance sampling 更新 student，并刷新 sampler。
 
-只要数据能够构造成 prompt、student 能返回采样 logprob、teacher 能计算同一 token 轨迹的 logprob，这套流程就可以从数学题迁移到代码、对话、工具调用和 Agent 轨迹蒸馏。
+所以想拿它做代码、对话或者 Agent 轨迹蒸馏，基本可以照搬这套代码，通常只要改数据读取和 `build_prompt` 就行。前提就两个：数据能构造成 prompt，student 和 teacher 的 tokenizer 兼容。
 
 ## 参考资料
 

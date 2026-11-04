@@ -360,7 +360,7 @@ padded_advantages = [0.0] * observation_len + [sample.advantage] * len(sample.to
 
 也就是说，只有 completion token 的 advantage 非零，prompt token 不参与训练。
 
-这点非常关键。GRPO 不是在训练模型“背 prompt”，而是在训练模型：看到这个 prompt 后，下次更倾向于走向更高 reward 的 completion。
+换句话说，prompt 只是上下文，模型学的是：看到这个 prompt 后，下次更倾向于走向更高 reward 的 completion。
 
 ## 第五步：提交 forward/backward 和 optimizer step
 
@@ -486,7 +486,7 @@ CISPO: clip ratio，把它当成固定砝码，控制每个 token 的学习力�
 | `ppo` | 最大化 clipped surrogate objective | clip ratio 对策略更新限速 | 同样 reward 下，保守更新是否更稳 |
 | `cispo` | 最大化 `detach(clipped_ratio) * logprob * advantage` | ratio clip 后只当固定权重 | custom loss 如何控制梯度形态 |
 
-注意，这里比较的是 loss 目标，不是说某个一定更强。GRPO 这类实验非常吃 reward、数据难度、group size、采样温度、学习率和训练步数。也正因为变量很多，PyTRIO 的并行实验价值才会出来。
+注意，这里比较的是 loss 目标，不是说某个一定更强。GRPO 这类实验非常吃 reward、数据难度、group size、采样温度、学习率和训练步数。变量这么多，正好用 PyTRIO 开几组并行跑，不用一组一组干等。
 
 ## 如何用 PyTRIO 实现自定义 loss？
 
@@ -620,7 +620,7 @@ fwd_bwd_future = training_client.forward_backward_custom(
 )
 ```
 
-这套写法的意义不止是 CISPO。以后想复现 DAPO、GSPO、Dr.GRPO，或者自己试一个新的 token-level weighting，本质都是同一条路：
+学会这套写法，后面复现 DAPO、GSPO、Dr.GRPO，或者自己试一个新的 token-level weighting，都是同一条路：
 
 ```text
 保留 rollout / reward / advantage 管线
