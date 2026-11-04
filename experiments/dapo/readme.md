@@ -32,11 +32,7 @@
 
 这篇一开始也准备按熟悉的路线写：介绍算法、跑完训练，再整理结果。
 
-但真正跑起来以后，我先得到的不是一条漂亮的 reward 曲线，而是一系列很真实的问题：
-
-> **Dynamic Sampling 确实能把更多有效 group 填进训练 batch，但它把数据质量的成本转移到了 rollout 上；当 batch 只差最后一个有效 group 时，补采会变成反复等待的同步屏障。**
-
-所以这次，我想完整记录和讲述三件事：
+但真正跑起来以后，我先撞上的是一堆问题。所以这次我想把下面几个问题讲清楚：
 
 1. DAPO 到底在 GRPO 上改了什么；
 2. 仓库里的 DAPO 和 GRPO 代码应该怎么读、怎么跑；
@@ -278,7 +274,7 @@ prompt token 全部 mask 掉，只有模型自己生成的 completion token 进�
 
 ### 最初的 DAPO 配置
 
-最我在运行 DAPO 时使用的是下面这组配置：
+最初我运行 DAPO 时使用的是下面这组配置：
 
 | 项目 | 配置 |
 | --- | --- |
@@ -383,7 +379,7 @@ prefill → autoregressive sampling → reward parsing → correctness verificat
 | token 利用率 | `train_completion_tokens / completion_tokens` | 生成的 token 有多少真正进入训练 |
 | 时间效率 | `time/step_seconds` | 一个参数更新实际等了多久 |
 
-这里最重要的是建立正确的观察方式：即使有效 batch 更满，也要继续检查多采了多少候选、浪费了多少 rollout token，以及一次更新究竟等待了多久。
+所以光看 batch 满不满不够，还得看多采了多少候选题、浪费了多少 rollout token、一次更新到底等了多久。
 
 ## 另一个真实问题：长序列、动态 batch 的成本峰值很难控制
 
@@ -438,20 +434,11 @@ effective_groups / step_seconds      → 真正的 wall-clock 产出
 
 ## 小结
 
-DAPO 的四个改动不是为了做一套更复杂的 GRPO，而是在解决 long CoT RL 里非常真实的问题：entropy collapse、无效 group、长轨迹权重和截断 reward noise。
+DAPO 的四个改动都是冲着 long CoT RL 的具体毛病去的：entropy collapse、无效 group、长轨迹权重和截断 reward noise。
 
-其中最有吸引力的 Dynamic Sampling，也恰好暴露了最明显的工程代价：
-
-```text
-它让每次更新看到更多有效 group，
-但为了等到最后一个有效 group，
-rollout 会反复补采、反复等待，
-最终把动态筛选的成本完整付在 wall-clock 上。
-```
+四个改动里我最期待的是 Dynamic Sampling，结果它的工程代价也最明显：每次更新确实能看到更多有效 group，但为了等最后一个有效 group，rollout 要反复补采、反复等待，筛选省下的成本最后全付在了训练时间上。
 
 ## 感受
-
-> ***所有命运馈赠的礼物，早已在暗中标好了价格***
 
 在全手搓实现 DAPO 的时候，我有很大的感触。之前在用 transformers 或者是 verl 训练模型的时候，假如说这次训练得很慢，我只会怀疑是不是我的卡不够好，或者说是我的 verl 哪里配置得不对，我绝对不会怀疑是算法的原因，因为 transformers 的 trainer 和 verl 的配置对我来说它是一个黑盒。但是这一次 dapo 的全部代码是我一行一行 review 过的，所以我很清楚 dapo 发生了什么事情，我也很清楚 dapo 为什么会这么慢。所以，这就是用 PyTrio 的魅力吧，因为我可以从0~1地完成核心算法代码，不必去关注框架、配置、什么训推一体呀，我不需要考虑这些事情，我只需要考虑核心算法到底有没有正确的实现。
 
