@@ -28,19 +28,19 @@
 
 先看 TEMPO 到底在解决什么问题。
 
-## 0. 长程任务的两个死结
+## 0. 长程任务的两个问题
 
-前面几篇的 Agentic RL 有一个共同的隐含前提：轨迹够短。Search-R1 检索几轮就出答案，ReTool 写几段代码就到终局，ALFWorld 五十步内见分晓。可一旦 agent 开始承担以小时、天计的任务，GRPO 这套范式会立刻撞上两堵墙。
+前面几篇的 Agentic RL 有一个共同的隐含前提：轨迹够短。Search-R1 检索几轮就出答案，ReTool 写几段代码就到终局，ALFWorld 五十步内见分晓。轨迹延长到几百轮以后，GRPO 会遇到两个实际问题。
 
-**第一堵墙：反馈周期过长。** 结果导向的奖励要等轨迹彻底结束才能观测。一次 rollout 跑八个小时，那训练信号的产生周期下限就是八小时——大部分算力都花在"等结果"上。
+**反馈周期过长。** 结果导向的奖励要等轨迹彻底结束才能观测。一次 rollout 跑八个小时，训练信号的产生周期下限就是八小时，大部分算力都花在等待结果上。
 
-**第二堵墙：信用分配。** 轨迹拉长到几百轮之后，开局第三个动作和最终成败之间隔着几百步。组内一减均值，信号被稀释得只剩噪声，模型根本无从知道当初哪个决定是对的。
+**信用分配变难。** 开局第三个动作和最终成败之间可能隔着几百步。只按终局奖励计算组内相对信号，无法判断中间哪些决定起了关键作用。
 
-教科书式的解法是 PPO 那套：训一个 value head，在每个中间状态上预测未来回报，让没走完的轨迹也能产生训练信号。但 scalar value head 有一个先天短板——**一次前向、固定计算量**。长程任务里"这个状态值多少"本身就是一道推理题：actor 的假设对不对？当前搜索方向还可行吗？哪些障碍还没解决？一个只够算一次乘加的小脑袋，回答不了这种问题。
+PPO 的解法是训练一个 value head，在中间状态预测未来回报，让未完成的轨迹也能产生训练信号。但 scalar value head 一次前向的计算量固定，而长程任务的状态估值可能需要检查 actor 的假设、搜索方向和未解决的障碍，本身就需要推理。
 
-TEMPO 的名字就来自它的答案：Test-Time-Scaled Value Estimation with Macro-Step Policy Optimization。拆开看，正好对应它的三个核心设计。
+TEMPO 的全名是 Test-Time-Scaled Value Estimation with Macro-Step Policy Optimization，方法主要由以下三部分组成。
 
-## 1. TEMPO 的三个核心设计
+## 1. TEMPO 的方法设计
 
 ### 1.1 macro-step：把优化单位从"整局"降到"一段"
 
@@ -54,29 +54,29 @@ TEMPO 把连续 H 轮模型-环境交互定义为**一个 macro-step**，用它�
 
 ### 1.2 生成式 critic：估值本身是个推理问题
 
-TEMPO 抛弃了 scalar value head，把价值估计建模成生成任务：critic 读取当前状态和此前的完整交互记录，分析 actor 已经掌握的环境规律、正在尝试的方案、尚未解决的障碍，推理之后再给出一个数值估计。面对更难的状态，critic 可以延长推理、多做反思——**actor 能靠 test-time scaling 变强，评价 actor 的 critic 也应该有同样的权利**。
+TEMPO 抛弃了 scalar value head，把价值估计建模成生成任务：critic 读取当前状态和此前的完整交互记录，分析 actor 已经掌握的环境规律、正在尝试的方案、尚未解决的障碍，推理之后再给出一个数值估计。面对更难的状态，critic 可以延长推理，在估值时使用更多计算量。
 
-博客里有个非常漂亮的例子，"放置骑士"：
+博客里有个很直观的例子，"放置骑士"：
 
 ![“放置骑士”任务的规则](./images/tempo-2.png)
 
 *actor 不知道规则，需要通过交互推断隐藏约束：在两枚预置棋子的基础上继续放六枚，任意两枚之间都不能形成马步攻击。图片来源：[TEMPO 博客](https://studio.dots.ai/dots/tempo-blog.html)。*
 
-从同一个起点采两条 64 轮的轨迹，环境奖励完全相同（都是 0），但处境已经天差地别：
+从同一个起点采两条 64 轮的轨迹，环境奖励完全相同（都是 0），但状态价值已经不同：
 
 ![环境奖励相同、价值已经分化的两条轨迹](./images/tempo-4.png)
 
 *分支 A 把"存在攻击关系"当成了任务目标（方向弄反了），此后枚举的所有候选布局都要求存在攻击关系——正确答案已经被整体排除在搜索空间外，critic 对照游戏源码判定 V̂=2.6；分支 B 回读历史推翻了错误假设，还发现了"同色格上的棋子互不攻击"的规律，给出了一个可行解，critic 判定 V̂=4.6。价值差 2.0，环境奖励差 0。图片来源：[TEMPO 博客](https://studio.dots.ai/dots/tempo-blog.html)。*
 
-这个例子同时解释了另一个设计：critic 可以访问**特权信息**——环境内部状态、隐藏规则、游戏源码。这些信息对 actor 保密，只作为评价侧的核验证据。分支 A 的死刑判决，正是 critic 对照源码做出来的。
+这个例子同时解释了另一个设计：critic 可以访问**特权信息**——环境内部状态、隐藏规则、游戏源码。这些信息对 actor 保密，只作为评价侧的核验证据。critic 对照游戏源码，给分支 A 打出了较低的估值。
 
 至于为什么只在 macro-step 边界估值：生成式 critic 单次调用要生成一整段推理，成本远高于 value head 的一次前向，没法在每个 token 后密集运行。H 轮一次，是反馈粒度和计算成本的平衡点。
 
-### 1.3 actor 兼任自己的 critic：两套角色，一套 GRPO
+### 1.3 actor 与 critic 共享参数
 
-价值估计变成生成任务之后，TEMPO 干脆**只维护一份参数**：交互时模型是 actor，走到 macro-step 边界就切到 critic prompt 估值。两种角色靠 prompt、上下文和奖励区分，共用同一个采样器和同一次权重更新。
+价值估计变成生成任务之后，TEMPO **只维护一份参数**：交互时模型是 actor，走到 macro-step 边界就切到 critic prompt 估值。两种角色靠 prompt、上下文和奖励区分，共用同一个采样器和同一次权重更新。
 
-这带来一个很舒服的副产品：actor 和 critic 统一进同一套 GRPO 训练框架。两者的 loss 形态完全一样，区别只在 reward 从哪来——actor 吃环境奖励，critic 吃估值误差。在 PyTRIO 里这意味着两者可以合并成一个 `forward_backward` batch，甚至共享同一个 LoRA。
+这样，actor 和 critic 可以统一进同一套 GRPO 训练框架。两者的 loss 形态完全一样，区别只在 reward 从哪来：actor 使用环境奖励，critic 使用估值误差。在 PyTRIO 里，两者可以合并成一个 `forward_backward` batch，甚至共享同一个 LoRA。
 
 ## 2. 训练信号：四个公式和一次热身
 
@@ -175,32 +175,32 @@ warmup=1 critic/abs_error_mean=0.606 warmup/boundary_states=22
 - `abs_error_mean=0.606`：未训练的 critic 基本没在预测成败，这正是 warm-up 要压下去的数字；
 - `success_rate=0.75`：prompt 里带可用动作列表时 4B 模型的起点比想象中高。
 
-判断"算法成立"，我们盯四个指标：
+判断算法链路是否正常，我们主要看四个指标：
 
 | 指标 | 期望 |
 |---|---|
 | `critic/abs_error_mean` | 随 warm-up 下降 |
 | `critic/value_corr` | V̂ 与实际成败的相关性上升 |
 | `actor/value_gap_zero_reward` | 段内奖励相同的分支之间，critic 能拉开 V̂ 差距（"放置骑士"的 ALFWorld 版） |
-| `td/fresh_states` 第 2 次 TD 起变小 | 状态仓库开始供弹、重放恢复生效——非终局段在产生梯度，TEMPO 的核心主张 |
+| `td/fresh_states` 第 2 次 TD 起变小 | 状态仓库开始复用已保存状态，重放恢复生效，非终局段产生梯度 |
 
 冒烟跑 8 次 update（4 warm-up + 4 TD）的 actor 侧观察：
 
 ![SwanLab 冒烟运行：actor 侧指标](./images/swanlab-td.png)
 
-*前 4 个 step 是 warm-up，后 4 个是 TD。`actor/segment_reward_mean` 从 0.62 爬到 0.85；最有讲头的是 `actor/degenerate_group_rate` 从 0.19 一路归零——初期约五分之一的起点组 return 完全相同、没有任何训练信号只能跳过，TD 第 4 步起归零，说明 V̂ 真的在组内拉开了 return 差异，每组都有梯度可吃。这正是 critic 给 actor 供能的实证。*
+*前 4 个 step 是 warm-up，后 4 个是 TD。`actor/segment_reward_mean` 从 0.62 升到 0.85；`actor/degenerate_group_rate` 从 0.19 降到 0。初期约五分之一的起点组 return 完全相同，没有训练信号，只能跳过；TD 第 4 步起，V̂ 在组内产生了不同的 return，每组都有了非零 advantage。*
 
 ![PyTRIO 用量：本次冒烟总开销](./images/pytrio-consume.png)
 
 *总开销 15.02 元。对照第 8 篇完整训练的四位数账单，算法级复现的成本确实友好。*
 
-critic 侧的曲线是这一篇真正的验收图：
+critic 侧曲线用于检查估值训练是否正常：
 
 ![SwanLab 冒烟运行：critic 侧指标](./images/swanlab-critic.png)
 
-*五张子图依次是 `critic/abs_error_mean`、`critic/value_target_mean`、`critic/value_target_std`、`critic/value_corr`、`critic/parse_failure_rate`。估值误差从 0.674 一路降到 0.315——warm-up 三步就压掉了四成，TD 阶段继续向下，"生成式 critic 在学估值"这件事算是直接坐实了。`critic/value_corr` 在 warm-up 阶段从 0.60 爬到 0.72，V̂ 和实际成败的相关性在起来。最右边的解析失败率从 7.3% 掉到 1% 一线，`<value>` 输出模板也站稳了。*
+*五张子图依次是 `critic/abs_error_mean`、`critic/value_target_mean`、`critic/value_target_std`、`critic/value_corr`、`critic/parse_failure_rate`。估值误差从 0.674 降到 0.315，warm-up 三步下降了约四成，TD 阶段继续向下。`critic/value_corr` 在 warm-up 阶段从 0.60 升到 0.72；解析失败率从 7.3% 降到约 1%，`<value>` 输出格式趋于稳定。*
 
-对照着 actor 侧那张图看会更有意思：`abs_error` 每往下压一格，actor 侧的 `degenerate_group_rate` 就同步向零收敛——critic 估得越准，actor 的每组分支之间越有区分度，两套角色在一份参数上互相供能。
+两组指标结合起来看，`abs_error` 下降的同时，actor 侧的 `degenerate_group_rate` 也趋近于 0。critic 估值改善与 actor 组内区分度提高在这次运行中是同步出现的。
 
 ## 7. 代码是怎么组织的
 
@@ -233,7 +233,7 @@ critic 侧的曲线是这一篇真正的验收图：
 
 ## 8. 边界与下一步
 
-诚实列出这次复现没做的事：
+这次复现还有三项未完成：
 
 1. **前缀重要性采样修正**。起点前缀可能来自旧版 actor，严格的等价性需要按前缀概率比给 advantage 加权。附录证明了前缀 on-policy 时无需修正，而我们的终点状态下一轮就被消费，偏差有限。实现路径已经想好：保存状态时顺带累积 assistant token 的旧 logprob 之和，每轮对每个起点调一次 `compute_logprobs` 算当前值，比值乘进 advantage。
 2. **ARC-AGI-3 上的对照**。等论文正式发布、超参公开后，值得把环境层换掉再跑一次。
@@ -241,6 +241,6 @@ critic 侧的曲线是这一篇真正的验收图：
 
 ## 总结
 
-TEMPO 把"长程任务的 RL"拆成了三件互相咬合的小事：优化单位降到 macro-step，让训练信号提前产生；截断尾部交给会推理的生成式 critic，让信用分配落在该落的地方；actor 和 critic 共享参数、共用一套 GRPO，让两份能力互相迁移。复现下来最大的感受是——它的"算法创新"几乎全部落在本地编排层（状态存取、信号拼装），服务端自始至终只需要标准的 sample / logprob / forward_backward。**当一个方法的核心机制全部长在训练循环里，它离工程落地就很近了。**
+这次复现实现了 macro-step 优化、生成式 critic 和 actor/critic 共享参数。新增机制主要落在本地的状态存取和训练信号拼装，服务端只需要标准的 sample / logprob / forward_backward。
 
-这一篇的账单是 **15.02 元**——对照第 8 篇完整训练的四位数，算法级复现的成本确实友好。等论文正式发布、超参公开，9.x 系列大概率还会有它的续集。
+本次冒烟运行花费 **15.02 元**。下一步是补充前缀重要性采样修正，并在论文正式发布、超参公开后检查 ARC-AGI-3 上的表现。
