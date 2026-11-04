@@ -24,11 +24,11 @@
 > - ALFWorld：[论文](https://arxiv.org/abs/2010.03768) / [官方仓库](https://github.com/alfworld/alfworld)
 > - PyTRIO 文档：[docs.pytrio.com](https://docs.pytrio.com/docs)
 
-这是“接下来我将复现 10 篇强化学习算法”系列的第 9.3 篇。第 9 篇现在展开成了一个 9.x 小系列：[9.1 Vision GRPO](../vision-grpo/readme.md) 让模型看图做几何题，[9.2 TEMPO](../tempo/readme.md) 把长轨迹切成 macro-step；这一篇则继续处理长轨迹中最棘手的信用分配问题：Agent 最终虽然成功了，中间几十个动作里，究竟哪些才真正关键？AgentOPSD 的答案很漂亮。当前 Agent 先在无技能条件下完成真实 rollout，再由同一个参数快照带着技能复评其中的每个 turn，整个过程无需额外训练 Critic，也无需 Teacher 重写一条“标准轨迹”。最终奖励决定整条轨迹应该被鼓励还是惩罚，Self-Teacher 只负责找出其中更关键的动作。这次我们使用 Qwen3.5-4B、PyTRIO 和 text-only ALFWorld 完成了 80 个训练 step。
+这是“接下来我将复现 10 篇强化学习算法”系列的第 9.3 篇。第 9 篇现在展开成了一个 9.x 小系列：[9.1 Vision GRPO](../vision-grpo/readme.md) 让模型看图做几何题，[9.2 TEMPO](../tempo/readme.md) 把长轨迹切成 macro-step；这一篇关注长轨迹的信用分配：Agent 最终成功后，中间几十个动作里哪些更关键？
 
-但我更愿意把 AgentOPSD 放进一个更大的图景里：它可能已经提供了一种 RSI（Recursive Self-Improvement，递归式自我改进）的雏形。一个本地或私有化部署的模型，白天通过 Codex、Claude Code 这样的 Harness 完成真实任务并留下轨迹；晚上再总结当天的成功、失败与用户纠正，形成类似 Skill 的可复用经验，随后由同一个模型带着这些经验重新审视原始轨迹，通过 AgentOPSD 给每个 turn 分配信用，并借助 PyTRIO、Tinker 这样的训练基础设施把经验真正写回权重。经过无 Skill 的回归评测后，新模型再进入第二天继续工作。Skill 只是让模型能够看见经验，只有训练才能让经验成为模型能力的一部分。
+AgentOPSD 让当前 Agent 先在无技能条件下完成真实 rollout，再由同一个参数快照带着技能复评每个 turn。它无需额外训练 Critic，也无需 Teacher 重写一条“标准轨迹”。最终奖励决定整条轨迹应该被鼓励还是惩罚，Self-Teacher 只调整不同 turn 的训练强度。这次我们使用 Qwen3.5-4B、PyTRIO 和 text-only ALFWorld 完成了 80 个训练 step。
 
-*它距离完整意义上的 RSI 仍有一段路，但在真正成熟的持续学习范式出现之前，我认为这是目前最优雅、也最具工程可行性的 RSI 实现路径。*
+这次实验也让我联想到 RSI（Recursive Self-Improvement，递归式自我改进）：模型白天通过 Harness 完成任务并留下轨迹，晚上总结 Skill、复评原轨迹，再把经验训练回权重。新 checkpoint 通过无 Skill 回归评测后进入下一轮，失败则保留旧版本。它还不是完整的 RSI，但 AgentOPSD 提供了其中“利用经验分配轨迹信用”这一环节。
 
 ![白天工作，晚上学习：企业模型持续进化闭环](./images/rsi.png)
 
@@ -358,13 +358,9 @@ experiments/agentopsd/images/agentopsd_checkpoint_evaluation.png
 
 ## 7. 总结
 
-如果只用一句话总结 AgentOPSD，我会说：
+AgentOPSD 保留了 GRPO 的终局奖励方向，再由 Self-Teacher 对不同 turn 的训练强度做有界调整。环境 verifier 仍决定成功或失败，局部证据只用于细分长轨迹的信用分配。
 
-> **带技能的自己回头审视刚才走过的原路，指出其中最关键的转弯。**
-
-GRPO 仍然掌握最终方向：成功轨迹往上推，失败轨迹往下压；Self-Teacher 只在这个方向内做有界的 turn-level 调整。这样既保留了环境 verifier 的最终权威，又把一个稀疏的终局奖励拆成了更细的长轨迹信用分配。
-
-这次我们用 80 个 step、10,240 条训练 rollout 跑通了完整链路。固定 274-game 评测上，整体成功率从 58.8% 提高到 65.7%，平均无效动作从 7.07 降到 5.68。结果是正的，成本也是真肉疼；更重要的是，它给后面的严格 GRPO 对照和多 seed 实验留下了一条已经可运行、可审计、可评测的起点。
+这次我们用 80 个 step、10,240 条训练 rollout 跑通了完整链路。固定 274-game 评测上，整体成功率从 58.8% 提高到 65.7%，平均无效动作从 7.07 降到 5.68。结果是正向的，但 turn credit 的独立贡献仍需严格 GRPO 对照和多 seed 实验确认。
 
 ## 8. 代码文件分别做什么？
 
