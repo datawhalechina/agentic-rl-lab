@@ -24,11 +24,11 @@
 > - ALFWorld: [Paper](https://arxiv.org/abs/2010.03768) / [Official repository](https://github.com/alfworld/alfworld)
 > - PyTRIO documentation: [docs.pytrio.com](https://docs.pytrio.com/docs)
 
-This is chapter 9.3 in my series reproducing ten reinforcement learning algorithms. Chapter 9 has become a 9.x series: [9.1 Vision GRPO](../vision-grpo/readme.md) solves geometry problems from images, and [9.2 TEMPO](../tempo/readme.md) divides long trajectories into macro-steps. This chapter addresses credit assignment: when an agent succeeds after dozens of actions, which actions mattered? In AgentOPSD, the current agent first performs a real rollout without skills. The same parameter snapshot then reviews every turn with skills available. No additional critic is trained, and the teacher does not rewrite a reference trajectory. Final reward determines the trajectory's learning direction; the self-teacher identifies locally important actions. We completed 80 training steps with Qwen3.5-4B, PyTRIO and text-only ALFWorld.
+This is chapter 9.3 in my series reproducing ten reinforcement learning algorithms. Chapter 9 has become a 9.x series: [9.1 Vision GRPO](../vision-grpo/readme.md) solves geometry problems from images, and [9.2 TEMPO](../tempo/readme.md) divides long trajectories into macro-steps. This chapter focuses on credit assignment in long trajectories: when an agent ultimately succeeds, which of the dozens of intermediate actions mattered most?
 
-I also see this as a possible early component of recursive self-improvement (RSI). Imagine a privately deployed model working through a harness such as Codex or Claude Code during the day and retaining its trajectories. At night, successes, failures and user corrections could be summarized into reusable skills. The same model could use those skills to reassess its original trajectories, assign turn credit with AgentOPSD, and update weights through infrastructure such as PyTRIO or Tinker. After evaluation without skills, the new model could return to work. In that proposed workflow, skills expose experience to the model, while training aims to incorporate it into the weights.
+AgentOPSD has the current agent first perform a real rollout without skills, then uses the same parameter snapshot to re-evaluate every turn with skills available. No additional critic is trained, and no teacher rewrites a reference trajectory. The final reward determines whether the whole trajectory is encouraged or penalized, while the self-teacher only adjusts the training strength of individual turns. We completed 80 training steps with Qwen3.5-4B, PyTRIO and text-only ALFWorld.
 
-*This remains some distance from complete RSI. My view is that it offers an elegant, practical path to investigate while more mature continual-learning methods develop.*
+This experiment also reminds me of RSI (Recursive Self-Improvement): a model completes tasks through a harness during the day and retains its trajectories, then at night summarizes skills, re-evaluates the original trajectories and trains the experience back into its weights. A new checkpoint enters the next round after passing skill-free regression evaluation; if it fails, the old version is kept. This is not yet complete RSI, but AgentOPSD supplies one piece of it: using experience to assign credit along a trajectory.
 
 ![Work by day, learn at night: a proposed continual-learning loop](./images/rsi.png)
 
@@ -358,13 +358,9 @@ There are also clear differences from the paper: its models and full-parameter t
 
 ## 7. Summary
 
-My one-sentence description of AgentOPSD is:
+AgentOPSD keeps GRPO's terminal-reward direction, then lets the self-teacher make bounded adjustments to the training strength of individual turns. The environment verifier still decides success or failure; local evidence is used only to refine credit assignment within long trajectories.
 
-> **A skill-informed version of the same model reviews the path it just took and identifies the turns that mattered.**
-
-GRPO retains the final direction, encouraging successful trajectories and discouraging failed ones. The self-teacher makes bounded adjustments to individual turns within that direction, retaining the environment verifier's authority while giving sparse terminal rewards finer credit allocation.
-
-We completed the loop in 80 steps and 10,240 training rollouts. On the fixed 274-game evaluation, overall success rises from 58.8% to 65.7%, and mean invalid actions fall from 7.07 to 5.68. The result is positive and the cost substantial. It provides a working, inspectable starting point for matched GRPO controls and multi-seed experiments.
+We completed the full loop in 80 steps and 10,240 training rollouts. On the fixed 274-game evaluation, overall success rises from 58.8% to 65.7%, and mean invalid actions fall from 7.07 to 5.68. The result is positive, but the independent contribution of turn credit still needs confirmation through strict GRPO controls and multi-seed experiments.
 
 ## 8. What does each code file do?
 

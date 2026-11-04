@@ -360,7 +360,7 @@ padded_advantages = [0.0] * observation_len + [sample.advantage] * len(sample.to
 
 Only completion tokens carry non-zero advantages; prompt tokens do not contribute to the policy-gradient loss.
 
-This is extremely important. GRPO isn't training the model to simply "memorize" prompts, but rather to train the model so that, after seeing a prompt, it is more likely to generate completions that lead to higher rewards.
+In other words, the prompt is just context. What the model learns is to favor higher-reward completions the next time it sees that prompt.
 
 ## Step 5: Submit forward/backward pass and optimizer step.
 
@@ -486,7 +486,7 @@ Considering these three together:
 | `ppo` | Maximize the clipped surrogate objective | The clip ratio limits policy updates. | Given the same reward, does a more conservative update provide greater stability? |
 | `cispo` | Maximize `detach(clipped_ratio) * logprob * advantage` | After ratio clipping, it functions as a fixed weight. | How can a custom loss function be used to control the shape of the gradient? |
 
-Please note that here, we are comparing loss objectives, not stating that one is definitively superior. Experiments like GRPO are highly sensitive to factors such as reward design, data difficulty, group size, sampling temperature, learning rate, and the number of training steps. It is precisely because of these many variables that the value of PyTRIO's parallel experiments becomes apparent.
+Please note that here, we are comparing loss objectives, not stating that one is definitively superior. Experiments like GRPO are highly sensitive to factors such as reward design, data difficulty, group size, sampling temperature, learning rate, and the number of training steps. With so many variables, this is a good place to lean on PyTRIO: launch a few runs in parallel instead of waiting for them one at a time.
 
 ## How to implement custom loss functions using PyTRIO?
 
@@ -620,7 +620,7 @@ fwd_bwd_future = training_client.forward_backward_custom(
 )
 ```
 
-This approach has significance beyond simply addressing CISPO. In the future, whether aiming to reproduce DAPO, GSPO, Dr.GRPO, or experimenting with a new token-level weighting method, they all represent essentially the same path.
+Once you've learned this pattern, reproducing DAPO, GSPO, or Dr.GRPO later — or trying a new token-level weighting of your own — all follows the same path:
 
 ```text
 保留 rollout / reward / advantage 管线

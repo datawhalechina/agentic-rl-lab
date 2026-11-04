@@ -32,11 +32,7 @@ Previous chapters cover:
 
 I originally planned the familiar route: explain the algorithm, finish training and organize the results.
 
-Running it brought a different set of observations before any attractive reward curve:
-
-> **Dynamic Sampling fills a training batch with more informative groups, but pays for that quality during rollout. When only one informative group is missing, repeated refill rounds become synchronization barriers.**
-
-I want to document three things:
+But once I actually ran it, the first thing I hit was a pile of problems. So this time I want to clearly walk through the following questions:
 
 1. What DAPO changes relative to GRPO.
 2. How to read and run the repository's DAPO and GRPO code.
@@ -383,7 +379,7 @@ Track at least four dimensions when running this code:
 | Token utilization | `train_completion_tokens / completion_tokens` | What fraction of generated tokens entered training? |
 | Time efficiency | `time/step_seconds` | How long did one parameter update take? |
 
-A fuller effective batch must be considered alongside extra candidates, discarded rollout tokens and actual update latency.
+So it's not enough to look at whether the batch is full — you also need to check how many extra candidate questions were sampled, how many rollout tokens were wasted, and how long a single update actually waited.
 
 ## Another practical issue: cost peaks from long sequences and dynamic batches
 
@@ -438,20 +434,11 @@ effective_groups / step_seconds      → 真正的 wall-clock 产出
 
 ## Summary
 
-DAPO's four changes address concrete long-CoT RL issues: entropy collapse, uninformative groups, long-trajectory weighting and truncation-related reward noise.
+DAPO's four changes all target concrete long-CoT RL problems: entropy collapse, uninformative groups, long-trajectory weighting and truncation-related reward noise.
 
-Dynamic Sampling is especially appealing, and also exposed the clearest engineering cost here:
-
-```text
-它让每次更新看到更多有效 group，
-但为了等到最后一个有效 group，
-rollout 会反复补采、反复等待，
-最终把动态筛选的成本完整付在 wall-clock 上。
-```
+Of the four, Dynamic Sampling was the one I looked forward to most, and it also turned out to carry the clearest engineering cost: each update does see more informative groups, but to wait for the last one, rollout has to resample and wait again and again, and the cost saved by filtering ends up paid entirely in training time.
 
 ## Reflections
-
-> ***Every gift of fate already carries a hidden price.***
 
 Implementing DAPO from scratch changed how I diagnose slow training. With transformers or verl, I would usually suspect the hardware or configuration because much of the trainer felt like a black box. Reviewing this DAPO implementation line by line let me see what it was doing and why it waited. For me, that is PyTRIO's appeal: I can implement and inspect the core algorithm without also building the combined training/inference infrastructure. The main question becomes whether the algorithm itself is implemented correctly.
 

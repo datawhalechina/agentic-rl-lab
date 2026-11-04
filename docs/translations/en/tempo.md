@@ -28,19 +28,19 @@ This experiment began differently from the earlier chapters. **At the time of th
 
 First, what problem is TEMPO trying to solve?
 
-## 0. Two obstacles in long-horizon tasks
+## 0. Two problems in long-horizon tasks
 
-The earlier Agentic RL experiments share an implicit assumption: trajectories are short enough. Search-R1 retrieves information for a few rounds, ReTool executes several code snippets, and ALFWorld resolves within fifty steps. When an agent takes on tasks lasting hours or days, the GRPO approach encounters two obstacles.
+The earlier Agentic RL experiments share an implicit assumption: trajectories are short enough. Search-R1 retrieves information for a few rounds, ReTool executes several code snippets, and ALFWorld resolves within fifty steps. Once trajectories stretch to hundreds of rounds, GRPO runs into two practical problems.
 
-**The first is delayed feedback.** Outcome rewards are available only when a trajectory ends. If a rollout takes eight hours, generating that training signal takes at least eight hours. Much of the computational effort is spent waiting for the outcome.
+**Feedback cycles are too long.** Outcome rewards are available only when a trajectory ends. If a rollout takes eight hours, generating training signals takes at least eight hours, and much of the compute is spent waiting for outcomes.
 
-**The second is credit assignment.** In a trajectory hundreds of turns long, the third action is separated from success or failure by hundreds of steps. Subtracting a group mean provides little guidance about which early decision helped.
+**Credit assignment becomes harder.** The third action of an episode may sit hundreds of steps away from the final outcome. Group-relative signals computed from terminal rewards alone cannot identify which intermediate decisions were decisive.
 
-The textbook PPO-style solution is a value head that predicts future returns at intermediate states, allowing unfinished trajectories to provide training signals. A scalar value head, however, uses **one forward pass with a fixed computational budget**. In long-horizon tasks, valuing a state can itself require reasoning: are the actor's assumptions correct, is its search direction viable, and which obstacles remain? A small scalar head has limited capacity to perform that analysis.
+The PPO solution is to train a value head that predicts future returns at intermediate states, so unfinished trajectories can still provide training signals. But a scalar value head has a fixed compute budget per forward pass, while valuing a state in a long-horizon task may require checking the actor's assumptions, its search direction, and unresolved obstacles, which itself demands reasoning.
 
-TEMPO's answer is in its name: Test-Time-Scaled Value Estimation with Macro-Step Policy Optimization. It combines three main designs.
+TEMPO stands for Test-Time-Scaled Value Estimation with Macro-Step Policy Optimization. The method consists of three main parts.
 
-## 1. TEMPO's three main designs
+## 1. The design of TEMPO
 
 ### 1.1 Macro-steps: optimize a segment instead of an entire episode
 
@@ -54,27 +54,27 @@ The blog appendix provides an easily overlooked guarantee: after correcting dist
 
 ### 1.2 A generative critic: value estimation requires reasoning
 
-TEMPO replaces a scalar value head with a generation task. The critic reads the current state and complete interaction history, analyzes what the actor has learned about the environment, its attempted solution and unresolved obstacles, then outputs a numerical value. Harder states can receive longer reasoning and further reflection. **Test-time scaling can benefit the critic as well as the actor.**
+TEMPO replaces a scalar value head with a generation task. The critic reads the current state and complete interaction history, analyzes what the actor has learned about the environment, its attempted solution and unresolved obstacles, then outputs a numerical value. For harder states, the critic can extend its reasoning and spend more compute on the estimate.
 
-The blog illustrates this with a knight-placement task:
+The blog gives an intuitive example, knight placement:
 
 ![Rules of the knight-placement task](./images/tempo-2.png)
 
 *The actor must infer hidden constraints through interaction. Starting from two preplaced pieces, it must place six more so that no pair can attack each other with a knight's move. Image source: [TEMPO blog](https://studio.dots.ai/dots/tempo-blog.html).*
 
-Two 64-round trajectories start from the same state and receive the same environment reward, 0, but reach very different situations:
+Two 64-round trajectories start from the same state and receive the same environment reward, 0, but their state values already differ:
 
 ![Equal environment rewards but different trajectory values](./images/tempo-4.png)
 
 *Branch A mistakenly treats the presence of attacks as the goal. All its candidate layouts require an attack, excluding valid solutions from its search space. Comparing the trajectory with the game source, the critic assigns V̂=2.6. Branch B revisits the history, rejects that assumption, discovers that knights on same-colored squares do not attack each other, and proposes a viable solution. The critic assigns V̂=4.6. The value difference is 2.0, while the environment-reward difference is 0. Image source: [TEMPO blog](https://studio.dots.ai/dots/tempo-blog.html).*
 
-This example also explains **privileged information**: the critic can access internal environment states, hidden rules or game source code. The actor cannot see this information; the critic uses it to verify its evaluation. Its judgment of branch A comes from checking the source.
+This example also explains **privileged information**: the critic can access internal environment states, hidden rules or game source code. The actor cannot see this information; the critic uses it to verify its evaluation. Checking against the game source, the critic assigned branch A a lower value estimate.
 
 Why estimate values only at macro-step boundaries? A generative critic produces an entire reasoning sequence and costs much more than a scalar value-head forward pass. Running it after every token would be expensive. One call every H rounds trades feedback granularity against computation.
 
-### 1.3 The actor is also its own critic: two roles, one GRPO framework
+### 1.3 Shared parameters between actor and critic
 
-Once value estimation becomes generation, TEMPO can maintain **one set of parameters**. The model acts during interaction, then switches to a critic prompt at the macro-step boundary. Prompts, context and rewards distinguish the roles, while both share a sampler and weight update.
+Once value estimation becomes generation, TEMPO maintains **one set of parameters**. The model acts during interaction, then switches to a critic prompt at the macro-step boundary. Prompts, context and rewards distinguish the roles, while both share a sampler and weight update.
 
 Both roles consequently fit into the same GRPO framework. Their losses have the same form; the reward source differs. Actor learning uses environment-derived rewards, while critic learning uses estimation error. In PyTRIO, both can enter one `forward_backward` batch and share a LoRA adapter.
 
@@ -175,7 +175,7 @@ warmup=1 critic/abs_error_mean=0.606 warmup/boundary_states=22
 - `abs_error_mean=0.606`: the untrained critic was not yet predicting success well. Warm-up aims to reduce this error.
 - `success_rate=0.75`: with available actions included in the prompt, the 4B model started stronger than I expected.
 
-We track four indicators when checking the mechanism:
+To check whether the algorithm pipeline is working, we mainly track four metrics:
 
 | Metric | Desired observation |
 |---|---|
@@ -188,19 +188,19 @@ Actor observations from a smoke run of 8 updates, 4 warm-up and 4 TD:
 
 ![Actor metrics from the SwanLab smoke run](./images/swanlab-td.png)
 
-*The first 4 steps are warm-up and the next 4 are TD. `actor/segment_reward_mean` rises from 0.62 to 0.85. `actor/degenerate_group_rate` falls from 0.19 to zero: initially, roughly a fifth of starting-state groups had identical returns and no relative training signal. By the fourth TD step, none did. This is consistent with V̂ separating branch returns and supplying a usable actor signal.*
+*The first 4 steps are warm-up and the next 4 are TD. `actor/segment_reward_mean` rises from 0.62 to 0.85, and `actor/degenerate_group_rate` falls from 0.19 to 0. Initially, roughly a fifth of starting-state groups had identical returns and no training signal, so they had to be skipped; from the fourth TD step on, V̂ produced different returns within each group, giving every group a nonzero advantage.*
 
 ![PyTRIO usage for this smoke run](./images/pytrio-consume.png)
 
 *This run cost ¥15.02, compared with the four-digit cost of chapter 8's full training run. The smaller algorithm-level reproduction was substantially cheaper.*
 
-The critic curves are central to checking this implementation:
+We use the critic-side curves to check whether value training is working:
 
 ![Critic metrics from the SwanLab smoke run](./images/swanlab-critic.png)
 
 *The five panels show `critic/abs_error_mean`, `critic/value_target_mean`, `critic/value_target_std`, `critic/value_corr` and `critic/parse_failure_rate`. Estimation error falls from 0.674 to 0.315, decreasing by roughly two fifths during three warm-up steps and continuing downward in TD. Warm-up value correlation rises from 0.60 to 0.72. Parsing failures decline from 7.3% to around 1%, indicating more reliable `<value>` formatting.*
 
-Alongside these critic changes, the actor's `degenerate_group_rate` approaches zero. In this run, improving value estimates coincided with more differentiated returns across actor branches, with both roles sharing one parameter set.
+Reading the two metric groups together, `abs_error` falls while the actor's `degenerate_group_rate` approaches 0. In this run, better critic estimates and sharper within-group differentiation on the actor side appeared in sync.
 
 ## 7. Code organization
 
@@ -241,6 +241,6 @@ This reproduction leaves three items unresolved:
 
 ## Summary
 
-TEMPO combines macro-step optimization, a reasoning-based generative critic for the truncated future, and shared actor–critic parameters trained with GRPO. The most striking implementation detail is how much happens in local orchestration: saving states, restoring them and assembling signals. The service still needs standard sample, logprob and forward_backward operations. This makes the mechanisms practical to inspect and implement in the training loop.
+This reproduction implements macro-step optimization, a generative critic, and shared actor–critic parameters. The new mechanisms live mainly in local state storage and training-signal assembly; the service only needs standard sample, logprob and forward_backward operations.
 
-This experiment cost **¥15.02**, far below chapter 8's four-digit full-training cost. Once the paper and hyperparameters are public, I expect to revisit it in the 9.x series.
+This smoke run cost **¥15.02**. The next steps are to add the prefix importance-sampling correction and, once the paper is published and hyperparameters are public, to check performance on ARC-AGI-3.

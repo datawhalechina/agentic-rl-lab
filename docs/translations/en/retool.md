@@ -101,16 +101,6 @@ ReTool allows the model to write code during reasoning. Two central settings are
 
 The paper also includes cold-start SFT on code-interlaced demonstrations, an asynchronous SandboxFusion sandbox and KV-cache reuse. This reproduction distinguishes what it retains from what it omits.
 
-## ReTool in everyday terms
-
-Imagine a student taking a math exam with a calculator that clears after every use:
-
-- The student writes the reasoning and can run code for difficult calculations.
-- The calculator has no persistent state; results must be printed explicitly.
-- Grading checks the final boxed answer: +1 for correct and −1 for incorrect.
-
-No one specifies exactly when to use the calculator. The student may initially overuse or underuse it. Outcome rewards can favor a policy that handles reliable calculations directly and delegates harder ones to code.
-
 ## How did we reproduce it?
 
 The implementation retains the central algorithm around three components:
@@ -418,17 +408,9 @@ The figure is written to `experiments/retool/images/checkpoint_avg_pass_format.p
 
 ## Summary
 
-ReTool reused much of the earlier multi-turn infrastructure, leaving three main new components: protocol, sandbox and reward. The resulting capability is concrete: choosing when to stop calculating internally and use code.
+This reproduction mainly adds the tool protocol, a local sandbox and outcome rewards, while the multi-turn trajectories, GRPO advantages and training loop reuse implementations from earlier chapters. The 20-step validation run cost ¥31.66 and the full 200-step training run cost ¥224.44; AIME25 Average@12 rose from 23.61% to 47.50%.
 
-Three observations summarize the experiment:
-
-```text
-两杯瑞幸（¥31.66）的 20 步验证跑，就足够确认 ReTool 闭环有效；
-一条 200 步轨迹（¥224.44）下来，AIME25 Average@12 从 23.61% 提到 47.50%；
-模型学会的顺序是：先调规范，再写能跑的代码，最后写对解题有用的代码。
-```
-
-For me, the small trial showed how native model tools plus a local execution environment make Agentic RL ideas practical to investigate from a MacBook Air. The two-coffee comparison applies to that initial trial, with full training and evaluation accounted for separately above.
+The behavioral changes during training deserve more attention than the scores: the model first learns to call the tool properly, then writes code that runs, and only gradually makes that code more helpful for solving problems. The 8K trajectory budget and the single training run remain the main limitations of the current results.
 
 ## References
 

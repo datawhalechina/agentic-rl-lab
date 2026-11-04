@@ -1,9 +1,9 @@
-# Tournament-GRPO: Putting 8 Research Reports Through an Elimination Tournament
+# Tournament-GRPO Reproduction: Training Research Report Generation with Tournament Rewards
 
 > Want to skip the article and run it directly? See the [quick start guide](./start.md): prepare data → configure tools and judges → train → evaluate.
 
 <div align="center">
-  <img src="./images/封面.png" alt="Tournament-GRPO: Putting 8 Research Reports Through an Elimination Tournament" width="100%">
+  <img src="./images/封面.png" alt="Tournament-GRPO Reproduction: Training Research Report Generation with Tournament Rewards" width="100%">
 </div>
 
 <div align="center">
@@ -25,17 +25,15 @@
 
 
 
-The earlier [Search-R1](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md) and [ReTool](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/readme.md) chapters share a convenient premise: match the reference answer, and the reward is 1. This chapter switches to deep research: the model searches, reads webpages, and ultimately writes a research report. For example, one question in the training set asks:
+The tasks in the earlier [Search-R1](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/readme.md) and [ReTool](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/retool/readme.md) chapters usually have reference answers, so the reward can be built directly from whether the answer matches. Deep research tasks are different: the model must search, read webpages, and produce a research report. For example, one question in the training set asks:
 
 > What progress has been made in the application of data mining in materials science research?
 
-There is no standard answer to this kind of question. Two reports might both be correct, while one offers broader coverage and stronger evidence. The reward has to come from an LLM judge evaluating the report against the question's rubric.
+There is no standard answer to this kind of question. Two reports might both be correct, with one offering broader coverage and stronger evidence, so an LLM judge must score them against the question's rubric.
 
-Tournament-GRPO asks how a judge should assign scores so that GRPO receives a useful signal. Its answer is straightforward: instead of scoring each report independently, have reports for the same question compete in pairs and calculate rewards from their wins.
+Tournament-GRPO no longer asks the judge for an absolute score on each report; instead, it compares reports within the same group and computes rewards from accumulated wins. This article records its reproduction on PyTRIO, using Qwen3.5-4B LoRA, DeepSeek Search, Jina Reader, and a Jev judge, with a focus on checking the training pipeline, reward computation, and early behavior changes.
 
-I ported the authors' verl implementation to PyTRIO: Qwen3.5-4B LoRA, DeepSeek for search, Jina for reading webpages, and Jev as the judge. We will start with a map, then go through the algorithm, code, and experiments.
-
-## 0. Results First
+## 0. Reproduction Results Overview
 
 | Item | Status |
 | --- | --- |
@@ -46,7 +44,7 @@ I ported the authors' verl implementation to PyTRIO: Qwen3.5-4B LoRA, DeepSeek f
 
 After 20 steps, the most obvious change was that the model learned to hand in its report on time. Across the 100 evaluation questions, answer completion rose from 60% to 98%, and format compliance from 42% to 72%. Most of the 14-point RACE Overall gain came from fewer blank reports: an empty report scores 0, and Base failed to submit a report on 40 questions. On the 59 questions where both models produced reports, Overall was 34.49 → 35.25.
 
-## 1. Start with a Map
+## 1. The Training Pipeline
 
 The training loop for rubric-based RL looks roughly like this:
 
@@ -65,9 +63,9 @@ Tournament-GRPO changes only the **Judge → Reward** segment of this map:
 | Reward | Accumulates wins over multiple tournament rounds, applies min-max normalization within the group, then adds a 0/1 format reward |
 | GRPO / Policy | Standard GRPO group-standardized advantages and PPO clipping, unchanged |
 
-As you read this chapter, keep one question in mind: **With the same judge, how does changing the way we ask affect the signal that GRPO receives?**
+This article focuses on one question: when the same judge switches to pairwise comparison, how does the signal GRPO receives change?
 
-## 2. Where Does Tournament-GRPO Come From, and What Does It Solve?
+## 2. From Individual Scoring to Pairwise Comparison
 
 >Tournament-GRPO was proposed by Zixuan Yang et al. and has been **accepted to the EMNLP 2026 Main Conference**. The full paper title is *Tournament-GRPO: Group-Wise Tournament Rewards for Reinforcement Learning in Open-Ended Long-Form Generation*.
 
@@ -86,22 +84,11 @@ The key observation comes from GRPO itself: it only needs to know which response
 
 The comparison idea comes from TourRank, which ranks candidates through multiple rounds of within-group comparisons. The paper also includes a Pairwise baseline: compare every pair among the 8 responses (28 matches) and use the win rate as the reward, an idea drawn from ArenaRL. Tournament-GRPO instead runs an elimination tournament: form pairs, advance the winners, regroup, and continue until one candidate remains; repeat the entire tournament several times and accumulate wins.
 
-## 3. A Plain-Language Analogy: Testing New Beans at a Pour-Over Coffee Shop
+## 3. Why Use Pairwise Comparison
 
-Imagine a pour-over coffee shop has received a new batch of Ethiopian beans, and 8 baristas each brew a cup. The manager has a tasting card: clear floral and fruity aromas, bright but gentle acidity, clean sweetness, and no bitter aftertaste.
+Scoring long reports individually tends to cluster the scores, yet within-group differences are exactly what GRPO relies on. Pairwise comparison simplifies the question to “which one is better.” It is a bit like judging coffee: rather than assigning isolated scores to eight cups, compare two at a time and rank them by accumulated wins.
 
-With **pointwise scoring**, the manager tastes each cup and scores it independently. They can check each item on the tasting card—are the floral and fruity notes clear? Is the acidity harsh?—and calculate a weighted sum, or directly assign a score of 1–10. Either way, they consider only the cup in front of them. With a checklist, several of the 8 cups may satisfy every item and receive identical totals. With direct scoring, by the 6th cup, the manager may struggle to remember whether the floral aroma of the 1st cup deserved a 7 or an 8.
-
-In a **tournament**, the manager tastes only two cups at a time and uses the tasting card to decide which is better. The 8 cups are drawn into 4 pairs, and the winners advance; the remaining 4 cups form 2 pairs, until 1 champion emerges. Each win earns 1 point. To reduce the luck of the draw, the whole tournament is redrawn and repeated 3 more times. The final ranking uses accumulated wins:
-
-- The barista with the most wins receives 1, the one with the fewest receives 0, and the rest receive proportional scores in between.
-- If everyone has the same number of wins, everyone receives 0.5.
-- A barista who never serves a cup (fails to produce a final answer) still enters the tournament, but their final score is set to 0.
-- Anyone who records the brewing process according to the shop's rules (format compliance) receives an additional 1.
-
-The scores for these 8 cups are then compared: brewing methods that perform above average are encouraged, while those below average are discouraged. In the next round, everyone adjusts the grind size, water temperature, and pouring rhythm, then brews and compares again.
-
-Throughout this process, the manager answers only one question: “Which of these two cups is better?” That is much easier to answer than “What score does this cup deserve?”
+In the actual implementation, the 8 responses are first paired off, winners advance until a champion emerges, and the whole tournament is repeated 4 times; rewards are then computed from accumulated wins. Win normalization and the handling of empty answers and format rewards are covered in the next section.
 
 ## 4. Key Variables and Formulas
 
@@ -336,30 +323,21 @@ To inspect the judge, sample records from `judge.jsonl`. It contains the candida
 
 - The policy, judge, search backend, and training scale all differ from the paper, so the scores cannot be directly compared. This chapter checks whether the training pipeline works after connecting tournament rewards to PyTRIO, and how early behavior changes.
 
-## 9. Insight and Action
+## 9. Questions to Be Verified
 
-The following observations emerged during reproduction and have not yet been tested.
+The following two points come from observations during the reproduction and have not yet been verified with further experiments.
 
-- **Repeating a binary tournament 4 times does not save judge calls.** With K=8, 4 × 7 = 28 matches, the same as the C(8,2) exhaustive pairwise comparisons; the difference is how rewards are assigned. The paper's configurations that save calls use 2–3 repeats. Action: run M=2 and M=4 offline on the same batch of trajectories and compare the advantage rankings.
+- **Repeating a binary tournament 4 times does not save judge calls.** With K=8, 4 × 7 = 28 matches, the same as the C(8,2) exhaustive pairwise comparisons; the difference is how rewards are assigned. The paper's configurations that save calls use 2–3 repeats. A next step is to run M=2 and M=4 offline on the same batch of trajectories and compare the advantage rankings.
 
-- **Early reward gains come mainly from the format reward.** From the first 3 steps to the last 3, total reward rose from 0.485 → 0.849, with approximately 92% of the increase coming from format reward (0.193 → 0.526); tournament reward rose only from 0.293 to 0.323. Action: track has_answer, format, and tournament separately, then examine within-group tournament reward variance once answer completion stabilizes.
+- **Early reward gains come mainly from the format reward.** From the first 3 steps to the last 3, total reward rose from 0.485 → 0.849, with approximately 92% of the increase coming from format reward (0.193 → 0.526); tournament reward rose only from 0.293 to 0.323. Going forward, we can track has_answer, format, and tournament separately, then examine within-group tournament reward variance once answer completion stabilizes.
 
 ## 10. Summary
 
-Tournament-GRPO makes a small change: it replaces the source of the reward.
+Tournament-GRPO changes only how rewards are computed: the judge compares responses within the same group, wins are accumulated and normalized, a format reward is added on top, and standard GRPO and PPO are used afterwards. The cost is that judge calls grow linearly with M, and reward quality depends entirely on the judge.
 
-```text
-1. 每道题采样 8 份带工具调用的研究报告。
-2. 两两比赛、胜者晋级，整场重复 4 次，累计胜场。
-3. 组内 min-max 归一化，无答案记 0，再加 0/1 格式奖励。
-4. 组内标准化得到 advantage，用 vanilla PPO 更新。
-```
+In this 20-step reproduction, the clearest improvements are in answer completion and format compliance; on the 59 questions where both models produced reports, RACE Overall rose only from 34.49 to 35.25. The current evidence therefore supports “the model learned to complete its outputs” more than an equivalent improvement in report quality.
 
-The reasoning behind it is that GRPO only needs to know which response is better within the group, so we can ask the judge directly. This is a natural approach for long-form tasks without standard answers. The cost is that judge calls grow linearly with M, and reward quality depends entirely on the judge.
-
-The environment took the most time during reproduction: cutting the tool budget left the model unable to wrap up, judge network failures produced random rewards, and the search endpoint imposed a query-length limit. These issues are separate from the algorithm itself, yet determine whether a training step produces useful gradients. In Agentic RL, environment quality is itself an experimental variable.
-
-This 20-step run cost 78.92 yuan and took 4 hours 3 minutes; evaluation added 13.12 yuan, for a total of 92.04 yuan. Across all 100 Deep Research Bench questions, answer completion rose from 60% → 98%, format compliance from 42% → 72%, and RACE Overall from 20.65 → 34.70.
+What took the most time in the actual reproduction was not the algorithm but tool budgets, judge failures, and search API limits. These issues directly change trajectories and rewards, and their impact is no smaller than that of model configuration.
 
 ## References
 

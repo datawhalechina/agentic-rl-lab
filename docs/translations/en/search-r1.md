@@ -92,25 +92,13 @@ A working search engine is only the beginning. The model must decide:
 
 Prompt instructions can guide these choices at inference. Search-R1 instead uses reinforcement learning to train the pattern of alternating reasoning and search into model parameters.
 
-The central change is:
+The paper's main change is that search goes from a fixed step before answering to an action the model can repeatedly choose throughout its reasoning trajectory.
 
-> Search becomes an action the model can repeatedly choose throughout reasoning.
+## Search-R1's training approach
 
-## Search-R1 in everyday terms
+The model samples multiple search trajectories for the same question. Training checks only the final answer: correct answers receive higher reward, incorrect answers receive lower reward, and missing the required answer format incurs a small additional penalty.
 
-Imagine a student taking an open-book exam.
-
-In ordinary RAG, the teacher retrieves a page of material first and then asks the student to answer.
-
-Search-R1 gives the student a search box. The student can think, submit a query, read results, revise the query when information is insufficient, and answer when the evidence seems adequate.
-
-At the end, grading checks the answer:
-
-- Correct answers receive higher reward.
-- Incorrect answers receive lower reward.
-- Missing the required answer format incurs a small additional penalty.
-
-Several trajectories for the same question are compared. Those above the group mean are encouraged; those below it are discouraged.
+Trajectories for the same question are compared against the group's mean reward to compute relative advantages, and the model is updated accordingly.
 
 The complete process is:
 
@@ -237,9 +225,7 @@ training_client.optim_step(adam_params).result()
 
 See the complete loop in [`train.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/train.py).
 
-This keeps rollout and training responsibilities clear while using remote compute. For a task with long generation and tool interaction but relatively short backward computation, that separation is useful.
-
-For me, it makes the training service feel like compute accessed through an API, while local code describes the algorithm and experiment.
+This keeps the division between rollout and trainer clear. For tasks like this, where generation and tool calls take much longer than backward computation, I can write the algorithm and experiment loop locally while using the remote service billed by actual training tokens.
 
 ## Evaluation after 30 training steps
 
@@ -794,27 +780,9 @@ Within those limits, the experiment provides a runnable way to understand Search
 
 ## Summary
 
-Search-R1's central loop can be expressed simply:
+Search-R1 computes rewards from final answers, computes relative advantages across multiple search trajectories for the same question, and trains only the assistant action tokens the model generates. This article replaces the paper's roughly 160 GB retrieval database and 180 GB-memory retrieval environment with a switchable online search service, keeping the core multi-turn search and training loop.
 
-```text
-1. 给模型一个问题和搜索工具。
-2. 让当前策略生成多轮 search / observation / answer 轨迹。
-3. 只根据最终答案计算 reward。
-4. 在同一道题的多条轨迹之间计算相对 advantage。
-5. 只训练模型生成的 assistant action token。
-6. 用 PyTRIO importance_sampling 更新 LoRA。
-7. 导出新 sampler，继续下一轮 rollout。
-```
-
-It trains the ability to actively obtain useful information from an environment.
-
-The original retrieval setup's roughly 160 GB database and 180 GB memory requirement are relevant to a close reproduction. For learning the algorithm, switchable online search makes the entry point much lighter.
-
-The current 30-step run shows changes in Format rate and search behavior, along with higher EM on the fixed 70 questions. Wikipedia offers a key-free backend, while the official DeepSeek Search API offers broader web coverage and higher concurrency.
-
-The appeal for me is spending time on rewards, rollouts, masks and experiment design instead of first maintaining a large training/inference cluster.
-
-I expect model training to become more like using cloud storage or a database: ordinary Python describes the algorithm, while sampling, training and checkpoints are remote capabilities. That could make more experiments practical for individual researchers and small teams.
+In this 30-step run, Format Rate and search behavior both changed, and EM improved on the fixed 70-question evaluation, but a single training run and a small evaluation are not enough to establish stable gains. Wikipedia is available for key-free runs; the official DeepSeek Search API provides general web coverage and higher concurrency.
 
 I had not yet chosen the next chapter when writing this note—perhaps GSPO, OPSD, or another Agentic RL idea.
 

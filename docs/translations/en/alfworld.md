@@ -105,8 +105,6 @@ The paper's main contribution aligns text and embodied environments; official ag
 
 The scope is an LLM Agentic RL recipe on ALFWorld. The paper's original training algorithm and visual BUTLER system are outside this reproduction.
 
-Next, we connect the textual environment to a tool protocol an LLM can call consistently.
-
 ## 1. Turn household actions into a tool call
 
 The model receives one tool:
@@ -154,8 +152,6 @@ The environment, rather than the model's own declaration, determines termination
 The next prompt retains the complete interaction record. After 30 turns, the 31st generation still sees all 30 actual assistant tool calls and tool observations.
 
 Household tasks depend heavily on state. The model must remember which cabinet it opened, whether it holds the apple or placed it in the microwave, and where it moved it after heating. Losing early history can cause repeated searches, wrong-object choices and forgotten intermediate steps.
-
-With trajectory generation defined, we can run the system before examining its rewards and advantages.
 
 ## 2. Start training and evaluation
 
@@ -236,8 +232,6 @@ cd ..
 uv run python experiments/alfworld/analysis.py
 ```
 
-These commands run the experiment. Understanding what the model learns from 64 long trajectories requires examining rewards, advantages and PPO updates within each rollout batch.
-
 ## 3. How do we use the GRPO idea?
 
 GRPO samples several responses to one problem and calculates advantages from their relative rewards.
@@ -256,9 +250,9 @@ Qwen3.5-4B 分别完成 8 条完整工具轨迹
 在这 8 条轨迹内部计算相对 advantage
 ```
 
-The complete training loop is:
+The complete training process is:
 
-![ALFWorld and PyTRIO training loop](<./images/ALFWorld × PyTRIO · Training Loop.png>)
+![ALFWorld and PyTRIO training process](<./images/ALFWorld × PyTRIO · Training Loop.png>)
 
 ### 1. One episode return per trajectory
 
@@ -329,7 +323,7 @@ The precise description is:
 
 > **We combine same-game GRPO-style group rollouts and relative advantages with PPO updates to Qwen3.5-4B LoRA.**
 
-These advantages apply to a sequence of decisions that continuously changes the environment, the main difference from the earlier experiments.
+That completes the algorithm. What's special this time is that behind every advantage is a sequence of decisions that actually changes the environment.
 
 ## 4. A more stateful agent experiment
 
@@ -346,8 +340,6 @@ Each action changes what can happen next:
 Evaluation averages about 22 interactions per game. Every generation sees the growing full history. This longer credit-assignment problem resembles sustained agent work more closely than one or two tool calls.
 
 Text-only interaction keeps the experiment practical. TextWorld / PDDL supplies exact state transitions, PyTRIO handles remote sampling and training, and local Python handles environments, rewards, advantages and trajectory records.
-
-Longer decision chains also increase context length, sampling volume and cost.
 
 ## 5. Training configuration and cost
 
@@ -446,9 +438,7 @@ Gains differ substantially across the six task types:
 
 On `valid_unseen`, Heat then place gains `26.1 pp` and Clean then place gains `9.7 pp`, while Pick two & place loses `11.8 pp`. On `valid_seen`, Pick two & place gains `16.7 pp`, while Look under light and Heat then place regress.
 
-These results come from one training run and one evaluation seed. They demonstrate a working online Agentic RL loop and a positive result under these conditions. Stable conclusions require multiple training seeds, repeated evaluation and more checkpoint measurements.
-
-The code below shows how environment interactions become inspectable JSONL records and figures.
+These results come from one training run and one evaluation seed. They demonstrate a complete, working online Agentic RL workflow and a positive result under these conditions. Stable conclusions require multiple training seeds, repeated evaluation and more checkpoint measurements.
 
 ## 7. How is the code organized?
 
@@ -593,7 +583,7 @@ The eight files can be summarized as follows:
 | [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/eval.py) | Base/checkpoint evaluation, aggregated metrics and trajectory JSONL |
 | [`analysis.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/alfworld/analysis.py) | Read summaries and plot checkpoint comparisons |
 
-Together these files connect game discovery, online interaction, relative credit assignment and independent evaluation.
+That's all eight files. Strung together, they form the whole process from finding games to producing evaluation plots. Back to the opening question: what did the model actually learn from this long-trajectory Agentic RL experiment?
 
 ## 8. Summary
 
@@ -601,4 +591,4 @@ At this point in the series, this experiment has the longest trajectories, most 
 
 Qwen3.5-4B samples 8 independent trajectories per ALFWorld game. Terminal success and invalid-action counts determine episode reward; same-game relative advantages and PPO update LoRA. The model must remember its actions through at most 50 interactions and 12K tokens of context, ending with a PDDL state that truly satisfies the task.
 
-This provides a practical starting point for longer trajectories, more tools and more complex environments.
+This run got long-trajectory Agentic RL working. Trajectories can get longer and tools can get more numerous — which direction would you like to see next?

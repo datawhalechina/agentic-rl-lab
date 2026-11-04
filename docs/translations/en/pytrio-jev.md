@@ -12,27 +12,25 @@
 > - SwanLab: [Public training logs for this experiment](https://swanlab.cn/@kmno4/agentic-rl-lab-pytrio-jev/v1/qt5fzd/runs/g4i73a65/chart)
 > - PyTRIO: [Website](https://pytrio.com) / [Documentation](https://docs.pytrio.com/docs)
 
-We trained on 2,160 records for two epochs, completing 270 LoRA steps. Training and evaluation cost RMB 14.34 in total, about the price of a McDonald's breakfast. On the same evaluation sets used by Intern-Decision, the five-benchmark average rose from the base model's 76.30 to 83.74. Our model scored above Jev on Typed Decision and ToolACE, and came close on most of the other benchmarks.
+We trained on 2,160 records for two epochs, completing 270 LoRA steps. Training and the two evaluation runs cost RMB 14.34 in total. On the same evaluation sets used by Intern-Decision, the five-benchmark average rose from the base model's 76.30 to 83.74. Our model scored above Jev on Typed Decision and ToolACE, and came close on most of the other benchmarks.
 
 ## 0. What exactly is Jev?
 
-Online discussions can make models like Jev sound mysterious. Their basic idea is quite straightforward: **a classification and decision model with general world knowledge**. Give it a state and a set of questions with fixed options. Its interface asks for a choice and a confidence distribution: "A or B, and how confident are you in each?"
+Jev is a classification and decision model with general world knowledge. Give it a state and a set of questions with fixed options; it does not generate open-ended answers, only the options and their probabilities.
 
-That modest interface is useful. Many business processes already have a small, fixed set of possible outcomes:
+It suits business scenarios where the options are fixed:
 
 - **Intent recognition**: an after-sales request might concern a refund, a return with a refund, or another predefined resolution.
 - **Ticket routing**: send this message to billing, logistics, or technical support.
 - **Risk grading**: allow low-risk cases, review medium-risk cases, and block high-risk cases.
 
-There is real spending behind these tasks. In the OpenRouter "Top models by task" snapshot below, **Classification accounts for 10.4% of platform spending**, the largest individual task within the General category, which accounts for 31.2%:
+In the OpenRouter "Top models by task" snapshot below, **Classification accounts for 10.4% of platform spending**, the largest individual task within the General category, which accounts for 31.2%:
 
 ![OpenRouter Top models by task: Classification accounts for 10.4% of platform spending](./images/openrouter.png)
 
-The models on that list are also interesting. Classification spending is led by expensive models such as Claude Opus 5, GPT-6 Astra, and Gemini 3.1 Pro. Businesses and users are paying for large general-purpose models to make classification decisions. A decision model that costs orders of magnitude less could handle this kind of demand.
+The top of the list includes general-purpose models such as Claude Opus 5, GPT-6 Astra, and Gemini 3.1 Pro. These models can handle classification tasks, but for frequent, fixed judgments, a specially trained decision model is usually cheaper and faster.
 
-These workflows need **a fast, stable decision with useful probabilities**. Having a general-purpose model deliberate at length for every three-way choice puts slow thinking to work on a fast-thinking task. I see a role for both: slow thinking handles open-ended reasoning and planning, while fast thinking handles frequent routing and decisions over enumerable options. Models like Jev fill that fast-thinking role.
-
-How much does it take to build one? This experiment gives a concrete answer: you can train a decision model for your own domain for less than the price of a coffee.
+My view is that general-purpose models should handle reasoning and planning for open-ended problems, while decision models handle frequent, fixed, enumerable routing and judgments; when the model is unsure, the task is handed back to the upstream workflow.
 
 ## 1. Results first
 
@@ -229,8 +227,8 @@ The complete command list is in [`start.md`](https://github.com/datawhalechina/a
 
 ## Summary
 
-The practical work in a Jev-style model is making classification decisions in one forward pass: a shared state, marker placeholders, a restricted softmax, and temperature calibration. This experiment used **2,160 training records and less than USD 2 of training cost**. It reached an average of 83.74 on the same evaluation sets as the official leaderboard, scoring above Jev on two tasks and close on most others, subject to the evaluation differences discussed above.
+This reproduction completes the full training and inference pipeline of shared state, marker placeholders, restricted softmax, and temperature calibration. The five-benchmark average reaches 83.74, with two benchmarks above Jev; the drop in Hard accuracy also shows that training results remain limited by the data distribution.
 
-If your business has decisions with only a few possible options—intent recognition, ticket routing, or risk grading—this is a small experiment you can try with your own data. Open-ended reasoning and planning still need slow thinking; frequent, fixed-option decisions are a useful place to apply a fast-thinking model.
+For fixed-option tasks such as intent recognition, ticket routing, and risk grading, you can first set aside a batch of real test questions, then use a small training run to check whether a decision model fits your business.
 
 If you have a specific dataset and use case, feel free to contact me through Zhihu, Rednote, or email. I can help assess the feasibility and cost of training a Jev-style decision model. Email: violin@pytrio.com

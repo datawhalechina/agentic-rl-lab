@@ -88,7 +88,7 @@ For example, local CV prompts mention Hα and Hβ. The model can inspect the ful
 <answer>\boxed{YES}这里写基于光谱观察得到的解释。</answer>
 ```
 
-The interesting part is that **the model's current judgment determines which image it sees next.**
+The most interesting part of this task is that **the model's current judgment determines which image it sees next.**
 
 ## 2. Interleaved multimodal reasoning: thought alternates with new images
 
@@ -307,19 +307,15 @@ The lower-left `train/assistant_tokens` is **the total token count across the cu
 
 Base makes some correct judgments but has only **0.39%** strict format compliance. After SFT, that reaches **85.94%**. The change shows how full-trajectory demonstrations help this model follow the interaction protocol.
 
-SFT teaches the interleaved structure **reasoning → tool call → image observation → further reasoning → final answer**: specifying valid tool arguments, analyzing new images and ending responses correctly. Together these abilities produce an executable multi-turn trajectory.
+SFT teaches the interleaved structure **reasoning → tool call → image observation → further reasoning → final answer**: how to get the format right, how to continue the analysis after a new image arrives, and how to wrap up at the end — all taught by demonstration trajectories.
 
-With that cold start, GRPO can optimize wavelength selection and classification through final rewards within an interaction process the model already knows.
+Only after the cold start does GRPO have a reliable interaction process to keep training on.
 
 ## 7. What PyTRIO contributes to the research workflow
 
 The original paper trains with **8 NVIDIA H100 GPUs**. [Paper §4.2](https://arxiv.org/html/2601.06498v1#S4.SS2) Obtaining compute, deploying multi-GPU training and connecting training with inference take effort. Here I used PyTRIO to run Qwen3.5-4B LoRA SFT, tool interaction and GRPO, leaving model computation and weight storage to the remote service.
 
-The practical benefits during this experiment were:
-
-- **Starting an idea sooner.** With data and a Python loop ready, computation can be submitted through the API. The local machine renders spectra, organizes messages and computes rewards. The service executes multi-GPU training, so an ordinary CPU machine can drive the experiment. [PyTRIO introduction](https://docs.pytrio.com/docs)
-- **Organizing parallel comparisons.** Different learning rates, rewards or seeds can use separate training jobs with independent LoRA weights and optimizer states, while the service schedules shared compute. Experiments need not be tied to one GPU server. [Multi-job scheduling](https://docs.pytrio.com/docs/clock-cycle)
-- **Keeping attention on research questions.** I mainly worked on interleaved reasoning, image/text inputs, tool observations, rewards and evaluation rules. Changes to those parts still use the same training APIs, checkpoints and SwanLab records.
+I don't own an 8-GPU machine, and I didn't want to spend time setting up a multi-GPU training environment either. PyTRIO bills by token and can be topped up via Alipay, so my ordinary local machine only renders spectra, organizes messages and computes rewards, while training and sampling are submitted to the remote service. This time I mainly worked on interleaved reasoning, image/text inputs, tool observations, rewards and evaluation rules; once that logic changed, the existing training APIs, checkpoints and SwanLab records all carried over. If I later want to compare different learning rates, reward settings or random seeds, I can open a separate training job for each and run them in parallel — the LoRA weights and optimizer states are independent, so nothing is tied to a single GPU server. [PyTRIO introduction](https://docs.pytrio.com/docs) / [Multi-job scheduling](https://docs.pytrio.com/docs/clock-cycle)
 
 The original 4B usage record follows. Its SFT and RL epoch-1 training sessions total **¥699.68**, excluding evaluation and debugging sessions. This amount covers only the two historical training sessions shown, not the new 4B/9B epoch-3 training or evaluation.
 
@@ -335,7 +331,7 @@ The two labeled training sessions are listed below. M means one million tokens:
 
 The original 4B experiment took me **less than one day** from reading the paper to completion.
 
-For me, PyTRIO shortened the path from wanting to try a method to having results to analyze. That makes it easier to run an idea, add controls, inspect failed trajectories and adjust training iteratively.
+This is exactly the rhythm I wanted: get an idea running first, then gradually add controls, inspect failed trajectories and adjust the training plan.
 
 ## 8. Running this experiment
 
