@@ -22,7 +22,7 @@ swanlab login
 uv run --extra alfworld python -c 'from importlib.metadata import version; print("pytrio", version("pytrio")); print("alfworld", version("alfworld")); print("swanlab", version("swanlab"))'
 ```
 
-本文锁定的版本为 PyTRIO `0.2.8`、ALFWorld `0.4.2` 和 SwanLab `0.9.2`。
+本文锁定的版本为 PyTRIO `0.2.8`、ALFWorld `0.4.2` 和 SwanLab `0.10.4`。
 
 ## 2. 下载 ALFWorld 数据
 
