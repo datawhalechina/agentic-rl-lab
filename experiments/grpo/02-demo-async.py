@@ -32,9 +32,9 @@ import torch
 from tqdm import tqdm
 
 trio.configure(
-    actor_event_wait_timeout=600,
-    actor_event_request_timeout=600,
-    timeout=600,
+    request_timeout_seconds=600,
+    actor_event_submit_timeout_seconds=600,
+    actor_event_polling_timeout_seconds=600,
 )
 
 

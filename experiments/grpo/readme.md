@@ -71,13 +71,13 @@ uv sync
 如果你只是想把这个脚本拎到自己的项目里跑，需要的包也不多：
 
 ```bash
-uv add "datasets>=5.0.0" "numpy>=2.5.1" "pytrio>=0.2.0" "swanlab>=0.8.4" "torch>=2.12.1" "tqdm>=4.68.3"
+uv add "datasets>=5.0.0" "numpy>=2.5.1" "pytrio==0.2.9" "swanlab==0.10.4" "torch>=2.9.1" "tqdm>=4.68.3"
 ```
 
 不用 `uv` 的话，也可以直接：
 
 ```bash
-pip install "datasets>=5.0.0" "numpy>=2.5.1" "pytrio>=0.2.0" "swanlab>=0.8.4" "torch>=2.12.1" "tqdm>=4.68.3"
+pip install "datasets>=5.0.0" "numpy>=2.5.1" "pytrio==0.2.9" "swanlab==0.10.4" "torch>=2.9.1" "tqdm>=4.68.3"
 ```
 
 PyTRIO：https://pytrio.cn/

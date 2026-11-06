@@ -34,7 +34,7 @@ from tqdm import tqdm
 
 
 trio.configure(
-    timeout=600,
+    request_timeout_seconds=600,
 )
 
 
