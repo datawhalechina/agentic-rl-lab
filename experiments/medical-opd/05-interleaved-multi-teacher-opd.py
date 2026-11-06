@@ -73,7 +73,7 @@ import swanlab
 from tqdm import tqdm
 
 
-trio.configure(timeout=600)
+trio.configure(request_timeout_seconds=600)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_MEDICAL_DATASET_PATH = (

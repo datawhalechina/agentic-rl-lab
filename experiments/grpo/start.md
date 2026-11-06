@@ -14,7 +14,7 @@ swanlab login
 
 ## 2. 启动训练
 
-当前依赖版本下，直接使用同步入口：
+同步版示例：
 
 ```bash
 uv run python experiments/grpo/01-demo-sync.py \
@@ -26,7 +26,7 @@ uv run python experiments/grpo/01-demo-sync.py \
     --swanlab-mode online
 ```
 
-`02-demo-async.py` 仍包含旧版 PyTRIO 的 timeout 配置，更新该参数前会在启动阶段报错，因此快速指南暂不使用它。
+`02-demo-async.py` 与同步版逻辑相同，只是把 batch 内每道题的 rollout 并发提交出去；它已适配当前 PyTRIO 0.2.9 的配置参数，可以直接运行。
 
 ## 3. 运行评测
 
