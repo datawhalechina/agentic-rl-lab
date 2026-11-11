@@ -4,6 +4,7 @@
 
 | 顺序 / Order | 实验 / Experiment |
 | --- | --- |
+| 00 | [环境配置与基础概念](./getting-started/readme.md) |
 | 01 | [Loss Functions](./loss-functions/readme.md) |
 | 02 | [GRPO](./grpo/readme.md) |
 | 03 | [Vision GRPO](./vision-grpo/readme.md) |
