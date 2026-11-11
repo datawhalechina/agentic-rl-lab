@@ -14,7 +14,7 @@ No separate download command is needed. The first training run downloads the `op
 
 ## 2. Start training
 
-With the current dependencies, use the synchronous entry point:
+Synchronous version example:
 
 ```bash
 uv run python experiments/grpo/01-demo-sync.py \
@@ -26,7 +26,7 @@ uv run python experiments/grpo/01-demo-sync.py \
     --swanlab-mode online
 ```
 
-`02-demo-async.py` still contains a timeout setting from an older PyTRIO version. It fails at startup until that setting is updated, so this quick start uses the synchronous script.
+`02-demo-async.py` has the same logic as the synchronous version, except that it submits the rollouts for each question in a batch concurrently. It already adapts to the current PyTRIO 0.2.9 configuration parameters and can be run directly.
 
 ## 3. Evaluate the run
 

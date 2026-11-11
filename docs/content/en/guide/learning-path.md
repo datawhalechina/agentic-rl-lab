@@ -5,7 +5,7 @@ description: Learn policy losses and GRPO, then explore distillation, search, co
 
 # An Agentic RL learning path
 
-Follow the sequence below or enter through a question you already have. Running one small experiment and changing one variable is often a better way to build intuition than reading every paper at once.
+Follow the sequence below or enter through a question you already have. Running one small experiment and changing one variable is often a better way to build intuition than reading every paper at once. If you are setting up for the first time, start with [Environment setup and core concepts](/en/experiments/getting-started/).
 
 ## 01 · Understand a policy update
 

@@ -7,6 +7,8 @@ description: Install the PyTRIO experiment dependencies, log in to the training 
 
 Your local machine handles data, tools and the experiment loop. PyTRIO executes model sampling and training remotely. You need **Python 3.13 or later**, `uv`, and a PyTRIO account with access to training resources.
 
+For the full registration and login steps, SwanLab mode choices and the core concepts needed for later chapters, see [Environment setup and core concepts](/en/experiments/getting-started/).
+
 For a map of the experiments, read the [PyTRIO tutorials](./pytrio.html). Readers familiar with Tinker can start with the [training workflow comparison](./tinker-pytrio.html).
 
 ## Get the code and install dependencies

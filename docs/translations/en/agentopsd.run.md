@@ -22,7 +22,7 @@ swanlab login
 uv run --extra alfworld python -c 'from importlib.metadata import version; print("pytrio", version("pytrio")); print("alfworld", version("alfworld")); print("swanlab", version("swanlab"))'
 ```
 
-This experiment pins PyTRIO `0.2.8`, ALFWorld `0.4.2` and SwanLab `0.9.2`.
+This experiment pins PyTRIO `0.2.9`, ALFWorld `0.4.2` and SwanLab `0.10.4`.
 
 ## 2. Download ALFWorld data
 

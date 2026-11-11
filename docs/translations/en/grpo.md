@@ -71,13 +71,13 @@ uv sync
 If you simply want to integrate this script into your project and run it, you won't need many additional packages.
 
 ```bash
-uv add "datasets>=5.0.0" "numpy>=2.5.1" "pytrio>=0.2.0" "swanlab>=0.8.4" "torch>=2.12.1" "tqdm>=4.68.3"
+uv add "datasets>=5.0.0" "numpy>=2.5.1" "pytrio==0.2.9" "swanlab==0.10.4" "torch>=2.9.1" "tqdm>=4.68.3"
 ```
 
 Without using `uv`, you can also proceed directly:
 
 ```bash
-pip install "datasets>=5.0.0" "numpy>=2.5.1" "pytrio>=0.2.0" "swanlab>=0.8.4" "torch>=2.12.1" "tqdm>=4.68.3"
+pip install "datasets>=5.0.0" "numpy>=2.5.1" "pytrio==0.2.9" "swanlab==0.10.4" "torch>=2.9.1" "tqdm>=4.68.3"
 ```
 
 PyTRIO：https://pytrio.cn/

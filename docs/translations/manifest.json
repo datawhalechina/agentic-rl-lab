@@ -1,14 +1,14 @@
 {
   "docs/translations/en/loss-functions.md": {
     "source": "experiments/loss-functions/readme.md",
-    "sourceSha256": "cae38b3f57d0eb8672b07f8e3bb69433fc9735118ba48f1c4aad38465ac6c836",
-    "translatedAt": "2026-09-26",
+    "sourceSha256": "c65ae21eb2f5e285ee4ffd7db4fa2066c5c34d825dd921a58b81f8b11ee5c8b0",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/grpo.run.md": {
     "source": "experiments/grpo/start.md",
-    "sourceSha256": "f73280792889113d6c880892462b053c4293b8c40b124083066221b50730924f",
-    "translatedAt": "2026-09-26",
+    "sourceSha256": "418bdb255c8bdd183f09c1a9f50639d66393182cbf5da6630d4fd33a4849ed05",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/medical-opd.run.md": {
@@ -61,8 +61,8 @@
   },
   "docs/translations/en/agentopsd.run.md": {
     "source": "experiments/agentopsd/start.md",
-    "sourceSha256": "5686481312b4c096a7e95f57c130abefd9f18f34e8cc3d5738b4209b87e727c6",
-    "translatedAt": "2026-09-26",
+    "sourceSha256": "9086e1561e827ef846a3b3948405b4e2f902ab9952dbcbb046853691c688bf85",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/spec-o3.run.md": {
@@ -73,14 +73,14 @@
   },
   "docs/translations/en/vision-grpo.md": {
     "source": "experiments/vision-grpo/readme.md",
-    "sourceSha256": "09b58935d178ddd9eed5ad2992ea5d3700da5e844a6722a9dcc7f0b5b1a18850",
-    "translatedAt": "2026-09-26",
+    "sourceSha256": "cc2179a5fec14a6417dbd0dacbb76c51caadff64065a60d7f73b1cdd08a433ba",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/grpo.md": {
     "source": "experiments/grpo/readme.md",
-    "sourceSha256": "2e1b0f16bfd878457b1fd712c99ec135ee76f704d161eb2e3c4d33c11cd48592",
-    "translatedAt": "2026-11-04",
+    "sourceSha256": "fcede2f4a8080338f5f5f2998b25b1373ae7e68762b93e76060d755c9a6d62af",
+    "translatedAt": "2026-11-11",
     "engine": "TranslateGemma 12B with manual technical review; original code and equations preserved"
   },
   "docs/translations/en/gspo.md": {
@@ -91,8 +91,8 @@
   },
   "docs/translations/en/tempo.md": {
     "source": "experiments/tempo/readme.md",
-    "sourceSha256": "35d33e32cd6ae8ca27cc9cc2cc6a28266a58a6ebaf3db83945fd2166376c78a0",
-    "translatedAt": "2026-11-04",
+    "sourceSha256": "1df82bd67eaad51802081eb17f2f0781b09812cc674212a4eaae22473ebec6a5",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/general-opd.md": {
@@ -109,8 +109,8 @@
   },
   "docs/translations/en/agentopsd.md": {
     "source": "experiments/agentopsd/readme.md",
-    "sourceSha256": "7e8d346d87f4ea86266287e8dd71010f223a9470c46d85651043856a0a56ddc8",
-    "translatedAt": "2026-11-04",
+    "sourceSha256": "8dd942f93cbd7508d95953834aaca385359865fac042a107ebf878719ad36a2b",
+    "translatedAt": "2026-11-11",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/dapo.md": {
@@ -171,6 +171,12 @@
     "source": "experiments/tournament-grpo/start.md",
     "sourceSha256": "6dbc59a22417aee362923bc0cf8f171d96e0821caa26b025635e79ede2841db7",
     "translatedAt": "2026-11-02",
+    "engine": "English translation reviewed against source; original code and equations preserved"
+  },
+  "docs/translations/en/getting-started.md": {
+    "source": "experiments/getting-started/readme.md",
+    "sourceSha256": "cd670e66942efc7e22f8fa0bbfae4650a7424b55ab6cf8e38af201f5e638e43a",
+    "translatedAt": "2026-11-11",
     "engine": "English translation reviewed against source; original code and equations preserved"
   }
 }

@@ -7,6 +7,8 @@ description: 安装 PyTRIO 实验依赖、登录训练服务与 SwanLab，并在
 
 本地负责数据处理、工具执行和训练循环，模型采样与训练通过 PyTRIO 远程执行。开始前，需要 Python **3.13 或以上**、`uv`，以及可用的 PyTRIO 账户和训练资源。
 
+注册与登录的完整步骤、SwanLab 的模式选择，以及读懂后续章节所需的基础概念，见[环境配置与基础概念](/experiments/getting-started/)。
+
 想先了解各个实验的用途，可以阅读 [PyTRIO 教程与实战路线](./pytrio.html)；熟悉 Tinker 的读者可以从[训练工作流对照](./tinker-pytrio.html)进入。
 
 ## 获取代码与安装依赖

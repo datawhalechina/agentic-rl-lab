@@ -35,7 +35,7 @@ These variables help explain the differences between Importance Sampling, PPO an
 Importance Sampling asks for the ratio between the current policy's probability and the sampling policy's probability for the same token.
 
 ```math
-\mathcal{L}_{\text{IS}}(\theta) = \mathbb{E}_{x\sim q}\Bigl[\frac{p_\theta(x)}{q(x)}A(x)\Bigr]
+\mathcal{L}_{\text{IS}}(\theta) = -\mathbb{E}_{x\sim q}\Bigl[\frac{p_\theta(x)}{q(x)}A(x)\Bigr]
 ```
 
 In code, the probability ratio is `exp(target_logprobs - sampling_logprobs)`. A minus sign turns the objective into a loss for an optimizer that minimizes:

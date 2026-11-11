@@ -1,5 +1,9 @@
 // Page metadata is kept separate from the original research notes.
 export const metadata = {
+  'getting-started': {
+    seoTitle: '环境配置与基础概念：PyTRIO 与 SwanLab 注册登录、第一次训练',
+    en: { subtitle: 'Environment setup and core concepts', seoTitle: 'Getting Started: Environment Setup, PyTRIO and SwanLab Login, First Training Run', description: 'Set up the uv environment, register and log in to PyTRIO and SwanLab, run your first training, and pick up the core concepts needed for the later chapters.', tags: ['Setup', 'Getting started'] },
+  },
   'tournament-grpo': {
     author: { name: 'MRLE', url: 'https://github.com/mrle0429' },
     seoTitle: 'Tournament-GRPO 原理与复现：研究报告淘汰赛奖励',
@@ -81,6 +85,7 @@ export const metadata = {
 }
 
 export const englishGroups = {
+  start: { label: 'Before you start', note: 'Set up the environment and run your first training' },
   foundations: { label: 'Foundations & optimization', note: 'Understand a policy update' },
   distillation: { label: 'Distillation & self-learning', note: 'Turn feedback into a learning signal' },
   agents: { label: 'Tools & environments', note: 'Let a model interact with the world' },

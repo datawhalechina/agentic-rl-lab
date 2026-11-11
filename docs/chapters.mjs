@@ -1,6 +1,7 @@
 import { metadata, englishGroups } from './metadata.mjs'
 // The only chapter registry. Article bodies remain in their original directories.
 export const groups = [
+  { id: 'start', label: '开始之前', note: '装好环境，跑通第一次训练', number: '00' },
   { id: 'foundations', label: '基础与优化', note: '理解一次策略更新', number: '01' },
   { id: 'distillation', label: '蒸馏与自学习', note: '把反馈变成学习信号', number: '02' },
   { id: 'agents', label: '工具与环境', note: '让模型走进交互环境', number: '03' },
@@ -8,6 +9,7 @@ export const groups = [
 ]
 
 export const chapters = [
+  { id: 'getting-started', number: '00', title: 'Getting Started', subtitle: '环境配置与基础概念', group: 'start', source: 'experiments/getting-started/readme.md', description: '装好 uv 环境，注册并登录 PyTRIO 与 SwanLab，跑通第一次训练，补齐读懂后续章节所需的基础概念。', tags: ['环境配置', '入门'] },
   { id: 'loss-functions', number: '01', title: 'Loss Functions', subtitle: '从直觉理解强化学习损失', group: 'foundations', source: 'experiments/loss-functions/readme.md', description: '从 importance sampling 到 PPO、CISPO，看清每一次策略更新到底在优化什么。', tags: ['入门', '目标函数'] },
   { id: 'grpo', number: '02', title: 'GRPO', subtitle: '从组内比较开始', group: 'foundations', source: 'experiments/grpo/readme.md', start: 'experiments/grpo/start.md', description: '在 GSM8K 上走通采样、奖励与更新，亲手比较三种 loss 的训练行为。', tags: ['GSM8K', '组相对优势'] },
   { id: 'vision-grpo', number: '03', title: 'Vision GRPO', subtitle: '让强化学习看见图片', group: 'frontiers', source: 'experiments/vision-grpo/readme.md', start: 'experiments/vision-grpo/start.md', description: '在 GeoQA 上接入图像输入，把图文推理与可验证奖励串起来。', tags: ['视觉语言模型', 'GeoQA'] },
