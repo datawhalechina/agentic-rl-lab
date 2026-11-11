@@ -48,7 +48,7 @@ from skills import (
 from teacher import TeacherBatchStats, score_trajectories_async
 
 
-trio.configure(timeout=1800)
+trio.configure(request_timeout_seconds=1800)
 
 PPO_EPOCHS = 1
 

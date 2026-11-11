@@ -56,6 +56,7 @@
 
 | 主题 | 内容 | 在线版 |
 | --- | --- | --- |
+| [环境配置与基础概念](./experiments/getting-started/readme.md) | 从零开始：装依赖、注册 PyTRIO 与 SwanLab、跑通第一次训练 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/getting-started/) |
 | [Loss Function](./experiments/loss-functions/readme.md) | 用直觉解释 `importance_sampling`、`ppo`、`cispo` 分别在优化什么 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/loss-functions/) |
 | [GRPO](./experiments/grpo/readme.md) | 复现 GSM8K 上的 GRPO，并比较 `importance_sampling` / `ppo` / `cispo` 三个 loss | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/grpo/) |
 | [Vision GRPO](./experiments/vision-grpo/readme.md) | 在 GeoQA 上接入图片输入，解决几何数学题 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/vision-grpo/) |
@@ -74,6 +75,8 @@
 | [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | 让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tournament-grpo/) |
 
 ## 快速启动
+
+&emsp;&emsp;第一次接触本项目，建议先读 [环境配置与基础概念](./experiments/getting-started/readme.md)：注册账号、登录、跑通第一次训练按顺序走一遍，全程不需要 GPU。
 
 &emsp;&emsp;如果是直接 clone 这个仓库：
 
@@ -106,7 +109,7 @@ uv add \
   "openai>=2.44.0" \
   "python-dotenv>=1.2.2" \
   "pytrio==0.2.9" \
-  "swanlab==0.9.2" \
+  "swanlab==0.10.4" \
   "torch>=2.9.1" \
   "torchvision>=0.27.1" \
   "tqdm>=4.68.3"

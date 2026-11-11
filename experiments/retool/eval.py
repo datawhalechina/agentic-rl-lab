@@ -39,7 +39,7 @@ from rollout import RolloutConfig, rollout_batch_async
 from sandbox import LocalPythonSandbox
 
 
-trio.configure(sampling_timeout=18000,)  # 5 小时，足够多轮评测 30 道题
+trio.configure(sampling_timeout_seconds=18000,)  # 5 小时，足够多轮评测 30 道题
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DATASET_PATH = SCRIPT_DIR.parent / "opsd" / "datasets" / "aime_2025"

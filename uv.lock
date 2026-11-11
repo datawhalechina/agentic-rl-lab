@@ -1,12 +1,12 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.13"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'linux'",
-    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version >= '3.14' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
     "python_full_version >= '3.14' and sys_platform != 'emscripten' and sys_platform != 'linux' and sys_platform != 'win32'",
+    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version < '3.14' and sys_platform == 'win32'",
     "python_full_version < '3.14' and sys_platform == 'emscripten'",
     "python_full_version < '3.14' and sys_platform != 'emscripten' and sys_platform != 'linux' and sys_platform != 'win32'",
@@ -53,7 +53,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "pytrio", specifier = "==0.2.9" },
     { name = "spacy", marker = "extra == 'alfworld'", specifier = "==3.8.13" },
-    { name = "swanlab", specifier = "==0.9.2" },
+    { name = "swanlab", specifier = "==0.10.4" },
     { name = "torch", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cpu" },
     { name = "torchvision", specifier = ">=0.27.1", index = "https://download.pytorch.org/whl/cpu" },
     { name = "tqdm", specifier = ">=4.68.3" },
@@ -1844,6 +1844,108 @@ wheels = [
 ]
 
 [[package]]
+name = "pyroaring"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.14' and sys_platform == 'linux'",
+    "python_full_version < '3.14' and sys_platform == 'win32'",
+    "python_full_version < '3.14' and sys_platform == 'emscripten'",
+    "python_full_version < '3.14' and sys_platform != 'emscripten' and sys_platform != 'linux' and sys_platform != 'win32'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0f/e4/975f0fa77fc3590820b4a3ac49704644b389795409bc12eb91729f845812/pyroaring-1.0.3.tar.gz", hash = "sha256:cd7392d1c010c9e41c11c62cd0610c8852e7e9698b1f7f6c2fcdefe50e7ef6da", size = 188688, upload-time = "2025-10-09T09:08:22.448Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/95/97142ee32587ddda9e2cd614b865eeb5c0ee91006a51928f4074cd6e8e5f/pyroaring-1.0.3-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:20bc947054b197d1baa76cd05d70b8e04f95b82e698266e2f8f2f4b36d764477", size = 678813, upload-time = "2025-10-09T09:07:29.936Z" },
+    { url = "https://files.pythonhosted.org/packages/70/5e/cff22be3a76a80024bdf00a9decdffedc6e80f037328a58b58c1b521442d/pyroaring-1.0.3-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:ba5909b4c66bb85cab345e2f3a87e5ce671509c94b8c9823d8db64e107cbe854", size = 373661, upload-time = "2025-10-09T09:07:30.983Z" },
+    { url = "https://files.pythonhosted.org/packages/86/73/fc406a67cd49e1707d1c3d08214458959dd579eff88c28587b356dfa068b/pyroaring-1.0.3-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:b744746ba5da27fad760067f12633f5d384db6a1e65648d00244ceacbbd87731", size = 313559, upload-time = "2025-10-09T09:07:32.099Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/64/c7fe510523445f27e2cb04de6ffd3137f9d72db438b62db2bfa3dafcf4fc/pyroaring-1.0.3-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5b16c2a2791a5a09c4b59c0e1069ac1c877d0df25cae3155579c7eac8844676e", size = 1875926, upload-time = "2025-10-09T09:07:33.701Z" },
+    { url = "https://files.pythonhosted.org/packages/47/74/da9b8ad2ca9ce6af1377f2cffdad6582a51a5f5df4f26df5c41810c9de5b/pyroaring-1.0.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e7f68dfcf8d01177267f4bc06c4960fe8e39577470d1b52c9af8b61a72ca8767", size = 2064377, upload-time = "2025-10-09T09:07:35.273Z" },
+    { url = "https://files.pythonhosted.org/packages/99/e3/8a70c5a5f7821c63709e2769aeccda8ae87a192198374bc475cbee543a22/pyroaring-1.0.3-cp313-cp313-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:dba4e4700030182a981a3c887aa73887697145fc9ffb192f908aa59b718fbbdd", size = 1778320, upload-time = "2025-10-09T09:07:36.782Z" },
+    { url = "https://files.pythonhosted.org/packages/04/4c/08159a07c3723a2775064887543766b6115b4975e7baaa4d51e5580701a4/pyroaring-1.0.3-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e26dd1dc1edba02288902914bdb559e53e346e9155defa43c31fcab831b55342", size = 1786569, upload-time = "2025-10-09T09:07:38.473Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/ff/55a18d0e7e0dc4cd9f43988b746e788234a8d660fa17367c5ed9fa799348/pyroaring-1.0.3-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:6eb98d2cacfc6d51c6a69893f04075e07b3df761eac71ba162c43b9b4c4452ad", size = 2852766, upload-time = "2025-10-09T09:07:39.633Z" },
+    { url = "https://files.pythonhosted.org/packages/24/3c/419e25c51843dd40975ae37d67dea4f2f256554b5bec32237f607ec8ef21/pyroaring-1.0.3-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:a967e9eddb9485cbdd95d6371e3dada67880844d836c0283d3b11efe9225d1b7", size = 2683904, upload-time = "2025-10-09T09:07:41.139Z" },
+    { url = "https://files.pythonhosted.org/packages/75/64/8d91f1b85b42925af632fc2c1047bb314be622dce890a4181a0a8d6e498d/pyroaring-1.0.3-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:b12ef7f992ba7be865f91c7c098fd8ac6c413563aaa14d5b1e2bcb8cb43a4614", size = 2973884, upload-time = "2025-10-09T09:07:42.34Z" },
+    { url = "https://files.pythonhosted.org/packages/61/6d/c867625549df0dc9ad675424ecf989fa2f08f0571bd46dfc4f7218737dd2/pyroaring-1.0.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:82ca5be174b85c40be7b00bc6bf39b2931a1b4a465f3af17ec6b9c48e9aa6fe0", size = 3103671, upload-time = "2025-10-09T09:07:44.055Z" },
+    { url = "https://files.pythonhosted.org/packages/59/b1/d47c5ec2b2580d0b94f42575be8f49907a0f4aa396fdc18660f3b5060d54/pyroaring-1.0.3-cp313-cp313-win32.whl", hash = "sha256:f758c681e63ffe74b20423695e71f0410920f41b075cee679ffb5bc2bf38440b", size = 205153, upload-time = "2025-10-09T09:07:45.496Z" },
+    { url = "https://files.pythonhosted.org/packages/c4/92/3600486936eebab747ae1462d231d7f87d234da24a04e82e1915c00f4427/pyroaring-1.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:428c3bb384fe4c483feb5cf7aa3aef1621fb0a5c4f3d391da67b2c4a43f08a10", size = 260349, upload-time = "2025-10-09T09:07:46.524Z" },
+    { url = "https://files.pythonhosted.org/packages/77/96/8dde074f1ad2a1c3d2091b22de80d1b3007824e649e06eeeebded83f4d48/pyroaring-1.0.3-cp313-cp313-win_arm64.whl", hash = "sha256:9c0c856e8aa5606e8aed5f30201286e404fdc9093f81fefe82d2e79e67472bb2", size = 218775, upload-time = "2025-10-09T09:07:47.558Z" },
+]
+
+[[package]]
+name = "pyroaring"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and sys_platform == 'linux'",
+    "python_full_version >= '3.14' and sys_platform == 'win32'",
+    "python_full_version >= '3.14' and sys_platform == 'emscripten'",
+    "python_full_version >= '3.14' and sys_platform != 'emscripten' and sys_platform != 'linux' and sys_platform != 'win32'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/a8/eb0d010cc5e99285398d8a793b68995fdf3a28201e380a9d7ac99f11dcfd/pyroaring-1.2.0.tar.gz", hash = "sha256:e33bf8fc8d8aad7373f62147cb5dbfaf0fdcf19af8069d034cd8ef4fb41a78af", size = 222349, upload-time = "2026-10-03T12:00:25.449Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/35/5cead434a8b6a672b15e42a4edba23f80f425cd480c41c7d18c3e0ab27ef/pyroaring-1.2.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:5e7cfb52f58e5ea1bd3bf577bff0094708f214e7848af26465bb5d23f1d5df90", size = 368224, upload-time = "2026-10-02T23:13:10.338Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/24/5a058f9c4ff2291aa0a75d976731affae950f4b2520cfb71125c7d30e56c/pyroaring-1.2.0-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:1298e81a689d9fd2c8fe669f463512b53d28b4ba78b06c434b0e655373d3fe88", size = 779048, upload-time = "2026-10-02T23:13:11.541Z" },
+    { url = "https://files.pythonhosted.org/packages/98/eb/8bf982b05f6474d1c0786d8475d6fdce90b308466da2ca39d866f17ca043/pyroaring-1.2.0-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:383ed2e8cb9e55836923a1b9d6f70b339c1af6542d0e1a0c43fe7acafd71b0e4", size = 416948, upload-time = "2026-10-02T23:13:12.801Z" },
+    { url = "https://files.pythonhosted.org/packages/42/68/0a04a9af792246c80798fc62a9c1cd33aa239d98678a81c723a156f21b9d/pyroaring-1.2.0-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0979b59a2749cd7a62995f081200e6e344641b3b16151ccb3c12cc81606b51af", size = 2170077, upload-time = "2026-10-02T23:13:14.205Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/ba/ec926be84b4510a02988a3a555421275bca08bab8956a0ee6c4248e2b051/pyroaring-1.2.0-cp313-cp313-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:78b07066b21465bad0e2ae2aba28bdf2295c762cd727bd7c831aa8c87ad773d6", size = 2033735, upload-time = "2026-10-02T23:13:15.743Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/0f/92f936855b76d36325b69483df5d0ba75c6567998d68c680a6dcfe2d0ba1/pyroaring-1.2.0-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5ff886577d57aaf5f46ffdd071e534e4462edc8358e84904a2934548371e6aff", size = 2394183, upload-time = "2026-10-02T23:13:17.275Z" },
+    { url = "https://files.pythonhosted.org/packages/91/4c/690e200f45e35396eb5655ee0610f93b468baec8f1385aafcb0796d5379b/pyroaring-1.2.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:93ea7b09f8ebc3e853e9904c0cbf4ed2f671faa1b5b2a9a555745ea325b0a7f2", size = 3073578, upload-time = "2026-10-02T23:13:19.167Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/7d/e2b024c7cc50774db12709d6cbeb076643bfb04c34e60b45ed79b985e645/pyroaring-1.2.0-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:af35f53b38f8a7c3e0a35fa1765237949a3b6ed10b308b1d23e0a639b46ec3d9", size = 2929641, upload-time = "2026-10-02T23:13:20.759Z" },
+    { url = "https://files.pythonhosted.org/packages/38/25/6d6be0639c1e6dbba20e6a553bafacc8101bb5b5e2c9c6943e6ab233790f/pyroaring-1.2.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:eba04f9e99ff0a3a3de7668542f849b3e8b57cf7876f05174a9d6025c0ee3586", size = 3339828, upload-time = "2026-10-02T23:13:22.53Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/09/4a36edb6ce3b00bf4429671b02f1d43c556503b43d956ff91ce155b04939/pyroaring-1.2.0-cp313-cp313-win32.whl", hash = "sha256:2d3b415b6f105cf66494b3eb00bf60adb68b1af6333d397ef40a7203c61d84ae", size = 222207, upload-time = "2026-10-02T23:13:24.367Z" },
+    { url = "https://files.pythonhosted.org/packages/00/5b/eca198682c6fc220642a6411bc798435035b48b7e0f9a2f5957c2238df8c/pyroaring-1.2.0-cp313-cp313-win_amd64.whl", hash = "sha256:24f5a703734a569c6482b82436565ee58fea82f25ab18affbfc1b10b4d1a95e6", size = 289654, upload-time = "2026-10-02T23:13:25.636Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/b0/48e4b3120a56530afd8d8a0b4401d4b750f76dc5bdcd25f4173fa8df23ab/pyroaring-1.2.0-cp313-cp313-win_arm64.whl", hash = "sha256:3009e15a3146f57c2438b2142cfcdf863ab8c55e9eb029683a50b3d480ce25a2", size = 242654, upload-time = "2026-10-02T23:13:26.858Z" },
+    { url = "https://files.pythonhosted.org/packages/8e/35/398c0cfe150a20b3fe586fba7495b5b688e4a0ffa80754a3d63e6cbf77a8/pyroaring-1.2.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:991d2b2da6bab0c51df9178dabc69a7598add806b1dd0eda8ba51d0930b539e2", size = 369570, upload-time = "2026-10-02T23:13:28.141Z" },
+    { url = "https://files.pythonhosted.org/packages/60/17/12989ba0ed9112cb59ab87ca15388d97d267f158aba9809ba6f2ef5aeaea/pyroaring-1.2.0-cp314-cp314-macosx_11_0_universal2.whl", hash = "sha256:f74b6d1eb724187506dd7a8b0a15226c370cb5cb1ed77738b70757e6930732c0", size = 781205, upload-time = "2026-10-02T23:13:29.454Z" },
+    { url = "https://files.pythonhosted.org/packages/65/fd/c2b808fce8cc35984cc8cf2a2983ae7151365dbe9e968ce921084ab6cff6/pyroaring-1.2.0-cp314-cp314-macosx_11_0_x86_64.whl", hash = "sha256:0d7707c327eddef26dc5c179b891715d92192c8e17cf520496504f15dd8d8cc3", size = 418091, upload-time = "2026-10-02T23:13:30.802Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/03/4305ec90d9705762d6b134692c4c1c12a040e1fd54659f7f767dd0f6612b/pyroaring-1.2.0-cp314-cp314-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:d3f310f92545c38866fabaa3d348c4c551e01c8dba8dbb13f34c4feee12175e5", size = 2165442, upload-time = "2026-10-02T23:13:32.175Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/fa/d13cbbffdb0282214de02c9c9a2ac2f89c9a73c811f8443fa1690f4c9b6f/pyroaring-1.2.0-cp314-cp314-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:fcb04d8d87ea9935f6ca1471e110c376f9b366a696d6109dc1a76653bef6034d", size = 2025701, upload-time = "2026-10-02T23:13:34.01Z" },
+    { url = "https://files.pythonhosted.org/packages/28/c5/ae473aea4f742d99265d59a0673314ebf00e874042d3c7addaa1fcb18ccb/pyroaring-1.2.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:250277f2a1f85ed9745c6b0dd4016190728ee8b20c1a8d3396be55dbea9366b6", size = 2380087, upload-time = "2026-10-02T23:13:35.408Z" },
+    { url = "https://files.pythonhosted.org/packages/91/ef/569de50e9f3d83947042e838c3968e2fa3cf997da16ea6c5135d250147b2/pyroaring-1.2.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:f98235a883eb180dc97bd44096636afe143c7b8a3ad4cb95f01e84dcb8624a49", size = 3067636, upload-time = "2026-10-02T23:13:37.128Z" },
+    { url = "https://files.pythonhosted.org/packages/13/42/ca18b0b4af331edf14ab3bdfbf82971d11156548d8c99bc6aa2cfd445b12/pyroaring-1.2.0-cp314-cp314-musllinux_1_2_armv7l.whl", hash = "sha256:894adefaccd506d043818ea18353d933aa032d83f55b2523353e2a687cd491e9", size = 2914106, upload-time = "2026-10-02T23:13:38.775Z" },
+    { url = "https://files.pythonhosted.org/packages/af/88/a79458f1e5db2059cf61a67661335cfdf31bcb09e1732130d34ece3e8418/pyroaring-1.2.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:88b6dab1079ab2ed89ef27621fc6a351aa9c90f4587d913cd27bebd398c4940b", size = 3325531, upload-time = "2026-10-02T23:13:40.399Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/b2/9d3346437a2d139512dae999f701d0c98b7e39e8841a5cf88ab95ae3b43b/pyroaring-1.2.0-cp314-cp314-win32.whl", hash = "sha256:2a17ddae90f05b395bda01c2ffdb2b694d5b0a33ad5343722f9ce208e5d101bf", size = 228243, upload-time = "2026-10-02T23:13:41.883Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/aa/6bcc4d4ae65c74693009270201fa24fda288c45101496511fe4edc5501a2/pyroaring-1.2.0-cp314-cp314-win_amd64.whl", hash = "sha256:37f4e7f17ec6055908d9cc02b65082217a12ea4d461fc5bc0c52d027d717ecfb", size = 298247, upload-time = "2026-10-02T23:13:43.275Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/87/7de8319d173abde1a12115a73a6ecacd4b85259276ff3aaa618128f7867b/pyroaring-1.2.0-cp314-cp314-win_arm64.whl", hash = "sha256:cf83339a2029b41480ed4c950228a50e21c017e46e95d324c7ad1088f02b6f05", size = 250702, upload-time = "2026-10-02T23:13:44.499Z" },
+    { url = "https://files.pythonhosted.org/packages/18/d2/854ed99f728e4c2c29668c6f1bdb11c4cbd084afc13a2ec342883ad550a9/pyroaring-1.2.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:45447e98893db59671e008cafaebef705a3964f6d56a70f1737264cc4cff8b1b", size = 379683, upload-time = "2026-10-02T23:13:45.747Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/75/37b4c0862cd93db07fcf794206f3a0f4ec7866d07b348b1323e060fab11a/pyroaring-1.2.0-cp314-cp314t-macosx_11_0_universal2.whl", hash = "sha256:a67f6c9448a75fc83980bf99f74ececbe3b6537d7662700c2d22404e5b3efbea", size = 797645, upload-time = "2026-10-02T23:13:47.109Z" },
+    { url = "https://files.pythonhosted.org/packages/27/37/c23072769bcf9d6032879f64e5807f577e9daf90fac751a00c6cf139b4a3/pyroaring-1.2.0-cp314-cp314t-macosx_11_0_x86_64.whl", hash = "sha256:229b7875494ab4d5a4c1c5e36caede1eb5cb8afcc2ce9a6ab7d76f80618d5c77", size = 425331, upload-time = "2026-10-02T23:13:48.383Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/15/16f22a6e2284222d81d21be867fdd4610f25b1178c62f485980c3c66ab58/pyroaring-1.2.0-cp314-cp314t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:cd2b5d30081cd37e920576c8dfba8fece9253e4ab7b932a8a328b8b1e55fa8f2", size = 2217114, upload-time = "2026-10-02T23:13:49.787Z" },
+    { url = "https://files.pythonhosted.org/packages/3f/92/55acd5cf71eb1e2c774f331efdcb16cc009432b61d1cbf475a17fddcecf3/pyroaring-1.2.0-cp314-cp314t-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:45a2a6da3d6605fa7d088f70a6f12e9d634bb844e1a0367cef38937086168013", size = 2022046, upload-time = "2026-10-02T23:13:51.272Z" },
+    { url = "https://files.pythonhosted.org/packages/80/ef/f399f8b3ed8c8e511a7b4acc6559c49ab7f50b04dd09afd218dedb71242b/pyroaring-1.2.0-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bf15bae4be08ced3e7141a644cf09000658258cf3919451de490e94a44589548", size = 2405357, upload-time = "2026-10-02T23:13:53.148Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/fc/25bd605337e05bfe24282bd6ff0c11e004bbcfe9dca42a621bb2e6da6a1f/pyroaring-1.2.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:188ab14a841cb787fabfd98d8c0cad1e5e0a69e0cca1867098282a2f2492ad16", size = 3108010, upload-time = "2026-10-02T23:13:55.01Z" },
+    { url = "https://files.pythonhosted.org/packages/48/56/0e5139080de882636b42b7ead8c39241353fd18bd184ab877cb95d41832d/pyroaring-1.2.0-cp314-cp314t-musllinux_1_2_armv7l.whl", hash = "sha256:060a11e87a27b9aaf0e8d88455e71e49af2e8a133803f90235224b01b957b4cc", size = 2906786, upload-time = "2026-10-02T23:13:56.903Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/58/80fe03d669a2f96a672068f8f99a5e05c5ca6cfd0ca9048e44e4744d9333/pyroaring-1.2.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:3ab28755e2e81d72429787c5ad9489477ba780dafc2a9384adfb8b57160def55", size = 3352952, upload-time = "2026-10-02T23:13:58.495Z" },
+    { url = "https://files.pythonhosted.org/packages/55/53/cdd00fceb107481ab816a938905a5ef5b3cf98ead590db97c5c530b1ece4/pyroaring-1.2.0-cp314-cp314t-win32.whl", hash = "sha256:2ab47d7743d0bf611281338947fb85304a8c73ba7f78159d6591c4154a81a85a", size = 239870, upload-time = "2026-10-02T23:13:59.878Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/a5/6baf003f72c04985eaf37d3e213f537533b0768a655715c0578e9e058a8e/pyroaring-1.2.0-cp314-cp314t-win_amd64.whl", hash = "sha256:d0cb2d7269071f459df994765d54595dae131a7a44966732b0d7cf703b9f511e", size = 311922, upload-time = "2026-10-02T23:14:01.725Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/0a/15c75789ed9bb7a9fcb9f531639c4d05a48dc8812ad3431149308de071bb/pyroaring-1.2.0-cp314-cp314t-win_arm64.whl", hash = "sha256:18dced8d2e917c2385a1ed2ca1ee1281ec787b0f0827011ec28544920c99e23c", size = 264192, upload-time = "2026-10-02T23:14:02.975Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/2a/4147ace48717dca614780a9acece71a8c9781b458830b0aeccbf3603b51c/pyroaring-1.2.0-cp315-cp315-macosx_11_0_arm64.whl", hash = "sha256:2c34ab7815c24910aa8e770c63a10be4dc3350825b8c1f4af6058a1ed6bd47f4", size = 369466, upload-time = "2026-10-02T23:14:04.271Z" },
+    { url = "https://files.pythonhosted.org/packages/73/17/c31754c31590431a9d6e3a7eeec9cda5757ffc565162c955c05f7261f619/pyroaring-1.2.0-cp315-cp315-macosx_11_0_universal2.whl", hash = "sha256:7fd5333448d8aa2e0ec3b89c410c52611e965fa7a9573f58991db90e93ee4163", size = 780384, upload-time = "2026-10-02T23:14:05.683Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/db/bd2691c95def0ce6363485586544d4dfe0a0e38f1072b7b591f95c905643/pyroaring-1.2.0-cp315-cp315-macosx_11_0_x86_64.whl", hash = "sha256:c3fbb184bff6906e6fcfa81ca7fc28f50015f09e4684c7ca4e8edf535f7d7548", size = 417238, upload-time = "2026-10-02T23:14:07.111Z" },
+    { url = "https://files.pythonhosted.org/packages/db/6e/f1ea4c03c5a47b053a5ff7b2c7f688592fae00ef527dbd48bcf764f36244/pyroaring-1.2.0-cp315-cp315-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:6fd37e994a50b23118eea5803212644d6bd441c8f3568cb96e096539cc01bf51", size = 2167961, upload-time = "2026-10-02T23:14:08.633Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/ff/f0b6b9ca064ec281654c604b2723686d5ded90c62e2c5075fa39fed95cb2/pyroaring-1.2.0-cp315-cp315-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:2d10b306ff4338fa700040f090aad5181847dccb4647f78d75cedadc0fa07261", size = 2043488, upload-time = "2026-10-02T23:14:10.328Z" },
+    { url = "https://files.pythonhosted.org/packages/64/6b/965cd228525f435a9a4892b01e4735cdd02937630d471f56099c3a869f4b/pyroaring-1.2.0-cp315-cp315-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:08b12268c9c35aa0c7bf9b42f9d41693bc2654a355b78e522b3200f6981cb597", size = 2388072, upload-time = "2026-10-02T23:14:12.605Z" },
+    { url = "https://files.pythonhosted.org/packages/36/08/431df231af15a66ae9283bcf7c60cd5e3f2e8e6a68ed318f4e21263ddd43/pyroaring-1.2.0-cp315-cp315-musllinux_1_2_aarch64.whl", hash = "sha256:67c3e82fdc77e6c519a8285b6c1c504445d489ea43bef40e732f0da3b59d957b", size = 3073229, upload-time = "2026-10-02T23:14:14.126Z" },
+    { url = "https://files.pythonhosted.org/packages/27/90/5b436c33ff351ddb70dff2fd1994330ed2d39ce00bd51604d3ab25b940e4/pyroaring-1.2.0-cp315-cp315-musllinux_1_2_armv7l.whl", hash = "sha256:48623cb6aebb8494df897454142eacb079a1514873403ea0f6db764e8350ed57", size = 2915361, upload-time = "2026-10-02T23:14:16.13Z" },
+    { url = "https://files.pythonhosted.org/packages/25/cd/2a35580b9f10bf550aea9548ab90d52499d75c172aac5b2a1956c1c1df0e/pyroaring-1.2.0-cp315-cp315-musllinux_1_2_x86_64.whl", hash = "sha256:a4d94daff62d6d2b088710404f23dec5badc518982de83ab2b0b9dea86c1ba11", size = 3339070, upload-time = "2026-10-02T23:14:17.865Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/62/15746ff565aab0f2b1e218868cca6d6ba6c9a090e41f85c31f06f81ad487/pyroaring-1.2.0-cp315-cp315-win32.whl", hash = "sha256:6eeaa4aa97aad53a9aa11f5af2fad824195e1187e4672e9e8a13e7e3a0b8e1e6", size = 228067, upload-time = "2026-10-02T23:14:19.223Z" },
+    { url = "https://files.pythonhosted.org/packages/79/68/f3cbd09b666b49a9c4756d9ce53ec6d97f875e2cd99b512a71675bd3acdc/pyroaring-1.2.0-cp315-cp315-win_amd64.whl", hash = "sha256:3126d9e5590c3978ac6b831802a2012302a5ed816bd8f968fc3c6b9ea6da03e1", size = 298341, upload-time = "2026-10-02T23:14:20.63Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/69/a40c6c7300af1a90ae4199225aa5303f0e88e8592ed8874afd2b13305ac9/pyroaring-1.2.0-cp315-cp315-win_arm64.whl", hash = "sha256:3440aced4c4fcbe9e649d124c6258c9e17a3432ac1a4c750a78e88a38f6e15f2", size = 250707, upload-time = "2026-10-02T23:14:21.962Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/8f/0dc48fccb63489e0cded9257593689d6eca91f4fd41f3e9841336af4c0c1/pyroaring-1.2.0-cp315-cp315t-macosx_11_0_arm64.whl", hash = "sha256:0a0aa9197a8783b630b430ce04dc671fd68ecec22648857e1ded128b275e6e49", size = 379036, upload-time = "2026-10-02T23:14:23.291Z" },
+    { url = "https://files.pythonhosted.org/packages/1b/8a/f06c24357490434a33dfe50c27f20de660ec9d0a214d4b1105145ebe6c60/pyroaring-1.2.0-cp315-cp315t-macosx_11_0_universal2.whl", hash = "sha256:c524f1304d16ab43eec4ebe2047cc41ebd2962f3512355001d9758dc1db03671", size = 796722, upload-time = "2026-10-02T23:14:24.807Z" },
+    { url = "https://files.pythonhosted.org/packages/26/a6/b9a6903d696f1e6230be928474d95641dc7dd7066765b1c528cad37c45c5/pyroaring-1.2.0-cp315-cp315t-macosx_11_0_x86_64.whl", hash = "sha256:20f1cd2079b7567826594e8fb614d3a40560af6f58c30aa85baa404ca0dd8903", size = 424905, upload-time = "2026-10-02T23:14:26.583Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/2f/205c677218831b45863a5a254d0b1edde4d5325bca1b6a184073f6072ae0/pyroaring-1.2.0-cp315-cp315t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1652cd6d08fe966e4819ca38f22a3b5b733f86b2ba3855ccf7dabde9fb18f62f", size = 2216222, upload-time = "2026-10-02T23:14:28.078Z" },
+    { url = "https://files.pythonhosted.org/packages/87/c0/1ce14d5dabf1f056898acdccb11b0a5d016a64e433e9b908cdb30223f486/pyroaring-1.2.0-cp315-cp315t-manylinux_2_24_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:abd3962b6ba5063eeb971098cbe95ea64c9ca34faf699dbb68cb204ffcd8551f", size = 2031275, upload-time = "2026-10-02T23:14:30.261Z" },
+    { url = "https://files.pythonhosted.org/packages/92/26/b7f2eb53e3a9b3c64dde61285916f06b1db5b39256c94823b4e7227e2a58/pyroaring-1.2.0-cp315-cp315t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:73b93870d9815c003596aa53e535723e7388cd8cca01fb3264c8214f25b8a611", size = 2415985, upload-time = "2026-10-02T23:14:32.737Z" },
+    { url = "https://files.pythonhosted.org/packages/01/a3/107faa20c1794e1b77cd7ffd946d2689448e041fa1de9e5640433a20c44b/pyroaring-1.2.0-cp315-cp315t-musllinux_1_2_aarch64.whl", hash = "sha256:0832d0b680461aee0e29e5525dfb9612f8b1fd92e6179ae2d13f4235177d3e89", size = 3105827, upload-time = "2026-10-02T23:14:34.412Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/e5/796260a31b5125af3b832223da7a31fad4a86787ff2cb5fe90699dff5cea/pyroaring-1.2.0-cp315-cp315t-musllinux_1_2_armv7l.whl", hash = "sha256:7bd07c8237abccce046f13fbd2fac33835a71b14cb46bab7dd8b73b1b131ad7a", size = 2913746, upload-time = "2026-10-02T23:14:36.191Z" },
+    { url = "https://files.pythonhosted.org/packages/1f/92/25d4941545ab9bb719657779e1830f0ea6e41e6d3789c916860dfa4fb620/pyroaring-1.2.0-cp315-cp315t-musllinux_1_2_x86_64.whl", hash = "sha256:69ea3963fb2bd2e067f274ddc7c89c211f99e730668bde6659bc80502d5e9e80", size = 3365078, upload-time = "2026-10-02T23:14:37.892Z" },
+    { url = "https://files.pythonhosted.org/packages/90/47/091d9b7122c06d044ac7b403768a8bee74cb67e79fb2078230c162b21f3a/pyroaring-1.2.0-cp315-cp315t-win32.whl", hash = "sha256:ca9f1e0ac8f895eb1e0853d402f4fe49f9f4778321dcc2c9bed8833f418ef411", size = 238912, upload-time = "2026-10-02T23:14:39.667Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/8e/d038e43c68ad871f14014e853ea26fd89f74de56adb32248dde6df8c01e1/pyroaring-1.2.0-cp315-cp315t-win_amd64.whl", hash = "sha256:2f940c8aeebbb5c5c0dba828159f6c9d3da870f771f099cb67a60f1adf4bf11c", size = 310716, upload-time = "2026-10-02T23:14:41.246Z" },
+    { url = "https://files.pythonhosted.org/packages/81/48/aff0a85aa77fc8c99181342e7aa4bb97e9864aca153d4ef67113553da572/pyroaring-1.2.0-cp315-cp315t-win_arm64.whl", hash = "sha256:295092bf7fe7e56b9b6d013172ed32fd8e20e6471cb9edb9ec5f41d5418c84c6", size = 263442, upload-time = "2026-10-02T23:14:42.571Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -2234,7 +2336,7 @@ wheels = [
 
 [[package]]
 name = "swanlab"
-version = "0.9.2"
+version = "0.10.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -2247,6 +2349,8 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pyecharts" },
+    { name = "pyroaring", version = "1.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
+    { name = "pyroaring", version = "1.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "rich" },
@@ -2255,9 +2359,9 @@ dependencies = [
     { name = "watchdog" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/18/22/025cf0f1c060d92aa88bb25738edc8a4d8cfe5ccf4f4f472ed0c9a8c59f0/swanlab-0.9.2.tar.gz", hash = "sha256:1365f9d1813dae349d02ec90378b617a007efdcf6d755c37e6aa5e51d4e4355a", size = 14774772, upload-time = "2026-07-29T10:12:57.64Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ee/1d/af6a98518fc688c948b2971cc9ab0cfbe3f8018bdf7dcbbe01189262e45d/swanlab-0.10.4.tar.gz", hash = "sha256:e7025a07a0b3db34af07ded2e1ed0d7ca7589412647cf6186c66b63edb6ee73d", size = 14954003, upload-time = "2026-11-04T07:42:14.825Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/42/77/927f438b973cc4009015d7e5ad55d897b3341e5ad8cba78d1479b9ca6a1c/swanlab-0.9.2-py3-none-any.whl", hash = "sha256:f342b2d56a5cb80621426630805f041091394e4a6227168679d6e4e0d799b5ca", size = 505838, upload-time = "2026-07-29T10:12:54.706Z" },
+    { url = "https://files.pythonhosted.org/packages/16/80/46ed950ee818bce47e9b91cdd3ccab1ba8bb23f2d8e72c44432d7615b734/swanlab-0.10.4-py3-none-any.whl", hash = "sha256:456fb428e04d0229cf7809ae874b5e09604d109febf319324ce36ebfae32cbf0", size = 576727, upload-time = "2026-11-04T07:42:11.888Z" },
 ]
 
 [[package]]
@@ -2446,9 +2550,9 @@ version = "2.13.0+cpu"
 source = { registry = "https://download.pytorch.org/whl/cpu" }
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'linux'",
-    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version >= '3.14' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
+    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version < '3.14' and sys_platform == 'win32'",
     "python_full_version < '3.14' and sys_platform == 'emscripten'",
 ]
@@ -2506,9 +2610,9 @@ version = "0.28.0+cpu"
 source = { registry = "https://download.pytorch.org/whl/cpu" }
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'linux'",
-    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version >= '3.14' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
+    "python_full_version < '3.14' and sys_platform == 'linux'",
     "python_full_version < '3.14' and sys_platform == 'win32'",
     "python_full_version < '3.14' and sys_platform == 'emscripten'",
 ]

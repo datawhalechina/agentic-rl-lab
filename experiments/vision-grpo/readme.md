@@ -7,7 +7,7 @@
 <div align="center">
   <a href="https://github.com/datawhalechina/agentic-rl-lab/tree/main/experiments/vision-grpo"><img alt="Code" src="https://img.shields.io/badge/Code-09--vision--grpo-2563eb?style=flat"></a>
   <a href="https://huggingface.co/datasets/hz2475/geoQA"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-GeoQA-f59e0b?style=flat"></a>
-  <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.7-d94a45?style=flat"></a>
+  <a href="https://docs.pytrio.com/docs"><img alt="PyTRIO" src="https://img.shields.io/badge/PyTRIO-0.2.9-d94a45?style=flat"></a>
   <a href="https://www.xiaohongshu.com/user/profile/63c2055e000000002502c58c" target="_blank"><img alt="Rednote" src="https://img.shields.io/badge/Rednote-小红书-e93c49?style=flat"></a>
   <a href="https://github.com/datawhalechina/agentic-rl-lab"><img alt="visitors" src="https://visitor-badge.laobi.icu/badge?page_id=KMnO4-zx.agentic-rl-lab.vision-grpo"></a>
 </div>
@@ -215,7 +215,7 @@ datum = trio.Datum(
 
 ## 3. 如何启动训练？
 
-所有命令都从仓库根目录运行。项目要求 Python 3.13 及以上，并锁定 `pytrio==0.2.7`。
+所有命令都从仓库根目录运行。项目要求 Python 3.13 及以上，并锁定 `pytrio==0.2.9`。
 
 ### 3.1 安装与登录
 

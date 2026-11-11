@@ -28,7 +28,7 @@ from reward import extract_last_boxed
 from rollout import build_prompt_tokens, stop_sequences
 
 
-trio.configure(sampling_timeout=18000)
+trio.configure(sampling_timeout_seconds=18000)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DATASET_PATH = SCRIPT_DIR / "datasets" / "aime_2025"

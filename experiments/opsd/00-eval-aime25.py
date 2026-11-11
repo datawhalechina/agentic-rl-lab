@@ -42,7 +42,7 @@ import pytrio as trio
 from tqdm import tqdm
 
 
-trio.configure(sampling_timeout=18000,)  # 5 小时，足够评测 30 道题
+trio.configure(sampling_timeout_seconds=18000,)  # 5 小时，足够评测 30 道题
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DATASET_PATH = SCRIPT_DIR / "datasets" / "aime_2025"

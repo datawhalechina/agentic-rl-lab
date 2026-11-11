@@ -63,7 +63,7 @@ import swanlab
 from tqdm import tqdm
 
 
-trio.configure(timeout=600)
+trio.configure(request_timeout_seconds=600)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DATASET_PATH = SCRIPT_DIR / "datasets" / "ceval-non-med" / "opd_train.jsonl"

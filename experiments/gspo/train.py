@@ -37,7 +37,7 @@ from rollout import (
 )
 
 
-trio.configure(timeout=600, sampling_timeout=18000)
+trio.configure(request_timeout_seconds=600, sampling_timeout_seconds=18000)
 
 MAX_COMPLETIONS_PER_BATCH = 128
 

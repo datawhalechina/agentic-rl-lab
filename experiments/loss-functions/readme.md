@@ -35,7 +35,7 @@
 Importance Sampling 最直接。它问的是：当前模型和采样模型对同一个 token 的概率比例是多少？
 
 ```math
-\mathcal{L}_{\text{IS}}(\theta) = \mathbb{E}_{x\sim q}\Bigl[\frac{p_\theta(x)}{q(x)}A(x)\Bigr]
+\mathcal{L}_{\text{IS}}(\theta) = -\mathbb{E}_{x\sim q}\Bigl[\frac{p_\theta(x)}{q(x)}A(x)\Bigr]
 ```
 
 实现时再把概率比例写成 `exp(target_logprobs - sampling_logprobs)`，并因为优化器最小化 loss，所以代码里加负号：
