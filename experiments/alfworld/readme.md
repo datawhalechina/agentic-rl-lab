@@ -228,7 +228,7 @@ uv run --extra alfworld python eval.py \
 生成本文的 checkpoint 对比图：
 
 ```bash
-cd ..
+cd ../..
 uv run python experiments/alfworld/analysis.py
 ```
 
