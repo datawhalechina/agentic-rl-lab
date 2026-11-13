@@ -22,6 +22,7 @@ import argparse
 import re
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable
 
 from datasets import Dataset, load_dataset
@@ -516,6 +517,7 @@ def init_swanlab_run(
             "seed": config.seed,
             "weights_name": run_name,
         },
+        log_dir=str(Path(__file__).resolve().parent / "swanlog"),
     )
 
 
