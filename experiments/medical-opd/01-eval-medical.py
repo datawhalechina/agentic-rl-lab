@@ -156,7 +156,7 @@ def parse_choice(text: str) -> str | None:
             return exact_match.group(1)
 
         patterns = [
-            r"(?:FINAL\s*(?:ANSWER|OUTPUT)|ANSWER|OUTPUT|最终答案|正确答案|答案|选项|选择|应选|故选)\s*(?:IS|是|为|:|：|->)?\s*[\(\[【]?\s*([ABCD])",
+            r"(?:FINAL\s*(?:ANSWER|OUTPUT)|ANSWER|OUTPUT|最终答案|正确答案|答案|选项|选择|应选|故选)\s*(?:IS|是|为|:|：|->)?\s*[\(\[【]?\s*([ABCD])(?![A-Z])",
             r"[\(\[【]\s*([ABCD])\s*[\)\]】]",
         ]
         candidates: list[str] = []

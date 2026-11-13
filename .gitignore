@@ -255,6 +255,7 @@ experiments/spec-o3/datasets/
 experiments/spec-o3/outputs/
 experiments/vision-grpo/eval-results*.json
 experiments/tempo/datasets/
+experiments/general-opd/datasets/
 # Local experiment tracking artifacts
 **/swanlog/*
 !**/swanlog/.gitignore

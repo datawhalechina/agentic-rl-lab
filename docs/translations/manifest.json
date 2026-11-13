@@ -25,8 +25,8 @@
   },
   "docs/translations/en/opsd.run.md": {
     "source": "experiments/opsd/start.md",
-    "sourceSha256": "ea53015500aedc3e87109a4cdf913bdfa9ad77dc5d906e24842ceeb270170557",
-    "translatedAt": "2026-09-26",
+    "sourceSha256": "7196818c631d14c12c0206f4705cc6e8479a3df12e9dafec341d94db22dc4c4e",
+    "translatedAt": "2026-11-13",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/retool.run.md": {
@@ -121,8 +121,8 @@
   },
   "docs/translations/en/alfworld.md": {
     "source": "experiments/alfworld/readme.md",
-    "sourceSha256": "b816d302b18b3e5f7a9357bc65f5483a18955002dff60382bf815ea34cd2a6db",
-    "translatedAt": "2026-11-04",
+    "sourceSha256": "7eb3c5af491783775b8f045cde2622bc62aa792d0d3e644e7c93938cdfa7e627",
+    "translatedAt": "2026-11-13",
     "engine": "Manual English translation; original code and equations preserved"
   },
   "docs/translations/en/opsd.md": {

@@ -228,7 +228,7 @@ Evaluation writes complete messages, actions, environment feedback, termination 
 Generate the checkpoint comparison figure:
 
 ```bash
-cd ..
+cd ../..
 uv run python experiments/alfworld/analysis.py
 ```
 

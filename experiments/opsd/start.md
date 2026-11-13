@@ -54,5 +54,5 @@ uv run python experiments/opsd/00-eval-aime25.py \
     --temperature 1.0 \
     --enable-thinking false \
     --model-path 'trio://RUN_ID/sampler_weights/OPSD_WEIGHTS_NAME' \
-    --output experiments/opsd/eval-results/aime25-opsd-step100.jsonl
+    --output experiments/opsd/eval-results/aime25-sampler-steps100.jsonl
 ```
