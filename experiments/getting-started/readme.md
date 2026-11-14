@@ -39,6 +39,29 @@
 
    `uv sync` 按 `uv.lock` 创建 `.venv` 并装好全部依赖，版本和仓库完全一致。本地 Python 低于 3.13 时 uv 会自动下载一个合适的版本，不用手动装。
 
+   **Intel 芯片 Mac 看这里**：`uv sync` 如果报下面这个错，不是网络问题，别反复重试——
+
+   ```text
+   error: Distribution `torch==2.13.0 @ registry+https://download.pytorch.org/whl/cpu` can't be installed
+   because it doesn't have a source distribution or wheel for the current platform
+   hint: You're on macOS (`macosx_15_0_x86_64`), but `torch` (v2.13.0) only has wheels for
+   the following platform: `macosx_14_0_arm64`
+   ```
+
+   原因：PyTorch 从 2.3 起就不再为 macOS 的 x86_64（Intel）架构发布二进制轮子，只剩 Apple Silicon（arm64）的。本仓库要求 `torch>=2.9.1`，换镜像、降版本、加参数都绕不过去，Intel Mac 上原生装不上。Linux 的 x86_64 轮子是有的，所以走 Docker：
+
+   ```bash
+   cd agentic-rl-lab
+   docker build -t agentic-rl-lab .     # 首次约 10-15 分钟（torch CPU 轮子约 200MB）
+   docker run -it --name rl-lab agentic-rl-lab bash
+   ```
+
+   进容器后本章剩余步骤照常执行（`uv run trio login`、验证版本等），`uv sync` 已经在镜像构建时完成了。两点注意：容器里同样是 `uv run` 前缀；PyTRIO / SwanLab 的登录凭据存在容器内，用 `--name` 命名容器并 `docker start -ai rl-lab` 复用，别用 `--rm` 一次性容器，否则每次都要重新登录。临时跑单个脚本可以用：
+
+   ```bash
+   docker run --rm -v "$PWD:/app" -w /app agentic-rl-lab uv run python experiments/xxx.py
+   ```
+
 3. 记住一件事：仓库里的命令都加 `uv run` 前缀，或者先 `source .venv/bin/activate`（Windows 是 `.venv\Scripts\activate`）。`trio`、`swanlab` 这两个可执行文件在 `.venv` 里，在系统终端直接敲会报 command not found。
 
 4. 验证版本：
@@ -140,6 +163,30 @@ uv run swanlab watch experiments/grpo/swanlog
 
 浏览器打开 `http://127.0.0.1:5092`。
 
+两个已知问题，先说了省得踩：
+
+1. **watch 报 `Please install the swanboard package`**：dashboard 不在 `swanlab` 的默认依赖里，需要时按需补装（预发布版本，得开 prerelease）：
+
+   ```bash
+   uv pip install --prerelease=allow "swanlab[dashboard]==0.10.4"
+   ```
+
+   装进 `.venv` 即可，`uv sync` 不会动它；重建环境后要再装一次。
+
+2. **Docker 容器里 watch 地址打不开**：watch 默认绑 `127.0.0.1`，那是容器自己的回环地址，宿主机浏览器到不了。起服务时改成绑 `0.0.0.0`：
+
+   ```bash
+   uv run swanlab watch -h 0.0.0.0 experiments/grpo/swanlog
+   ```
+
+   然后浏览器访问容器 IP。IP 用这个命令查：
+
+   ```bash
+   docker inspect <容器名> --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+   ```
+
+   打开 `http://<容器IP>:5092`。注意容器重启后 IP 会变。想要固定用 `http://127.0.0.1:5092` 的话，建容器时就带上端口映射：`docker run -it --name rl-lab -p 5092:5092 agentic-rl-lab bash`，之后浏览器直接开 `http://127.0.0.1:5092`，两种方式都不受浏览器 DNS 设置影响（`<容器名>.orb.local` 这种域名写法部分浏览器解析不了，不推荐）。
+
 
 ## 4. 基础概念：读懂代码的最小词汇表
 
@@ -173,4 +220,8 @@ uv run python experiments/grpo/01-demo-sync.py \
     --steps 10 --batch-size 4 --group-size 8 \
     --max-tokens 512 --swanlab-mode online        # 第一次训练
 uv run swanlab watch experiments/grpo/swanlog     # 看本地日志
+
+# Intel Mac 走 Docker（见第 1 节）
+docker build -t agentic-rl-lab .                  # 首次构建镜像
+docker start -ai rl-lab                           # 复用已命名的容器
 ```

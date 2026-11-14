@@ -1,0 +1,8 @@
+.venv
+.git
+.github
+.idea
+.workbuddy
+__pycache__
+*.pyc
+images
