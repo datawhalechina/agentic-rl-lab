@@ -37,7 +37,7 @@
    uv sync
    ```
 
-   `uv sync` 按 `uv.lock` 创建 `.venv` 并装好全部依赖，版本和仓库完全一致。本地 Python 低于 3.13 时 uv 会自动下载一个合适的版本，不用手动装。
+   `uv sync` 按 `uv.lock` 创建 `.venv` 并装好全部依赖，版本和仓库完全一致。本地 Python 低于 3.13 时 uv 会自动下载一个合适的版本，不用手动装。**但不要把解释器选到 3.15 及以上**：`torchvision` 的 CPU 轮子目前只提供 `cp313`/`cp314`，版本过高时 `uv sync` 会直接报「没有可用的 wheel」。uv 在没有上界约束时会自己挑最新的解释器，所以建议先 `uv python pin 3.13` 再同步。
 
 3. 记住一件事：仓库里的命令都加 `uv run` 前缀，或者先 `source .venv/bin/activate`（Windows 是 `.venv\Scripts\activate`）。`trio`、`swanlab` 这两个可执行文件在 `.venv` 里，在系统终端直接敲会报 command not found。
 
@@ -54,7 +54,7 @@
 网络不顺畅时（顺畅就跳过）：
 
 - `uv sync` 慢：`UV_DEFAULT_INDEX=https://mirrors.cernet.edu.cn/pypi/web/simple uv sync`。
-- GSM8K 下载超时：`export HF_ENDPOINT=https://hf-mirror.com` 后重跑。部分章节的数据走 ModelScope，不需要翻墙，以各章 `start.md` 为准。
+- GSM8K 下载超时：bash/zsh 用 `export HF_ENDPOINT=https://hf-mirror.com`，PowerShell 用 `$env:HF_ENDPOINT = "https://hf-mirror.com"`，然后重跑。部分章节的数据走 ModelScope，不需要翻墙，以各章 `start.md` 为准。
 
 ## 2. PyTRIO：注册、登录、验证
 
@@ -87,6 +87,14 @@ uv run trio login -k <your API Key>
 export PYTRIO_API_KEY=<your API Key>
 ```
 
+以上是 bash/zsh 写法，Windows PowerShell 里对应：
+
+```powershell
+uv run trio login -k <your API Key>
+# 或者
+$env:PYTRIO_API_KEY = "<your API Key>"
+```
+
 部分章节的评测脚本（如 medical-opd）从自己目录下的 `.env` 读 `PYTRIO_API_KEY`；Search-R1 的 DeepSeek 搜索后端还需要 `DEEPSEEK_API_KEY`，Tournament-GRPO 需要 judge 模型的 key。这些都在各章 `start.md` 里写明，`.env` 已被 gitignore，别把 key 提交进仓库。
 
 验证连接（几乎不消耗额度）：
@@ -98,6 +106,17 @@ client = trio.ServiceClient()
 for name in client.get_supported_models():
     print(name)
 PY
+```
+
+Windows PowerShell 不支持 heredoc，等价写法：
+
+```powershell
+@'
+import pytrio as trio
+client = trio.ServiceClient()
+for name in client.get_supported_models():
+    print(name)
+'@ | uv run python -
 ```
 
 能打印出 `Qwen/Qwen3.5-4B` 一类的模型清单就说明通了，清单以服务端实际提供为准。
