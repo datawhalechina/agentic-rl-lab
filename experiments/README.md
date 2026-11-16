@@ -21,5 +21,6 @@
 | 14 | [TEMPO](./tempo/readme.md) |
 | 15 | [Spec-o3](./spec-o3/readme.md) |
 | 16 | [Tournament-GRPO](./tournament-grpo/readme.md) |
+| 17 | [RGSD](./rgsd/readme.md) |
 
 [返回仓库首页](../README.md) · [English README](../README_EN.md)

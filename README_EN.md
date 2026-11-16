@@ -72,6 +72,7 @@ If you have a promising Agentic-RL idea and want to turn it into a paper or a pr
 | [TEMPO](./experiments/tempo/readme.md) | Algorithm-level reproduction of macro-step optimization with a generative critic | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
 | [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | Compare research reports for the same query in knockout tournaments and use wins as GRPO rewards | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tournament-grpo/) |
+| [RGSD](./experiments/rgsd/readme.md) | Without a judge, a rubric-conditioned copy of the model distills token by token into the unconditioned copy | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/rgsd/) |
 
 ## Quick Start
 
@@ -134,7 +135,7 @@ A quick shout-out to their open-source native-memory model, [MemT-1.0](https://g
 
 ### Content Contributors
 
-- [MRLE](https://github.com/mrle0429) (Beijing Jiaotong University): [Tournament-GRPO](./experiments/tournament-grpo/readme.md)
+- [MRLE](https://github.com/mrle0429) (Beijing Jiaotong University): [Tournament-GRPO](./experiments/tournament-grpo/readme.md), [RGSD](./experiments/rgsd/readme.md)
 
 Want to contribute to this repo? Welcome! Please read the [Contributing Guide](./CONTRIBUTING_EN.md) first: open an Issue proposal before starting a new algorithm chapter; fixes and docs improvements can go straight to a PR.
 
