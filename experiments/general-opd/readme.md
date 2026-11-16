@@ -107,7 +107,7 @@ advantages = -args.kl_penalty_coef * reverse_kl
 
 - prompt 数据：ModelScope 上的 [AI-ModelScope/DeepMath-103K](https://modelscope.cn/datasets/AI-ModelScope/DeepMath-103K)；
 - student：`Qwen/Qwen3.5-4B`，训练一个 rank 32 的 LoRA；
-- teacher：`Qwen/Qwen3.6-27B`，只计算 logprob，不参与优化；
+- teacher：`Qwen/Qwen3.8-27B`，只计算 logprob，不参与优化；
 - loss：PyTRIO 的 `importance_sampling`；
 - 日志：SwanLab；
 - 训练服务：PyTRIO 远程执行 forward、backward、optimizer step、采样和权重保存。
