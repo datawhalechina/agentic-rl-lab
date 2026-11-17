@@ -50,8 +50,6 @@
 
 > *&emsp;&emsp;我要这天，不再高高在上。Agentic RL 属于每一个想要研究和学习它的人！*
 
-&emsp;&emsp;如果你有不错的 Agentic-RL idea，想做论文或者做项目，可以写一封邮件来申请 PyTrio 的代金券。审核会比较严格，希望大家在邮件里认真写清楚自己的 proposal。PyTrio 也很乐意赞助大家做 Agentic RL 的项目和论文，邮箱：violin@pytrio.com
-
 ## 文章目录
 
 | 主题 | 内容 | 在线版 |

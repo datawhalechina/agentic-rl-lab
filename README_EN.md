@@ -50,8 +50,6 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 
 > *I want the sky to be within everyone's reach. Agentic RL belongs to everyone who wants to learn about it and research it!*
 
-If you have a promising Agentic-RL idea and want to turn it into a paper or a project, you are welcome to email us to apply for PyTRIO credits. The review process is fairly strict, so please write your proposal carefully and clearly in the email. PyTRIO is also happy to sponsor Agentic RL projects and papers — contact: violin@pytrio.com
-
 ## Table of Contents
 
 | Topic | Content | Read online |
