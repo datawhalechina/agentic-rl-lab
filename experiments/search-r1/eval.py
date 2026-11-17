@@ -22,6 +22,7 @@ import pytrio as trio
 from tqdm import tqdm
 
 from data import SearchExample, load_examples
+from reward import extract_answer
 from rollout import RolloutConfig, Trajectory, rollout_batch
 from search import (
     DEEPSEEK_SEARCH_ENDPOINT,
@@ -57,6 +58,8 @@ def trajectory_record(trajectory: Trajectory) -> dict[str, Any]:
         "answers": trajectory.example.answers,
         "data_source": trajectory.example.data_source,
         "final_text": trajectory.final_text,
+        # 单独存一份从 final_text 里抽出来的答案，方便核对 "答案对但打分没给" 的情况。
+        "answer": extract_answer(trajectory.final_text),
         "reward": trajectory.reward,
         "exact_match": trajectory.exact_match,
         "valid_format": trajectory.valid_format,
