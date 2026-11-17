@@ -725,6 +725,15 @@ uv run python eval.py \
 
 评测代码在 [`eval.py`](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/search-r1/eval.py)。它对 Base 和 checkpoint 使用相同的 tokenizer、工具协议、搜索环境、轨迹限制和 EM 规则。
 
+### 5.1 如果出现「搜索调用恒为 0」或「格式全对但 EM 恒 0」
+
+PyTRIO 会把采样请求里命中的 `stop` 字符串（本章默认 `<|im_end|>`）保留在 `sequence.text` 末尾，而本章有两处判定都默认末尾没有这类控制标记：
+
+- `protocol.py` 的 `parse_assistant` 要求工具调用之后不再残留任何非空白文本。末尾多一个 `<|im_end|>` 就会把每一次工具调用都判成 `invalid`，表现为 `rollout/search_calls = 0.0`、`rollout/no_search_rate = 1.0`、训练里工具分支完全不出现。
+- `reward.py` 的 `extract_answer` 要求 `Answer:` 行内只有答案本身。`Answer: France<|im_end|>` 会把控制标记一起捕获，`normalize_answer` 只去标点（`|` 属于 Sm、`_` 不属于标点类），归一化后残留 `... imend`，于是即使答案逐字正确，`exact_match` 也恒为假 —— 症状是 `format/rate` 正常（82.86%），`em/*` 全是 0。
+
+两处现在都在入口调用 `strip_trailing_chat_tokens`（定义在 `protocol.py`）清掉尾部标记，正文中间出现的标记保持原样。用这套修复在 dev 全 70 题上复测 Base：`em/macro = 38.57%`、`format/rate = 81.43%`、`rollout/search_calls = 1.79`、`search/success_rate = 1.0`，与本文表格里的 40.00% / 82.86% / 1.76 逐项对得上。
+
 ### 6. 绘制评测结果
 
 绘制本次 DeepSeek 官方 Search API 的 Base 与 Step 30 对比：

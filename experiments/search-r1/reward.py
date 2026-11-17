@@ -4,6 +4,8 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
+from protocol import strip_trailing_chat_tokens
+
 
 ANSWER_PATTERN = re.compile(r"^\s*Answer:\s*(.*?)\s*$", re.IGNORECASE | re.MULTILINE)
 ARTICLE_PATTERN = re.compile(r"\b(a|an|the)\b", re.IGNORECASE)
@@ -31,6 +33,7 @@ def normalize_answer(text: str) -> str:
 
 def extract_answer(text: str) -> str | None:
     """只接受恰好一行非空的 Answer: 最终答案。"""
+    text = strip_trailing_chat_tokens(text)
     matches = ANSWER_PATTERN.findall(text)
     if len(matches) != 1:
         return None
