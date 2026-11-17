@@ -37,6 +37,25 @@ Question: What country was the author of The Little Prince born in?
 5. In a new assistant turn, give the final answer:
 Answer: France"""
 
+CHAT_CONTROL_TOKEN_PATTERN = re.compile(r"<\|[^|\n]+?\|>\Z")
+
+
+def strip_trailing_chat_tokens(text: str) -> str:
+    """去掉文本末尾的 chat 控制标记（例如 <|im_end|>）。
+
+    PyTRIO 的 ``sequence.text`` 会把命中的 stop 字符串保留在末尾，而本章的两处
+    判定都默认末尾没有这类标记：``parse_assistant`` 要求工具调用之后不残留任何
+    非空白文本，``reward.extract_answer`` 要求 ``Answer:`` 行内只有答案本身。
+    只清理尾部：标记出现在正文中间时保持原样，避免改动正常答案。
+    """
+    trimmed = text.rstrip()
+    while True:
+        match = CHAT_CONTROL_TOKEN_PATTERN.search(trimmed)
+        if not match:
+            return trimmed
+        trimmed = trimmed[: match.start()].rstrip()
+
+
 TOOL_CALL_PATTERN = re.compile(
     r"<tool_call>\s*<function=search>\s*<parameter=query>\s*(.*?)\s*"
     r"</parameter>\s*</function>\s*</tool_call>",
@@ -146,6 +165,7 @@ def build_next_prompt(
 
 def parse_assistant(text: str) -> ParsedAssistant:
     """把 assistant 文本识别成搜索调用、最终回答或非法调用。"""
+    text = strip_trailing_chat_tokens(text)
     matches = list(TOOL_CALL_PATTERN.finditer(text))
     if not matches:
         kind = "invalid" if "<tool_call>" in text else "answer"
