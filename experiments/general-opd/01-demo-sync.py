@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--base-model", default="Qwen/Qwen3.5-4B")
     parser.add_argument("--lora-rank", type=int, default=32)
-    parser.add_argument("--teacher-base-model", default="Qwen/Qwen3.6-27B", help="默认和 Qwen/Qwen3.6-27B 一样")
+    parser.add_argument("--teacher-base-model", default="Qwen/Qwen3.8-27B", help="默认和 Qwen/Qwen3.8-27B 一样")
     parser.add_argument("--teacher-model-path", default=None)
 
     parser.add_argument("--steps", type=int, default=10)
