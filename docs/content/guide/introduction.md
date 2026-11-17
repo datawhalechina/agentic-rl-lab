@@ -11,18 +11,34 @@ description: 一个从论文、代码和真实实验出发的 Agent 强化学习
 
 ## 什么是 Agentic RL
 
-一般来说，**Agentic RL 是指把 LLM 当作策略，放进一个有状态、有时间跨度的环境里，用强化学习优化它在多轮执行中的「观测—动作—反馈」行为。** 其中「动作」是文本或工具调用，「观测」来自环境（搜索结果、代码执行输出、游戏状态等）；只有模型自己生成的 token 参与 loss，而奖励通常来自任务的成败，而不只是答案对不对。
+Agentic RL 训练的是模型完成一次任务的过程，而不只是一个回答。LLM 是策略，环境是有状态的外部系统：搜索引擎、Python 解释器或文本游戏。每一轮，模型根据当前上下文生成一段文本或一个工具调用作为动作；环境执行它、更新自己的状态，再把结果作为 observation 返回。这个过程一直重复到任务结束。
 
-它和单轮 RLVR（例如在 GSM8K 上跑 GRPO）共用同一套 loss 与 advantage，区别在轨迹：
+一条轨迹可以写成：
+
+```text
+prompt → action_1 → observation_1 → action_2 → ... → action_T → reward
+```
+
+这条轨迹就是一次 rollout。模型能看到的是 prompt、自己此前的动作，以及环境返回的 observation；环境内部的状态它看不到，只能通过动作去探查。下一步能观察到什么，取决于这一步做了什么——轨迹由策略和环境共同决定，用 RL 的话说，这是一个部分可观测的决策过程（POMDP）。
+
+训练时，整条轨迹被拼成一个 token 序列送进模型。prompt 和单轮时一样不参与 loss；多轮轨迹里环境返回的 observation 也是给定输入，同样要 mask 掉。真正参与 loss 的只有模型自己生成的动作 token（推理、工具调用、最终回答）。奖励通常在轨迹结束时才出现，再由 GRPO、PPO 这类算法转成 advantage 回传。
+
+Agentic RL 和单轮 RLVR（例如在 GSM8K 上跑 GRPO）共用同一套 loss 与 advantage，区别集中在轨迹：
 
 | | 单轮 RLVR | Agentic RL |
 | --- | --- | --- |
 | 状态 | prompt 加上已生成的 token | 再加一层模型看不见、只能通过工具感知的环境状态 |
 | 一次 rollout | 生成一次 | 生成多次，中间穿插工具调用 |
-| 参与 loss 的 token | 全部 | 只有模型的动作，环境返回的 observation 要 mask 掉 |
+| 参与 loss 的 token | 模型生成的全部 token（prompt mask） | 只有模型的动作 token（prompt 和 observation 都 mask） |
 | 奖励 | 答案对错 | 任务成败，通常更稀疏、更延迟 |
 
-所以这个 Lab 的笔记中真正多轮的是 [Search-R1](/experiments/search-r1/)、[ReTool](/experiments/retool/)、[ALFWorld](/experiments/alfworld/)、[TEMPO](/experiments/tempo/)、[AgentOPSD](/experiments/agentopsd/) 与 [Spec-o3](/experiments/spec-o3/)；而[GRPO](/experiments/grpo/)、[DAPO](/experiments/dapo/)、[GSPO](/experiments/gspo/)、[OPD](/experiments/general-opd/)、[OPSD](/experiments/opsd/) 是它们的前置技术。学习路线从单轮讲起，是因为它是多轮训练的最小底座：先学习同一套 loss、同一套采样，再把 rollout 拉长、逐步把环境接进来。学术界的定义与分类可以参考综述 [The Landscape of Agentic Reinforcement Learning for LLMs: A Survey](https://arxiv.org/abs/2509.02547)。
+轨迹变长之后，训练要额外处理三件事：
+
+- **信用分配**：奖励在终点才出现，组内相对 advantage 无法指出中间哪一步真正起了作用。[TEMPO](/experiments/tempo/) 把长轨迹切成小段，训练生成式 critic 在段末估值；[AgentOPSD](/experiments/agentopsd/) 让 teacher 重看整条轨迹，为每个 turn 补监督。
+- **上下文就是状态**：环境状态不会自己进入模型，只能被 observation 带进上下文。保留多少历史、什么时候截断，会直接影响模型能学到什么。
+- **采样成本**：每一步动作都可能调用外部服务，rollout 比单轮慢，也更容易失败。
+
+Agentic RL Lab 的多轮章节从不同环境切入：[Search-R1](/experiments/search-r1/) 接搜索，[ReTool](/experiments/retool/) 接代码执行，[ALFWorld](/experiments/alfworld/) 接文本游戏，[Spec-o3](/experiments/spec-o3/) 把图片和工具返回一起放进轨迹。单轮的 [GRPO](/experiments/grpo/)、[DAPO](/experiments/dapo/)、[GSPO](/experiments/gspo/) 把采样、reward、advantage 与策略更新连成完整的训练循环，[OPD](/experiments/general-opd/)、[OPSD](/experiments/opsd/) 则把 teacher 的反馈变成学习信号。学术界的定义与分类可以参考综述 [The Landscape of Agentic Reinforcement Learning for LLMs: A Survey](https://arxiv.org/abs/2509.02547)。
 
 ## 作者与内容来源
 
