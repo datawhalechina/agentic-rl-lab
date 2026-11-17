@@ -9,6 +9,21 @@ description: 一个从论文、代码和真实实验出发的 Agent 强化学习
 
 我会用 PyTRIO 复现和拆解 LLM / Agent 强化学习方法，把算法、可运行代码、训练过程和评测放在一起。希望每读完一篇，你都能找到一个可以亲手改动、运行和验证的入口。
 
+## 什么是 Agentic RL
+
+一般来说，**Agentic RL 是指把 LLM 当作策略，放进一个有状态、有时间跨度的环境里，用强化学习优化它在多轮执行中的「观测—动作—反馈」行为。** 其中「动作」是文本或工具调用，「观测」来自环境（搜索结果、代码执行输出、游戏状态等）；只有模型自己生成的 token 参与 loss，而奖励通常来自任务的成败，而不只是答案对不对。
+
+它和单轮 RLVR（例如在 GSM8K 上跑 GRPO）共用同一套 loss 与 advantage，区别在轨迹：
+
+| | 单轮 RLVR | Agentic RL |
+| --- | --- | --- |
+| 状态 | prompt 加上已生成的 token | 再加一层模型看不见、只能通过工具感知的环境状态 |
+| 一次 rollout | 生成一次 | 生成多次，中间穿插工具调用 |
+| 参与 loss 的 token | 全部 | 只有模型的动作，环境返回的 observation 要 mask 掉 |
+| 奖励 | 答案对错 | 任务成败，通常更稀疏、更延迟 |
+
+所以这个 Lab 的笔记中真正多轮的是 [Search-R1](/experiments/search-r1/)、[ReTool](/experiments/retool/)、[ALFWorld](/experiments/alfworld/)、[TEMPO](/experiments/tempo/)、[AgentOPSD](/experiments/agentopsd/) 与 [Spec-o3](/experiments/spec-o3/)；而[GRPO](/experiments/grpo/)、[DAPO](/experiments/dapo/)、[GSPO](/experiments/gspo/)、[OPD](/experiments/general-opd/)、[OPSD](/experiments/opsd/) 是它们的前置技术。学习路线从单轮讲起，是因为它是多轮训练的最小底座：先学习同一套 loss、同一套采样，再把 rollout 拉长、逐步把环境接进来。学术界的定义与分类可以参考综述 [The Landscape of Agentic Reinforcement Learning for LLMs: A Survey](https://arxiv.org/abs/2509.02547)。
+
 ## 作者与内容来源
 
 这个 Lab 由 [KMnO4-zx](https://github.com/KMnO4-zx) 维护。每篇笔记尽量保留论文出处、代码入口、训练记录和评测条件，方便读者追查结论。中英文版本共用实验代码与原始结果图；代码中的原始注释、日志和图内文字可能保留中文。发现翻译或复现问题时，可以通过页面底部的编辑链接或 GitHub Issues 反馈。
