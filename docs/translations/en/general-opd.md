@@ -107,7 +107,7 @@ This article primarily focuses on [`01-demo-sync.py`](./01-demo-sync.py). The de
 
 - Data: [AI-ModelScope/DeepMath-103K](https://modelscope.cn/datasets/AI-ModelScope/DeepMath-103K) from ModelScope;
 - Student: `Qwen/Qwen3.5-4B`, trains a rank 32 LoRA;
-- Teacher: `Qwen/Qwen3.6-27B`, only calculates log probabilities and does not participate in optimization;
+- Teacher: `Qwen/Qwen3.8-27B`, only calculates log probabilities and does not participate in optimization;
 - Loss: The loss for `importance_sampling`, calculated using PyTRIO;
 - Logs: SwanLab;
 - Training Service: PyTRIO remotely executes forward pass, backward pass, optimizer step, sampling, and weight saving.

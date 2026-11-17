@@ -97,8 +97,8 @@
   },
   "docs/translations/en/general-opd.md": {
     "source": "experiments/general-opd/readme.md",
-    "sourceSha256": "a8a480e880c17820bb693019372103423adbbd26cdf858bee2c43b2269419259",
-    "translatedAt": "2026-11-04",
+    "sourceSha256": "a0c4be2140a8e1cb27b49a5ee3093ff2386bb9da12b669b4758a7b0883c94f79",
+    "translatedAt": "2026-11-17",
     "engine": "TranslateGemma 12B with manual technical review; original code and equations preserved"
   },
   "docs/translations/en/spec-o3.md": {
