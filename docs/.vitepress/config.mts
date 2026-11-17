@@ -77,8 +77,8 @@ function navigation(locale: 'zh' | 'en') {  const en = locale === 'en'
         // VitePress serializes this function for the browser; keep it self-contained.
         const repository = 'https://github.com/datawhalechina/agentic-rl-lab'
         return frontmatter.translationSource
-          ? `${repository}/edit/doc/${frontmatter.translationSource}`
-          : frontmatter.source ? `${repository}/edit/main/${frontmatter.source}` : `${repository}/edit/doc/docs/content/${relativePath}`
+          ? `${repository}/edit/main/${frontmatter.translationSource}`
+          : frontmatter.source ? `${repository}/edit/main/${frontmatter.source}` : `${repository}/edit/main/docs/content/${relativePath}`
       },
       text: en ? 'Edit this page on GitHub' : '在 GitHub 上编辑此页',
     },

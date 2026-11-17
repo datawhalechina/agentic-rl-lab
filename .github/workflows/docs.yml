@@ -2,9 +2,16 @@ name: Documentation site
 
 on:
   push:
-    branches: [doc]
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'scripts/docs/**'
+      - '**/*.md'
+      - '**/images/**'
+      - 'package*.json'
+      - '.github/workflows/docs.yml'
   pull_request:
-    branches: [main, doc]
+    branches: [main]
     paths:
       - 'docs/**'
       - 'scripts/docs/**'
@@ -41,7 +48,7 @@ jobs:
           path: docs/.vitepress/dist
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/doc'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:
