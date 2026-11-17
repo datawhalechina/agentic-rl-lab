@@ -16,36 +16,30 @@
 > **代码与复现资源**
 >
 > - 本章实现：[训练](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/rgsd/train.py) / [JSD 估计量](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/rgsd/loss.py) / [Student 与 Teacher 模板](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/rgsd/prompts.py) / [评测](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/rgsd/eval.py)
-> - 论文：[Rubric-Guided Self-Distillation: Post-Training Without Rubric Verifiers](https://arxiv.org/abs/2606.12507)（
+> - 论文：[Rubric-Guided Self-Distillation: Post-Training Without Rubric Verifiers](https://arxiv.org/abs/2606.12507)
 > - 数据：[sojuL/RubricHub_v1](https://huggingface.co/datasets/sojuL/RubricHub_v1)
-> - SwanLab：[训练记录](https://swanlab.cn/@MRLE/agentic-rl-lab-rgsd/v1/kltrar/runs/iz7ut58e/chart?utm_source=website_qr&utm_medium=qr_scan) 20-step 训练记录
+> - SwanLab：[20 步训练记录](https://swanlab.cn/@MRLE/agentic-rl-lab-rgsd/v1/kltrar/runs/iz7ut58e/chart?utm_source=website_qr&utm_medium=qr_scan)
 > - 本章作者：[MRLE](https://mrlepro.com)
 
 我第一篇参与贡献的工作 [Tournament-GRPO](../tournament-grpo/readme.md) 把评分细则（rubric）交给裁判，让裁判比较同组回答，再用胜场当 reward。不管逐条打分还是两两比较，训练时都要不停地调用裁判：每一步、每一组回答都要花一次裁判的钱和时间，reward 的质量也取决于裁判靠不靠谱。
 
-RGSD 的问题是：rubric 已经写好了，能不能**不要裁判**，直接让模型从 rubric 里学？
+RGSD 的思路来自 OPSD：OPSD 里的 Teacher 比 Student 多看到参考解答，RGSD 里 Teacher 多看到的是评分细则（rubric）。
 
 它的做法很像考试前的两种复习状态：同一个学生，拿着评分细则时，更容易知道回答该覆盖哪些要点。RGSD 让「看过细则的自己」当老师，「没看过细则的自己」当学生。Student 先写一条回答，Teacher 再给这条回答的每个 token 计算概率，Student 据此调整自己的偏好。训练全程不调用裁判，评测时才用裁判打分。
 
-本文记录它在 PyTRIO 上的复现：Qwen3.5-4B LoRA，RubricHub 医学子集，20 步。结论先说在前面：20 步之后的分数涨幅和论文同一量级，但我们加了一个论文里没有的对照，发现**只给 Base 加一句「请详细回答」就能拿到同样的分数**。所以这 20 步到底学到了 rubric 的内容，还是只学会了「写长一点、写全一点」，目前还没有答案。
+本文记录它在 PyTRIO 上的复现：Qwen3.5-4B LoRA，RubricHub 医学子集，20 步。
 
 ## 0. 复现结果概览
 
-| 项目 | 状态 |
-| --- | --- |
-| JSD 采样估计量 | 用 torch 在随机分布上核对与精确 JSD 的梯度一致（`loss.py`） |
-| 20-step 训练（每步 128 题 × 1 条 rollout） | 2,560 条 rollout，KL(S‖m) 0.058 → 0.032，平均长度 918 → 1,573 token |
-| Base vs checkpoint 评测 | 固定 300 题，加权 rubric 满足率 36.7 → 42.9（+6.3pp） |
-| 提示词对照 | Base 加一句 thorough 指令为 43.8；Step 20 与它相比 −0.9pp，不显著 |
-| 费用与耗时 | 训练 37.74 元（PyTRIO，约 2 小时）；评测费用未统计 |
+20 步训练每步 128 道题、每题 1 条回答，共 2,560 条 rollout。KL(S‖m) 从 0.058 降到 0.032，平均回答长度从 918 涨到 1,573 token。在固定的 300 道评测题上，加权 rubric 满足率从 Base 的 36.7 升到 Step 20 的 42.9（+6.3pp）。JSD 采样估计量的梯度用 torch 在随机分布上和精确 JSD 核对过（`loss.py`）。
 
-本次 20-step 训练的 PyTRIO 消费记录如下，费用为 **37.74 元**。
+训练在 PyTRIO 上花了 **37.74 元**，约 2 小时，评测费用没有统计。消费记录如下：
 
 ![PyTRIO 训练消费记录：37.74 元](./images/pytrio-bill.png)
 
-## 1. 训练流程
+## 1. RGSD 算法
 
-把 RGSD 和前面几章放在一起看会清楚一些：
+### 1.1 和 GRPO、OPD、OPSD 的关系
 
 | 方法 | 谁给信号 | 信号粒度 | 需要什么 |
 | --- | --- | --- | --- |
@@ -54,38 +48,23 @@ RGSD 的问题是：rubric 已经写好了，能不能**不要裁判**，直接�
 | [OPSD](../opsd/readme.md) | 看到参考解答的自己 | 逐 token | 每道题的参考解答 |
 | **RGSD** | 看到 rubric 的自己 | 逐 token | 每道题的 rubric |
 
-RGSD 沿用了 OPSD 的特权上下文思路：把 Teacher 看到的「参考解答」换成「rubric」，再用 JSD 构造逐 token 的蒸馏信号：
+论文对自己的定位是：沿用 On-Policy Distillation 的逐 token 蒸馏和 OPSD 的自蒸馏框架，只把 Teacher 的额外条件换成 rubric。
 
-```math
-\text{Question} \rightarrow \text{Student 采样} \rightarrow \text{Teacher(Question + Rubric) 逐 token 打分} \rightarrow \text{JSD advantage} \rightarrow \text{Student 更新}
-```
-
-和 GRPO 相比，它省掉了两样东西：
-
-- **不需要裁判**。信号来自 Teacher 对 Student 回答的逐 token 概率，一次前向就有。
-- **不需要一组 rollout**。每道题只采样 1 条回答，不用靠组内比较算 advantage。
-
-**Teacher 在训练中只给 Student 的同一条回答算概率，不另外生成答案。** 在第 $t$ 个位置，两者都接着 Student 已生成的前缀 $y_{<t}$，比较同一个 token $y_t$：Student 只以问题为条件，Teacher 的条件里多了 rubric。这样得到的两个 logprob 才能逐位置对齐。
+和 GRPO 相比，它省掉了两样东西。一是裁判：信号来自 Teacher 对 Student 回答的逐 token 概率，一次前向就有，训练中没有任何一条回答被打过分，所以也没有 reward 这个量。二是一组 rollout：信号是逐 token 的，不需要靠组内回答的相对好坏算 advantage，每道题采样 1 条就够。代价是每步多一次 Teacher 前向，而且 Teacher 的输入里多了几十条 rubric，prompt 更长。
 
 论文的主要结论是：在 RubricHub 的医学和科学两个领域，RGSD 的 rubric 满足率能追平用 gpt-4o-mini 当裁判的 GRPO，而每道题只需要一条 rollout，并且回答比 GRPO 更短。
 
-## 2. 为什么「看过 rubric 的自己」能当老师
+### 1.2 Teacher 和 Student 各看到什么
 
-论文在训练前先做了一个诊断（Table 1）：同一个模型，只看题目和看题目 + rubric，回答的 rubric 满足率差多少。差距非常大，Qwen3-4B-Thinking 在医学上从 43.6 涨到 89.8。我们用 Qwen3.5-4B 在评测集前 100 题上也测了一遍（1 题裁判失败，剩 99 题）：
+记题目为 $x$，这道题的 rubric 列表为 $r$，答题指令为 $c$。$c$ 是 Teacher 模板最后要求详尽作答的那句指令（论文称为 transition prompt），见下方模板的最后一段。Student 和 Teacher 是同一个 Qwen3.5-4B，只是条件不同：
 
-| 条件 | 满足率 | 平均回答 token |
-| --- | ---: | ---: |
-| 只看题目（Student 的输入） | 46.9 | 851 |
-| 题目 + rubric（Teacher 的输入） | 94.1 | 1,326 |
+```math
+\text{Student: } \pi_S(\cdot \mid x,\, y_{<t}) \qquad\qquad \text{Teacher: } \pi_T(\cdot \mid x,\, r,\, c,\, y_{<t}) \qquad\qquad y \sim \pi_S(\cdot \mid x)
+```
 
+Student 是可训练的 LoRA，输入只有题目本身，没有 system prompt，也没有附加指令。Teacher 固定为训练开始前的 Base 权重，全程不更新。回答 $y$ 只从 Student 采样。
 
-这说明 rubric 里有大量 Student 没用上的信息。RGSD 的假设是：这些信息里有一部分不是这道题独有的，而是「一个好的医学回答通常该覆盖什么」，比如该问的鉴别诊断、该提醒的就医时机、该写的禁忌。如果 Student 在很多道题上反复向「看过细则的自己」靠拢，也许能把这些习惯学进权重里，评测时不看 rubric 也能写出来。
-
-需要注意的是，Teacher 看到的是**这道题**的 rubric，Student 在评测时永远看不到。94 分是 Teacher 抄着答案要点写出来的，不是 Student 能达到的上限。
-
-## 3. 核心变量和公式
-
-Teacher 的输入照搬论文附录的模板（`prompts.py`）：
+Teacher 的输入照搬论文附录的模板（`prompts.py`），题目、rubric 和答题指令放在同一条 user 消息里：
 
 ```text
 <题目>
@@ -98,50 +77,128 @@ Hidden evaluation criteria that a good response should satisfy:
 After understanding these evaluation criteria, provide your own thorough response to the problem. Address the criteria naturally without explicitly referencing them.
 ```
 
-Student 的输入只有题目本身，没有 system prompt，也没有附加指令。两个角色都是同一个 Qwen3.5-4B：Student 是可训练的 LoRA，Teacher 固定为训练开始前的 Base 权重，全程不更新。
+![RGSD 一步训练中 Student 与 Teacher 的输入与逐 token 对齐](./images/rgsd-pipeline.svg)
 
-论文的损失是每个位置上 Student 分布 $\pi_S$ 与 Teacher 分布 $\pi_T$ 之间的广义 JSD：
+Teacher 在训练中不生成回答，只给 Student 的同一条回答算概率。在第 $t$ 个位置，两者都接着 Student 已生成的前缀 $y_{<t}$，比较同一个 token $y_t$，所以两条 logprob 序列可以逐位置对齐。
+
+### 1.3 论文的训练目标
+
+论文的损失（公式 3）是在 Student 自己采样的回答上，逐位置计算 Student 分布和 Teacher 分布之间的散度，再在回答内部取平均：
+
+```math
+\mathcal{L}_{\text{RGSD}}(\theta_S)=\mathbb{E}_{(x,r)\sim\mathcal{D},\;y\sim\pi_S(\cdot\mid x)}\left[\frac{1}{T}\sum_{t=1}^{T}D^{\text{clip}}_{\beta}\Big(\pi_S(\cdot\mid x,y_{<t})\;\Big\|\;\pi_T(\cdot\mid x,r,c,y_{<t})\Big)\right]
+```
+
+$D_\beta$ 是广义 JSD。以混合分布 $m$ 为参照，分别算 Teacher 和 Student 到 $m$ 的 KL：
 
 ```math
 m = \beta\,\pi_T + (1-\beta)\,\pi_S,\qquad
 \mathrm{JSD}_\beta = \beta\,\mathrm{KL}(\pi_T \,\|\, m) + (1-\beta)\,\mathrm{KL}(\pi_S \,\|\, m)
 ```
 
-$\beta=0.5$ 时它是对称的。和 OPSD 用的 reverse KL 相比，JSD 有上界，Teacher 认为某个 token 概率几乎为 0 时，惩罚不会无限放大。
+论文把它描述为介于 forward KL 和 reverse KL 之间的插值，全程取 $\beta=0.5$，此时两项对称。实现细节在附录的超参表里：散度只在 Teacher 概率最高的 128 个词上计算，并带一个 τ=0.05 的裁剪，正文没有给出裁剪的具体形式。
 
-论文在 Teacher 的 top-128 词表上精确计算这个求和。PyTRIO 0.2.9 只能拿到 top-20 的 logprob，训练端的 `target_tokens` 也只能是一维，所以我们换成只用**采样到的那个 token** 的估计。对 Student 参数求导，两项的梯度可以合并，得到：
+这个目标里的 $\sum$ 是对词表求和的。每个位置上，Student 的整个分布都被拉向 $m$，不只是被采样到的那个 token。我们的 PyTRIO 版本和论文最大的区别就在这里，见第 3 节和 1.6 的例子。
 
-```math
-\nabla_\theta \mathrm{JSD}_\beta = (1-\beta)\;\mathbb{E}_{y\sim\pi_S}\!\left[\log\frac{\pi_S(y)}{m(y)}\,\nabla_\theta \log \pi_S(y)\right]
+### 1.4 一步训练做了什么
+
+论文的 Algorithm 1 很短。下面按 `train.py` 的实际做法展开，标出每个量的形状；$T_i$ 是第 $i$ 条回答的 token 数：
+
+```text
+输入：Base 权重 θ₀，数据 D = {(x, r)}，β = 0.5，每步 B = 128 道题
+θ_S ← θ₀（LoRA 初始化为 0）；θ_T ← θ₀，冻结
+
+for step = 1 … N:
+    取 B 道题 {(x_i, r_i)}
+    对每道题 i（并发）：
+        y_i ~ π_S(· | x_i)                        # 采样 1 条回答，顺带得到 ℓ_S ∈ R^{T_i}
+        ℓ_T = log π_T(y_i | x_i, r_i, c)           # Teacher 对同一条 y_i 前向一次，ℓ_T ∈ R^{T_i}
+        A_i = (1-β)·log(β·exp(ℓ_T - ℓ_S) + 1-β)    # 逐 token advantage，R^{T_i}（第 3 节）
+        A_i ← A_i / T_i                           # 回答内部取平均，对应公式里的 1/T
+    一次 forward_backward（importance_sampling 损失）+ 一次 Adam 更新 θ_S
 ```
 
-PyTRIO 的 `importance_sampling` 损失在 ratio=1 处的梯度是 $-\sum A\,\nabla\log\pi_S$，所以只要把每个 token 的 advantage 设成：
+论文在最后一步直接对 $\mathcal{L}_\text{RGSD}$ 求梯度。我们拿不到 Teacher 的完整分布，所以先把散度换成逐 token 的 $A$，再交给 PyTRIO 的 `importance_sampling` 损失。`train.py` 在更新前还会检查采样端和训练端的 logprob 是否一致、用固定探针确认参数确实在变，并把整批 advantage 乘一个公共系数（4.2）。
 
-```math
-A_t = (1-\beta)\,\log\!\Big(\beta\,e^{\,\log\pi_T(y_t)-\log\pi_S(y_t)} + (1-\beta)\Big)
+### 1.5 几个设计选择
+
+论文没有逐条解释下面这些选择，以下是我们结合 OPD 和 OPSD 的理解。
+
+回答从 Student 自己采样（on-policy）。Teacher 纠正的是 Student 评测时真正会写出来的前缀。如果反过来让 Teacher 生成回答、Student 去模仿，Student 学到的是 Teacher 的前缀，评测时自己一旦写偏，就落到没见过的状态里，这是模仿学习里的 exposure bias。论文在相关工作中把这类做法和 DAgger 联系起来：让学生自己走，在学生到达的状态上问专家。
+
+Teacher 冻结在 step 0。Teacher 和 Student 是同一个模型，如果 Teacher 跟着更新，Student 的变化会反过来改变训练目标。冻结之后，目标始终是「Base 在看到 rubric 时会怎么写」。论文提到另一项工作让 Teacher 一起训练，RGSD 没有这样做。
+
+用 JSD 而不是 reverse KL。OPSD 用的 reverse KL 在 Teacher 认为某个 token 几乎不可能时，惩罚会无限放大。JSD 以混合分布 $m$ 为参照，$m$ 里至少有 $(1-\beta)$ 份 Student 自己的分布，所以散度有上界。
+
+每题一条 rollout。论文强调 RGSD 的信号是稠密的，回答里每个 token 都贡献一项散度，而 GRPO 是整条回答结束后一个标量。稠密信号不依赖组内比较，一条回答就能算。
+
+### 1.6 一个真实的例子
+
+下面用一条真实的训练数据看看 Teacher 的信号长什么样。题目是训练集的 `medical-004957`：
+
+```text
+Doctor, I have been experiencing a high-grade fever for the past day along with bone pain and fatigue. Should I be concerned?
 ```
 
-在给定的回答前缀处，就能用两个 logprob 构造该位置 JSD 的无偏梯度估计。读一下这个式子：
+这道题有 26 条 rubric，其中几条：回答应分节、用标题组织（#14）；结尾给出简短总结（#15）；指出高烧加剧烈骨痛可能是登革热（#21）；必须出现 "breakbone fever" 这个说法（#24）。
 
-- Teacher 比 Student 更认可这个 token（$\log\pi_T > \log\pi_S$），$A_t > 0$，往上推；
-- Teacher 相比 Student 更不认可这个 token，$A_t < 0$，往下压；负向信号有下界 $(1-\beta)\log(1-\beta) \approx -0.35$；
-- 两者一致时 $A_t \approx 0$。
+Student 在 step 1 写的回答（452 token）先给免责声明，再列可能原因：骨髓炎、深部感染、败血症、恶性肿瘤、自身免疫病，最后建议立即就医，全文没有提登革热。step 1 的 Student 就是 Base（LoRA 初始为 0），所以我们用 Base 分别以 Student 和 Teacher 的输入对这条回答算了一遍逐 token logprob，又取了几个位置上 Teacher 的 top-8 候选。这条回答里 Teacher 更认可的 token 占 29%，和训练日志里记录的一致。挑几个位置：
 
-正向 advantage 仍可能很大；JSD 本身有界，不代表每次采样得到的 advantage 都有界。
-
-用一个简化例子看完整过程。假设问题是「体检报告有一项指标偏高，需要担心吗？」，rubric 要求回答说明具体指标与参考范围、结合症状解释，并避免直接下诊断。Student 只看问题，生成了一条回答；Teacher 则带着这些要求，对这条回答逐 token 计算概率。
-
-以下数值仅用于演示公式，不是实验测量。取回答中某个位置实际采样到的 token $y_t$，固定 Student 的 logprob 为 −2，分别看三种可能的 Teacher 打分，$\beta=0.5$：
-
-| 对同一个 token 的判断 | Student logprob | Teacher logprob | 原始 $A_t$ | 梯度信号 |
+| 前文 → 采样到的 token | $\ell_S$ | $\ell_T$ | $A_t$ | Teacher 最想写的 |
 | --- | ---: | ---: | ---: | --- |
-| Teacher 更认可 | −2 | −1 | +0.310 | 倾向于提高该 token 在 Student 上的概率 |
-| 两者一致 | −2 | −2 | 0 | 该位置没有蒸馏信号 |
-| Teacher 更不认可 | −2 | −3 | −0.190 | 倾向于降低该 token 在 Student 上的概率 |
+| `**` → `Important` | −3.43 | −0.31 | +1.23 | `Important`（73%） |
+| `…immediately.**⏎⏎` → `Regarding` | −2.68 | −8.08 | −0.34 | `###`（91%） |
+| `the addition of` → ` severe` | −4.39 | −0.88 | +1.42 | ` severe`（41%） |
+| `need to be ruled out, such as` → `:` | −0.00 | −6.60 | −0.35 | ` Deng` / ` **`（各约 33%） |
+| `such as:⏎*   **` → `Bone` | −2.92 | −8.45 | −0.35 | `D`（82%） |
+| `Please go to an **` → `urgent` | −2.49 | −0.26 | +0.82 | `urgent`（77%） |
+| `critical for outcomes.` → `<\|im_end\|>` | −0.04 | −8.13 | −0.35 | `⏎⏎`（99%） |
 
-例如第一行是 $A_t=0.5\ln(0.5e^{(-1)-(-2)}+0.5)\approx0.310$。实际训练对整条回答的各个位置重复这个计算，再汇总更新 Student。这里没有「整条回答得了几分」这一步，rubric 的作用体现在 Teacher 的条件概率里。
+看了 rubric 的 Teacher，想法和 Student 很不一样。Student 列原因时从 "Bone"（骨髓炎）开始，Teacher 想写的是 "D"，接下来大概率是 Dengue；Student 写正文时直接用 "Regarding" 开段，Teacher 想先写一个 `###` 标题；Student 写完建议就结束，Teacher 给结束符的概率只有 $e^{-8.1}$，它还想继续写，对应 rubric 里的结尾总结和邀请补充信息。
 
-估计要求按 Student 自身的 token 分布采样，所以训练固定 temperature=1、top_p=1、top_k=-1，不做 top-p/top-k 筛选；回答仍有 2048 token 的长度上限。直接运行 `uv run python experiments/rgsd/loss.py` 会在随机分布上核对这个梯度恒等式。
+这张表也能看出第 3 节估计量的两个性质。第一，负向 advantage 都贴着下界 −0.35，正向可以到 +1.42：Teacher 不认可时，一个 token 最多被压这么多，认可时没有同样的上限。第二，信号只落在被采样到的 token 上。在 "Bone" 处，Student 会被压低 "Bone"，但 Teacher 最想写的 "D" 不会被直接推高，被压掉的概率会按 Student 原有的比例分给其他候选。论文在 top-128 词表上算精确 JSD，会直接把 "D" 往上拉。
+
+最后一行还有一个值得追的现象：如果大多数回答在结尾都收到「不要停」的负向信号，就可能和 6.1 里回答越来越长有关。这里只看了一条回答，要下结论还得统计更多回答结尾的 $A_t$。
+
+## 2. 为什么「看过 rubric 的自己」能当老师
+
+论文在训练前先做了一个诊断（Table 1）：同一个模型，只看题目和看题目 + rubric，回答的 rubric 满足率差多少。差距非常大，Qwen3-4B-Thinking 在医学上从 43.6 涨到 89.8。我们用 Qwen3.5-4B 在评测集前 100 题上也测了一遍：
+
+| 条件 | 满足率 | 平均回答 token |
+| --- | ---: | ---: |
+| 只看题目（Student 的输入） | 46.9 | 851 |
+| 题目 + rubric（Teacher 的输入） | 94.1 | 1,326 |
+
+这说明 rubric 里有大量 Student 没用上的信息。RGSD 的假设是：这些信息里有一部分不是这道题独有的，而是「一个好的医学回答通常该覆盖什么」，比如该问的鉴别诊断、该提醒的就医时机、该写的禁忌。如果 Student 在很多道题上反复向「看过细则的自己」靠拢，也许能把这些习惯学进权重里，评测时不看 rubric 也能写出来。
+
+## 3. PyTRIO 上的实现：只用采样到的 token
+
+论文在 Teacher 的 top-128 词表上精确计算 JSD。PyTRIO 0.2.9 只能拿到 top-20 的 logprob，训练端的 `target_tokens` 也只能是一维，没法对整个词表求和。所以我们换了个办法：只用 Student 实际采样到的那个 token。
+
+把 JSD 对 Student 参数求导，Teacher 那一项的梯度会被抵消，剩下的形式和策略梯度一样：
+
+```math
+\nabla_\theta \mathrm{JSD}_\beta = -\,\mathbb{E}_{y\sim\pi_S}\big[A(y)\,\nabla_\theta \log \pi_S(y)\big],\qquad A(y) = (1-\beta)\log\frac{m(y)}{\pi_S(y)}
+```
+
+也就是说，把 $A$ 当成 advantage，按 Student 自己的分布采样一个 token，就能得到 JSD 梯度的无偏估计。PyTRIO 的 `importance_sampling` 损失正好接收逐 token 的 advantage。把 $m=\beta\pi_T+(1-\beta)\pi_S$ 代进去，只剩两个 logprob（记号同 1.2 的图）：
+
+```math
+A_t = (1-\beta)\,\log\!\big(\beta\,e^{\ell_T-\ell_S} + 1-\beta\big)
+```
+
+Teacher 比 Student 更认可这个 token（$\ell_T>\ell_S$）时 $A_t>0$，往上推；更不认可时 $A_t<0$，往下压，最低到 $(1-\beta)\log(1-\beta)\approx-0.35$；两者一致时 $A_t=0$。正向则没有上限，会随 $\ell_T-\ell_S$ 增大而增大，1.6 的例子里最大到 +1.42。
+
+<details>
+<summary>为什么 Teacher 那一项会抵消</summary>
+
+$\pi_T$ 不依赖 $\theta$，但 $m$ 里含有 $(1-\beta)\pi_S$，所以 $\beta\,\mathrm{KL}(\pi_T\|m)$ 也有梯度，等于 $-\beta(1-\beta)\sum_v \frac{\pi_T(v)}{m(v)}\nabla_\theta\pi_S(v)$。$(1-\beta)\,\mathrm{KL}(\pi_S\|m)$ 求导后，除了 $(1-\beta)\sum_v \nabla_\theta\pi_S(v)\log\frac{\pi_S(v)}{m(v)}$，还多出 $(1-\beta)\sum_v \nabla_\theta\pi_S(v)\big(1-\frac{(1-\beta)\pi_S(v)}{m(v)}\big)$。把两个多出来的部分相加，括号里变成 $1-\frac{m(v)}{m(v)}=0$。最后用 $\nabla_\theta\pi_S=\pi_S\nabla_\theta\log\pi_S$ 把对词表的求和写成按 $\pi_S$ 采样的期望。
+
+直接运行 `uv run python experiments/rgsd/loss.py`，会在随机分布上用 torch 数值核对这个结果。
+
+</details>
+
+代价是方差更大，而且只能调整采样到的 token（1.6 里的 "Bone" 和 "D"）。估计要求按 Student 自身的分布采样，所以训练固定 temperature=1、top_p=1、top_k=-1；回答仍有 2048 token 的长度上限。
 
 | 符号 | 含义 | 本章取值 |
 | --- | --- | --- |
@@ -153,26 +210,13 @@ A_t = (1-\beta)\,\log\!\Big(\beta\,e^{\,\log\pi_T(y_t)-\log\pi_S(y_t)} + (1-\bet
 
 ## 4. 我们是怎么复现的？
 
-### 4.1 训练闭环
-
-`train.py` 每一步：
-
-```text
-1. 把最新权重交给 sampler，128 道题各采样 1 条回答（Student 输入）。
-2. Teacher（step-0 Base）对「题目 + rubric + transition」后面接同一条回答计算逐 token logprob。
-3. 按上面的公式算每个 token 的 advantage，每条回答内部按 token 取平均。
-4. 一致性检查（见 4.4），然后一次 forward_backward + 一次 Adam 更新。
-```
-
-一步 128 条 rollout，只更新一次。这和仓库 [OPSD](../opsd/readme.md) 章节的闭环几乎一样，区别是 Teacher 的输入和 advantage 公式。
-
-### 4.2 数据
+### 4.1 数据
 
 RubricHub 公开版没有官方的 train/val 划分，行数也和论文不同。`prepare_data.py` 固定数据 revision，按 seed 42 打乱，每个领域切出 300 题当评测集，其余当训练集。医学训练集 29,381 题，平均每题 30 条 rubric，权重 2–15。
 
 评测分数是论文公式 1 的加权满足率：裁判逐条判断 rubric 是否满足，满足条目的权重之和除以全部权重之和。
 
-### 4.3 Advantage 如何进入更新
+### 4.2 Advantage 如何进入更新
 
 代码先把每条回答的 $A_t$ 除以自身的训练 token 数 $T_i$，让长短回答按序列平均；提交给 `importance_sampling` 前，再乘 batch 的平均训练长度 $\bar T$（`train.py` 的 `batch_scale`）：
 
@@ -181,30 +225,21 @@ RubricHub 公开版没有官方的 train/val 划分，行数也和论文不同�
 \bar T=\frac{1}{B}\sum_{i=1}^{B}T_i
 ```
 
-同一 batch 内，各条回答的相对权重仍按 $1/T_i$ 缩放，公共系数 $\bar T$ 用于调整梯度量级。这是本次 LoRA 适配的实现选择，不能仅凭单个 token 的梯度恒等式，就认为整个训练过程与论文的优化完全等价。
+同一 batch 内，各条回答的相对权重仍按 $1/T_i$ 缩放，公共系数 $\bar T$ 只用来调整梯度量级。这是我们为 LoRA 加的缩放，论文没有这一步。
 
-阶段 A 的梯度范数约为 0.013–0.035。脚本用 `--min-grad-norm`（默认 1e-3）排查异常小的梯度，再用固定探针的 logprob 变化确认模型输出确实发生了变化。全局梯度范数不能单独确定 Adam 的实际更新幅度；Adam 还会使用逐参数的一阶、二阶矩估计和 eps。
+阶段 A 的梯度范数约为 0.013–0.035。脚本用 `--min-grad-norm`（默认 1e-3）排查异常小的梯度，再用固定探针的 logprob 变化确认模型输出确实发生了变化。
 
-<details>
-<summary>早期排障：额外归一化让梯度过小</summary>
-
-早期一次训练跑了 23 步，KL 几乎没有变化，梯度范数约 3e-7，花费约 60 元。当时每条回答内部已按长度平均，之后又额外做了一次 batch 级归一化。后来去掉这层额外缩放，并采用上面的平均长度系数，梯度量级恢复。这个经历促使我们把梯度检查和固定探针加入后续运行；单看一条平坦的 KL 曲线，不足以判断参数是否在有效更新。
-
-</details>
-
-
-### 4.4 与论文的差异
+### 4.3 与论文的差异
 
 | 项目 | 论文 | 本章 | 影响 |
 | --- | --- | --- | --- |
 | 基座模型 | Qwen2.5-3B/7B-Instruct、Qwen3-4B/8B-Thinking | Qwen3.5-4B，关闭思考 | 绝对分数不能和论文直接对比 |
 | 参数更新 | 全参，lr 4.2e-6 | LoRA rank 64，lr 4e-5 | 没有扫参 |
-| 损失 | Teacher top-128 词表上的精确 JSD，裁剪 τ=0.05 | 采样 token 的无偏梯度估计，不裁剪 | 梯度方差更大 |
+| 损失 | Teacher top-128 词表上的精确 JSD，裁剪 τ=0.05 | 采样 token 的无偏梯度估计，不裁剪 | 梯度方差更大，Teacher 偏好的未采样 token 不会被直接推高 |
 | 训练量 | 5 epoch，医学 490 步 | 20 步 | 只够看早期变化 |
 | 数据划分 | RubricHub 官方 train / val | 公开 parquet 按 seed 自行切分 | 评测集不同 |
 | 回答上限 | 2048（Instruct）/ 4096（Thinking） | 2048 | 训练后期约 20% 被截断，见 6.1 |
-| 评测裁判 | gpt-5.4 | OpenAI 兼容接口上的 `gpt-6.1` 系列模型 | 分数尺度不同 |
-| 实验追踪 | — | SwanLab | 无 |
+| 评测裁判 | gpt-5.4 | gpt-6.1 | 分数尺度不同 |
 
 β=0.5、batch 128、每题 1 条 rollout、10% warmup 后恒定学习率、Teacher 固定在 step 0、Student 与 Teacher 的模板都和论文保持一致。
 
@@ -214,7 +249,7 @@ RubricHub 公开版没有官方的 train/val 划分，行数也和论文不同�
 | --- | --- |
 | `rgsd/kl_student_mixture` | Student 离混合分布有多远，应该下降 |
 | `rgsd/teacher_prefers_rate` | Teacher 比 Student 更认可的 token 占比 |
-| `optim/grad_norm` | 低于 1e-3 时触发本次配置的停止阈值；结合固定探针判断更新情况（4.3） |
+| `optim/grad_norm` | 低于 1e-3 时触发本次配置的停止阈值；结合固定探针判断更新情况（4.2） |
 | `consistency/*` | 采样端与训练端 logprob 差，正常约 0.01–0.04 |
 | `probe/*` | 探针序列的 logprob 变化，确认参数在动 |
 | 回答长度与截断率 | 截断的回答没有结尾，Student 学不到「什么时候该停」 |
@@ -236,76 +271,57 @@ KL 下降只说明 Student 和 Teacher 越来越像，不说明回答变好，�
 | 截断率 | 1.6% | 9.4% | 21.1% |
 | Teacher 更认可的 token 占比 | 33.2% | 52.9% | 46.5% |
 
-20 步可以分成两段：
-
-- **前 10 步**：KL 从 0.058 降到 0.031，Teacher 更认可的 token 从 33% 升到 53%，回答长度变化不大。Student 在向 Teacher 靠拢。
-- **后 10 步**：KL 停在 0.030 左右不再下降，Teacher 更认可的比例反而回落到 46%，回答长度从 1,116 涨到 1,573，截断率从 9% 涨到 21%。这一段变化最大的是长度。
-
-我们翻了 rollout 里的回答。Student 没有照抄 rubric 原文：回答和这道题 rubric 的 5-gram 重合只有 0.4–0.6%。后 10 步被截断的 258 条回答里，211 条是正常但写得很长的回答，32 条陷入重复，13 条卡在大表格里。
+20 步可以分成两段。前 10 步 KL 从 0.058 降到 0.031，Teacher 更认可的 token 从 33% 升到 53%，回答长度变化不大，Student 在向 Teacher 靠拢。后 10 步 KL 停在 0.030 左右不再下降，Teacher 更认可的比例反而回落到 46%，回答长度从 1,116 涨到 1,573，截断率从 9% 涨到 21%，这一段变化最大的是长度。
 
 ### 6.2 Eval
 
-在固定的 300 题评测集上，每个模型每题生成 1 条回答（temperature 1、top_p 1，seed 按题目下标固定，不同模型在同一道题上用同一个种子），关闭思考，上限 2048 token，然后用同一个裁判逐条判断 rubric。
+在固定的 300 题评测集上，每个模型每题生成 1 条回答（temperature 1、top_p 1），关闭思考，上限 2048 token，然后用同一个裁判逐条判断 rubric。
 
-除了 Base 和两个 checkpoint，我们加了一个论文里没有的对照：**Base + thorough**，在题目后面空一行，加上 Teacher 模板里与 rubric 无关的那句话：
+除了 Base 和两个 checkpoint，我们加了一个论文里没有的对照：Base + thorough，在题目后面空一行，加上 Teacher 模板里与 rubric 无关的那句话：
 
 ```text
 Provide a thorough response to the problem.
 ```
 
-加它的原因是 6.1 里回答越来越长。Teacher 的 transition prompt 本身就要求 thorough，Student 向 Teacher 靠拢时，可能学到的只是「写全一点」，而不是 rubric 的内容。这个对照不训练，只改提示词，用来回答：一句话能拿到多少分？
+加它的原因是 6.1 里回答越来越长。Teacher 的答题指令 $c$ 本身就要求 thorough，Student 向 Teacher 靠拢时，可能学到的只是「写全一点」，而不是 rubric 的内容。这个对照不训练，只改提示词，用来回答：一句话能拿到多少分？
 
 ![评测对比](./images/eval-comparison.png)
 
-| 模型 | 满足率 | 95% CI | 平均回答 token | 截断率 |
-| --- | ---: | ---: | ---: | ---: |
-| Base | 36.7 | [34.7, 38.6] | 873 | 0.3% |
-| Base + thorough | 43.8 | [41.8, 46.0] | 1,372 | 4.7% |
-| RGSD Step 10 | 31.5 | [29.5, 33.5] | 1,182 | 12.0% |
-| RGSD Step 20 | 42.9 | [40.7, 45.1] | 1,617 | 25.3% |
-| RGSD Step 20（上限 4096） | 43.3 | [41.1, 45.5] | 1,803 | 4.7% |
-
-同一道题上的配对差值（单位 pp，括号是 95% bootstrap CI）：
-
-| 比较 | 差值 | 长度比中位数 | 等长校正后 |
+| 模型 | 满足率 | 平均回答 token | 截断率 |
 | --- | ---: | ---: | ---: |
-| Step 10 − Base | −5.2 [−6.7, −3.7] | 1.29 | −7.9 [−9.5, −6.1] |
-| Step 20 − Base | **+6.3** [+4.7, +7.8] | 1.83 | −0.9 [−3.9, +2.4] |
-| Base + thorough − Base | **+7.2** [+5.8, +8.7] | 1.53 | +2.5 [−0.0, +5.6] |
-| Step 20 − Base + thorough | **−0.9** [−2.4, +0.5] | 1.17 | −1.9 [−3.7, −0.4] |
+| Base | 36.7 | 873 | 0.3% |
+| Base + thorough | 43.8 | 1,372 | 4.7% |
+| RGSD Step 10 | 31.5 | 1,182 | 12.0% |
+| RGSD Step 20 | 42.9 | 1,617 | 25.3% |
+| RGSD Step 20（上限 4096） | 43.3 | 1,803 | 4.7% |
 
-「等长校正」是对每道题的得分差和长度比 $\ln(L_a/L_b)$ 做线性回归，取长度相同时的截距。它是外推，只在两边长度有重叠时才可信（Step 20 和 Base 只有 25 道题长度差在 25% 以内）。
+只有 300 道题，换一批题分数就会上下浮动几个点。为了判断两个模型的差距是不是偶然，我们在同一道题上算两者的得分差，再对 300 道题做 bootstrap，得到差值的 95% 区间。区间不包含 0，才说明差距显著。图中的误差线是各模型自身分数的 95% 区间。
 
-逐行看：
+Step 10 比 Base 低 5.2pp（区间 −6.7～−3.7），下降主要在事实类和安全提醒类的 rubric 条目，评测回答里有 23 条陷入重复。这一步 KL 刚降下来，回答还没变长，质量却先变差了。
 
-- **Step 10 比 Base 低 5.2pp。** 下降主要在事实类和安全提醒类的 rubric 条目，评测回答里有 23 条陷入重复。这一步 KL 刚降下来，回答还没变长，质量却先变差了。
-- **Step 20 比 Base 高 6.3pp**，量级和论文 Qwen3-4B-Thinking 在 RubricHub 医学上的 +7.5pp 接近。但它的回答是 Base 的 1.83 倍长。按长度校正后，差值接近 0。
-- **Base + thorough 比 Base 高 7.2pp**，只多了一句话，没有训练。
-- **Step 20 和 Base + thorough 打平**，长度相近时 Step 20 还略低。
-- **把上限放到 4096 不改变结论**：截断率从 25% 降到 5%，分数只多 0.3pp。被 2048 截断的题本身就更难，放开上限后也只从 35.3 涨到 36.7。
+Step 20 比 Base 高 6.3pp（区间 +4.7～+7.8），量级和论文 Qwen3-4B-Thinking 在 RubricHub 医学上的 +7.5pp 接近。但只多一句话、没有训练的 Base + thorough 比 Base 高 7.2pp（区间 +5.8～+8.7）。Step 20 比 Base + thorough 低 0.9pp，区间 −2.4～+0.5 包含 0，两者算打平。
+
+把上限放到 4096 不改变结论：截断率从 25% 降到 5%，分数只多 0.3pp。被 2048 截断的题本身就更难，放开上限后也只从 35.3 涨到 36.7。
 
 ## 7. 这次复现有哪些边界？
 
-- **能支持的结论**：代码链路是通的。JSD 估计量的梯度经过数值核对，20 步里 Student 稳定地向 Teacher 靠拢（KL 下降、Teacher 认可率上升），评测分数在 Step 20 显著高于 Base，量级和论文一致。
-- **不能支持的结论**：「RGSD 让模型学到了 rubric 的内容」。在我们的设置下，Step 20 的涨幅可以被一句 thorough 提示完全复现。
-- **对论文结论的含义**：论文没有报告提示词对照，所以这个对照既不能证明、也不能否定论文的结果。论文的训练量是我们的约 25 倍，学习的可能是更深的东西；论文在 Qwen2.5 上还观察到 RGSD 的回答比 GRPO 更短，而我们 20 步后的回答变长了 1.8 倍。两者设置不同，不能直接比较。
-- 模型、全参还是 LoRA、损失的估计方式、数据划分和裁判都与论文不同，绝对分数不能和论文对比。
+代码链路是通的：JSD 估计量的梯度经过数值核对，20 步里 Student 稳定地向 Teacher 靠拢（KL 下降、Teacher 认可率上升），评测分数在 Step 20 显著高于 Base，量级和论文一致。
+
+但这些结果不能说明「RGSD 让模型学到了 rubric 的内容」。在我们的设置下，Step 20 的涨幅可以被一句 thorough 提示完全复现。另外，模型、全参还是 LoRA、损失的估计方式、数据划分和裁判都与论文不同，绝对分数不能和论文对比。
 
 ## 8. 待验证的问题
 
 以下几点来自复现观察，尚未进一步实验验证。
 
-- **Student 学到的是 rubric，还是「写全一点」？** 最直接的消融是 Teacher 不给 rubric、只保留同样的 transition 句子，其余设置完全相同再训练 20 步。阶段 A 减去这个对照，才是 rubric 本身的贡献。更便宜的检查是给 Step 20 也加上 thorough 指令评测：如果它明显高于 Base + thorough，说明训练学到的东西和「写全」可以叠加。
-- **训练更久会不会不一样？** KL 在第 10 步之后不再下降，后 10 步主要是长度在涨。不确定这是 LoRA、学习率还是采样估计的方差造成的平台，还是 20 步之后会继续下降。需要续训到更多步数，并且每个 checkpoint 都和 Base + thorough 比较。
-- **截断对蒸馏的影响。** RGSD 是逐 token 蒸馏，截断不像 GRPO 那样让 reward 失真，被截断的回答前面的 token 照样有信号。但截断回答里没有结束符，Student 学不到「什么时候该停」，这可能和长度持续增长有关。
+Student 学到的是 rubric，还是「写全一点」？最直接的消融是 Teacher 不给 rubric、只保留同样的答题指令 $c$，其余设置完全相同再训练 20 步。阶段 A 减去这个对照，才是 rubric 本身的贡献。更便宜的检查是给 Step 20 也加上 thorough 指令评测：如果它明显高于 Base + thorough，说明训练学到的东西和「写全」可以叠加。
+
+训练更久会不会不一样？KL 在第 10 步之后不再下降，后 10 步主要是长度在涨。不确定这是 LoRA、学习率还是采样估计的方差造成的平台，还是 20 步之后会继续下降。需要续训到更多步数，并且每个 checkpoint 都和 Base + thorough 比较。
+
+截断对蒸馏有什么影响？RGSD 是逐 token 蒸馏，截断不像 GRPO 那样让 reward 失真，被截断的回答前面的 token 照样有信号。但截断回答里没有结束符，Student 学不到「什么时候该停」，这可能和长度持续增长有关。
 
 ## 9. 小结
 
 RGSD 把 rubric 从裁判手里拿回来，交给模型自己：看过 rubric 的自己当老师，没看过的自己当学生，逐 token 用 JSD 蒸馏。训练不需要裁判，每道题只要一条 rollout，代价是 Teacher 每步要多做一次带 rubric 的前向。
-
-这次 20 步复现跑通了链路，评测分数也涨了 6.3pp，和论文量级一致。但我们加了一个只改提示词的对照，Base 加一句「请详细回答」就能拿到同样的分数。所以目前的证据更支持「模型学会了写得更全、更长」，还不足以说明它从 rubric 里学到了更多内容。
-
-复现中花时间最多的不是算法本身，而是确认每一步更新真的生效：advantage 的缩放是否合适、采样端和训练端是不是同一个模型、评测涨分是不是只来自长度。这些问题都不会让训练报错，只会让曲线和分数看起来「还行」。
 
 ## 参考资料
 

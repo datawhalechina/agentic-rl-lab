@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560" font-family="PingFang SC, 'Noto Sans CJK SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="960" height="560" fill="#ffffff"/>
+
+  <!-- Student input -->
+  <rect x="40" y="28" width="360" height="132" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="60" y="58" font-size="18" font-weight="600" fill="#1e3a8a">Student 输入</text>
+  <text x="60" y="84" font-size="13" fill="#1e40af">可训练（LoRA），训练和评测都只看到题目</text>
+  <rect x="60" y="100" width="320" height="40" rx="6" fill="#ffffff" stroke="#93c5fd"/>
+  <text x="76" y="125" font-size="15" fill="#0f172a">题目 x</text>
+
+  <!-- Teacher input -->
+  <rect x="560" y="28" width="360" height="132" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="580" y="58" font-size="18" font-weight="600" fill="#7c2d12">Teacher 输入</text>
+  <text x="580" y="84" font-size="13" fill="#9a3412">同一个模型，权重冻结在 step 0（Base）</text>
+  <rect x="580" y="100" width="90" height="40" rx="6" fill="#ffffff" stroke="#fdba74"/>
+  <text x="596" y="125" font-size="15" fill="#0f172a">题目 x</text>
+  <rect x="678" y="100" width="106" height="40" rx="6" fill="#ffedd5" stroke="#fdba74"/>
+  <text x="692" y="125" font-size="15" fill="#0f172a">rubric r</text>
+  <rect x="792" y="100" width="108" height="40" rx="6" fill="#ffffff" stroke="#fdba74"/>
+  <text x="804" y="125" font-size="15" fill="#0f172a">答题指令 c</text>
+
+  <!-- sampling -->
+  <path d="M220,160 L220,212" stroke="#475569" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="232" y="192" font-size="13" fill="#475569">采样 1 条回答 y ~ π_S(· | x)，temperature 1</text>
+
+  <!-- answer strip -->
+  <rect x="40" y="216" width="880" height="62" rx="10" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="60" y="252" font-size="15" font-weight="600" fill="#0f172a">回答 y</text>
+  <g font-size="15" fill="#0f172a">
+    <rect x="150" y="230" width="84" height="34" rx="5" fill="#ffffff" stroke="#cbd5e1"/><text x="182" y="253">y₁</text>
+    <rect x="244" y="230" width="84" height="34" rx="5" fill="#ffffff" stroke="#cbd5e1"/><text x="276" y="253">y₂</text>
+    <text x="350" y="253" fill="#64748b">…</text>
+    <rect x="390" y="230" width="84" height="34" rx="5" fill="#fef9c3" stroke="#ca8a04"/><text x="422" y="253">y_t</text>
+    <text x="496" y="253" fill="#64748b">…</text>
+    <rect x="536" y="230" width="84" height="34" rx="5" fill="#ffffff" stroke="#cbd5e1"/><text x="568" y="253">y_T</text>
+  </g>
+  <text x="640" y="246" font-size="13" fill="#475569">同一条 y 接在 Teacher 输入后面，</text>
+  <text x="640" y="266" font-size="13" fill="#475569">只做一次前向，Teacher 不另外生成</text>
+  <path d="M740,160 L740,216" stroke="#475569" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-start="url(#arrow)"/>
+
+  <!-- per-position comparison -->
+  <path d="M432,278 L432,312" stroke="#475569" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <rect x="40" y="316" width="880" height="122" rx="10" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="60" y="346" font-size="15" font-weight="600" fill="#0f172a">在第 t 个位置，比较两者对同一个 token y_t 的概率</text>
+  <rect x="60" y="362" width="400" height="58" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="76" y="386" font-size="14" fill="#1e3a8a">ℓ_S = log π_S(y_t | x, y&lt;t)</text>
+  <text x="76" y="408" font-size="12" fill="#1e40af">采样时顺带返回，不需要额外前向</text>
+  <rect x="500" y="362" width="400" height="58" rx="6" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="516" y="386" font-size="14" fill="#7c2d12">ℓ_T = log π_T(y_t | x, r, c, y&lt;t)</text>
+  <text x="516" y="408" font-size="12" fill="#9a3412">多看了 rubric，对 y_t 的判断可能不同</text>
+
+  <!-- advantage and update -->
+  <path d="M480,438 L480,472" stroke="#475569" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <rect x="160" y="476" width="640" height="62" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="480" y="502" font-size="15" text-anchor="middle" fill="#14532d">A_t = (1−β) · log(β · e^(ℓ_T − ℓ_S) + 1 − β)，β = 0.5</text>
+  <text x="480" y="526" font-size="13" text-anchor="middle" fill="#166534">ℓ_T &gt; ℓ_S 推高该 token；ℓ_T &lt; ℓ_S 压低该 token；只更新 Student</text>
+</svg>
