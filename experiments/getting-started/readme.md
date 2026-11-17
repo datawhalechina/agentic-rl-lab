@@ -4,6 +4,8 @@
 
 全程不需要 GPU。训练和采样跑在 PyTRIO 的云端 GPU 上，你的电脑只负责数据、reward 和训练循环，一台能够联网的笔记本电脑就足够了。
 
+**Windows 用户先看：** 下面的命令默认按 macOS / Linux 的 bash 写。Windows 推荐装 [Git for Windows](https://git-scm.com/download/win)，用自带的 Git Bash 直接照抄；继续用 PowerShell 也可以，环境变量、激活和续行的写法在文中单独标注，其余命令一致。
+
 ## 0. 先搞清楚谁在干什么
 
 | 组件 | 跑在哪 | 负责什么 |
@@ -27,7 +29,7 @@
    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
 
-   `brew install uv` 或 `pip install uv` 也可以。
+   `brew install uv`（macOS）或 `pip install uv` 也可以。
 
 2. clone 仓库并同步依赖：
 
@@ -39,7 +41,20 @@
 
    `uv sync` 按 `uv.lock` 创建 `.venv` 并装好全部依赖，版本和仓库完全一致。本地 Python 低于 3.13 时 uv 会自动下载一个合适的版本，不用手动装。
 
-3. 记住一件事：仓库里的命令都加 `uv run` 前缀，或者先 `source .venv/bin/activate`（Windows 是 `.venv\Scripts\activate`）。`trio`、`swanlab` 这两个可执行文件在 `.venv` 里，在系统终端直接敲会报 command not found。
+3. 记住一件事：仓库里的命令都加 `uv run` 前缀，或者先激活虚拟环境：
+
+   ```bash
+   # macOS / Linux
+   source .venv/bin/activate
+   # Windows Git Bash
+   source .venv/Scripts/activate
+   # Windows PowerShell
+   .venv\Scripts\Activate.ps1
+   # Windows CMD
+   .venv\Scripts\activate.bat
+   ```
+
+   `trio`、`swanlab` 这两个可执行文件在 `.venv` 里，在系统终端直接敲会报 command not found。PowerShell 提示「禁止运行脚本」时，执行一次 `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`；也可以不激活，所有命令都用 `uv run`。
 
 4. 验证版本：
 
@@ -49,12 +64,21 @@
 
    输出应该是 `0.2.9 0.10.4`，大于这个版本的都可以～
 
-5. 额外依赖按需装：跑 ALFWorld、TEMPO、AgentOPSD 三章需要 `uv sync --extra alfworld`，其余章节不用。
+5. 额外依赖按需装：跑 ALFWorld、TEMPO、AgentOPSD 三章需要 `uv sync --extra alfworld`，其余章节不用。这个 extra 依赖的 `textworld` 官方只提供 macOS / Linux 版本；ReTool 的本地沙箱和 Tournament-GRPO 的文件锁也用了 POSIX API。所以这几章在 Windows 原生环境跑不了，需要 WSL2（[安装文档](https://learn.microsoft.com/windows/wsl/install)）；其余章节可以原生运行。
 
 网络不顺畅时（顺畅就跳过）：
 
-- `uv sync` 慢：`UV_DEFAULT_INDEX=https://mirrors.cernet.edu.cn/pypi/web/simple uv sync`。
-- GSM8K 下载超时：`export HF_ENDPOINT=https://hf-mirror.com` 后重跑。部分章节的数据走 ModelScope，不需要翻墙，以各章 `start.md` 为准。
+- `uv sync` 慢：`uv sync --default-index https://mirrors.cernet.edu.cn/pypi/web/simple`。这个参数在 macOS、Linux 和 PowerShell 里写法相同。
+- GSM8K 下载超时：设置镜像后重跑。
+
+  ```bash
+  # macOS / Linux
+  export HF_ENDPOINT=https://hf-mirror.com
+  # Windows PowerShell
+  $env:HF_ENDPOINT = "https://hf-mirror.com"
+  ```
+
+  这些环境变量只对当前终端窗口生效；想长期保留，Windows 可以执行 `setx HF_ENDPOINT https://hf-mirror.com` 后重开终端。部分章节的数据走 ModelScope，不需要翻墙，以各章 `start.md` 为准。
 
 ## 2. PyTRIO：注册、登录、验证
 
@@ -82,9 +106,16 @@ trio: Login successfully. Hi, <your username>!
 CI 或脚本等不方便交互的场景，两种替代：
 
 ```bash
-uv run trio login -k <your API Key>
-# 或者
-export PYTRIO_API_KEY=<your API Key>
+uv run trio login -k YOUR_API_KEY
+```
+
+或者直接设置环境变量：
+
+```bash
+# macOS / Linux
+export PYTRIO_API_KEY=YOUR_API_KEY
+# Windows PowerShell
+$env:PYTRIO_API_KEY = "YOUR_API_KEY"
 ```
 
 部分章节的评测脚本（如 medical-opd）从自己目录下的 `.env` 读 `PYTRIO_API_KEY`；Search-R1 的 DeepSeek 搜索后端还需要 `DEEPSEEK_API_KEY`，Tournament-GRPO 需要 judge 模型的 key。这些都在各章 `start.md` 里写明，`.env` 已被 gitignore，别把 key 提交进仓库。
@@ -92,13 +123,10 @@ export PYTRIO_API_KEY=<your API Key>
 验证连接（几乎不消耗额度）：
 
 ```bash
-uv run python - <<'PY'
-import pytrio as trio
-client = trio.ServiceClient()
-for name in client.get_supported_models():
-    print(name)
-PY
+uv run python -c "import pytrio as trio; print(*trio.ServiceClient().get_supported_models(), sep='\n')"
 ```
+
+这一行在 Git Bash、PowerShell 和 CMD 里都能直接粘贴运行。
 
 能打印出 `Qwen/Qwen3.5-4B` 一类的模型清单就说明通了，清单以服务端实际提供为准。
 
@@ -165,12 +193,12 @@ uv run swanlab watch experiments/grpo/swanlog
 ## 附：命令速查
 
 ```bash
-uv sync                                          # 装 / 恢复依赖
-uv run trio login                                # PyTRIO 登录
-uv run swanlab login                             # SwanLab 登录
-uv run swanlab verify                            # 检查 SwanLab 凭据
-uv run python experiments/grpo/01-demo-sync.py \
-    --steps 10 --batch-size 4 --group-size 8 \
-    --max-tokens 512 --swanlab-mode online        # 第一次训练
-uv run swanlab watch experiments/grpo/swanlog     # 看本地日志
+uv sync                                                            # 装 / 恢复依赖
+uv run trio login                                                  # PyTRIO 登录
+uv run swanlab login                                               # SwanLab 登录
+uv run swanlab verify                                              # 检查 SwanLab 凭据
+uv run python experiments/grpo/01-demo-sync.py --steps 10 --batch-size 4 --group-size 8 --max-tokens 512 --swanlab-mode online   # 第一次训练
+uv run swanlab watch experiments/grpo/swanlog                      # 看本地日志
 ```
+
+训练命令写成一行，是为了在 PowerShell、CMD 和 bash 里都能直接粘贴；bash 里想换行的话用 `\`，PowerShell 里用反引号 `` ` ``。

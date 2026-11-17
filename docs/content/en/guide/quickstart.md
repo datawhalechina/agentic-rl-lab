@@ -46,6 +46,8 @@ ALFWorld, TEMPO and AgentOPSD also need the environment dependencies:
 uv sync --extra alfworld
 ```
 
+Native Windows cannot install this extra (`textworld` ships macOS/Linux builds only); ReTool's local sandbox and Tournament-GRPO's file lock also rely on POSIX APIs. Run those chapters under WSL2; the rest work natively on Windows. See [Environment setup and core concepts](/en/experiments/getting-started/) for the full platform notes.
+
 Then prepare data and environments for [ALFWorld](/en/experiments/alfworld/run), [TEMPO](/en/experiments/tempo/) or [AgentOPSD](/en/experiments/agentopsd/run). Search-R1 retrieval backends, the ReTool local sandbox and Spec-o3 multimodal data have their own configuration requirements.
 
 ## Keep an experiment reproducible

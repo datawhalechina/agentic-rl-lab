@@ -175,8 +175,8 @@
   },
   "docs/translations/en/getting-started.md": {
     "source": "experiments/getting-started/readme.md",
-    "sourceSha256": "cd670e66942efc7e22f8fa0bbfae4650a7424b55ab6cf8e38af201f5e638e43a",
-    "translatedAt": "2026-11-11",
+    "sourceSha256": "7fd0b2ffb35fe73f228e4c80d901afb921eed242ce0dd0c9ebdc7faf2f0d1bb1",
+    "translatedAt": "2026-11-17",
     "engine": "English translation reviewed against source; original code and equations preserved"
   }
 }

@@ -46,6 +46,8 @@ ALFWorld、TEMPO 和 AgentOPSD 还需要环境依赖：
 uv sync --extra alfworld
 ```
 
+Windows 原生环境装不了这个 extra（`textworld` 只提供 macOS / Linux 版本）；ReTool 的本地沙箱和 Tournament-GRPO 的文件锁也依赖 POSIX API。这几章需要在 WSL2 里运行，其余章节可以直接在 Windows 上跑。完整的平台说明见[环境配置与基础概念](/experiments/getting-started/)。
+
 随后按对应章节准备环境与数据：[ALFWorld](/experiments/alfworld/run)、[TEMPO](/experiments/tempo/)、[AgentOPSD](/experiments/agentopsd/run)。Search-R1 的检索后端、ReTool 的本地沙箱和 Spec-o3 的多模态数据也各有独立配置。
 
 ## 记录一次可复查的实验
