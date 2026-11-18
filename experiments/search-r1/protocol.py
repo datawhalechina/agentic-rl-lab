@@ -144,8 +144,33 @@ def build_next_prompt(
     ]
 
 
+# 采样端偶尔会在 completion 尾部留下模板停止标记（不同 SDK/模板不一致），
+# 它们不属于 assistant 正文，必须先剔除再解析，否则合法工具调用会被判成 invalid。
+STOP_TOKENS = (
+    "<|im_end|>",
+    "<|endoftext|>",
+    "<|end|>",
+    "<eos>",
+    "</tool_response>",
+)
+
+
+def strip_trailing_stops(text: str) -> str:
+    """只剔除文本尾部的停止标记与空白，不改变正文任何字符。"""
+    s = text.rstrip()
+    changed = True
+    while changed:
+        changed = False
+        for tok in STOP_TOKENS:
+            if s.endswith(tok):
+                s = s[: -len(tok)].rstrip()
+                changed = True
+    return s
+
+
 def parse_assistant(text: str) -> ParsedAssistant:
     """把 assistant 文本识别成搜索调用、最终回答或非法调用。"""
+    text = strip_trailing_stops(text)
     matches = list(TOOL_CALL_PATTERN.finditer(text))
     if not matches:
         kind = "invalid" if "<tool_call>" in text else "answer"
