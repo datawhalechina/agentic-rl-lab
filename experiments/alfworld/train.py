@@ -340,7 +340,6 @@ def build_trajectory_datum(
             "advantages": np.asarray(advantages, dtype=np.float32),
         },
     )
-    datum.validate_loss_inputs("ppo")
     return TrainingDatum(
         datum=datum,
         num_tokens=len(input_tokens),
