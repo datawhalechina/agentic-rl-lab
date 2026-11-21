@@ -145,6 +145,7 @@ def fit_tool_content(
     config: RolloutConfig,
 ) -> tuple[str, list[int]] | None:
     """在工具输出和总轨迹预算内截断执行结果；保留尾部（结果/报错关键在末尾）。"""
+    tail = content
     while True:
         if token_count(tokenizer, content) <= config.max_tool_response_tokens:
             next_tool_message = tool_message(pending.call_id, content)
@@ -157,9 +158,13 @@ def fit_tool_content(
             )
             if len(next_prompt) <= config.max_trajectory_tokens:
                 return content, next_prompt
-        if len(content) <= 64:
+        # Shrink the raw output and add the marker once. Re-truncating the
+        # marked-up text made its length settle at 65-66 chars, so this exit
+        # was never reached and the rollout looped forever.
+        if len(tail) <= 64:
             return None
-        content = "[... truncated ...]\n" + content[-int(len(content) * 0.7) :]
+        tail = tail[-int(len(tail) * 0.7) :]
+        content = "[... truncated ...]\n" + tail
 
 
 def make_request(
