@@ -74,6 +74,7 @@ experiments/vision-grpo/datasets/
 | 每题 rollout 数 | 8 |
 | 最大生成长度 | 1,024 tokens |
 | 学习率 | `4e-5` |
+| 单次 backward 提交 | micro-batch 拆分，每批 ≤ 8 条 Datum（服务端单批图片上限） |
 | 图文模板 | `enable_thinking=False` |
 
 ## 1. 一张图片怎样进入 PyTRIO？
@@ -215,7 +216,7 @@ datum = trio.Datum(
 
 ## 3. 如何启动训练？
 
-所有命令都从仓库根目录运行。项目要求 Python 3.13 及以上，并锁定 `pytrio==0.2.7`。
+所有命令都从仓库根目录运行。项目要求 Python 3.13 及以上，并锁定 `pytrio==0.2.9`。
 
 ### 3.1 安装与登录
 
@@ -276,6 +277,14 @@ State 权重：trio://.../training_state/...-state
 ```
 
 `sampler_weights` 用于推理和评测，`training_state` 用于恢复训练。
+
+### 3.5 单批图片张数上限与 micro-batch 拆分
+
+PyTRIO 服务端限制了单次 `forward_backward` 请求能携带的图片张数（实测 `pytrio==0.2.9` 上限为 **8 张**，官方 0.2.7 案例代码整批提交 64 条 Datum 在当前服务端会报 `InputRejected: batch exceeds image count limit`）。而 GRPO 每条 Datum 都内嵌一张图：8 题 × 8 条 rollout 最多产生 64 张图。
+
+因此一个 step 内的 Datum 会按 `--micro-batch-size`（默认 8，即上限值）拆成多次 `forward_backward`，梯度在远端累积，最后只做一次 `optim_step`。远端对每次请求内的样本取 mean，拆分前会把第 k 个 micro-batch 的 advantage 乘以 `n_k / N`，保证多次累积等价于整批一次提交的 global mean 梯度；指标合并时 `loss_mean` 相加恢复全局均值，其余指标取平均。
+
+如果未来服务端调整上限，只需同步修改 `--micro-batch-size`，无需改动 batch/group 配置。
 
 更紧凑的命令清单见 [快速启动文档](./start.md)。
 

@@ -20,6 +20,7 @@ import asyncio
 import io
 import re
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
@@ -74,6 +75,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-p", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--learning-rate", type=float, default=4e-5)
+    parser.add_argument(
+        "--micro-batch-size",
+        type=int,
+        default=8,
+        help=(
+            "单次 forward_backward 最多提交的 Datum 数；每条 Datum 携带一张图，"
+            "实测不能超过服务端单批 8 张图片的上限"
+        ),
+    )
     parser.add_argument(
         "--swanlab-mode",
         choices=("online", "local", "offline", "disabled"),
@@ -250,8 +260,15 @@ async def run_rollout_group(
     return RolloutGroup(prompt_chunks, prompt_length, samples)
 
 
-def build_grpo_datum(group: RolloutGroup, sample: RolloutSample) -> trio.Datum:
-    """把图文 prompt chunk 和 completion 拼成 GRPO Datum。"""
+def build_grpo_datum(
+    group: RolloutGroup,
+    sample: RolloutSample,
+    advantage_scale: float = 1.0,
+) -> trio.Datum:
+    """把图文 prompt chunk 和 completion 拼成 GRPO Datum。
+
+    advantage_scale 用于 micro-batch 累积时按 n_k / N 缩放 advantage。
+    """
     model_input = trio.ModelInput(
         chunks=[
             *group.prompt_chunks,
@@ -273,9 +290,28 @@ def build_grpo_datum(group: RolloutGroup, sample: RolloutSample) -> trio.Datum:
             "advantages": np.asarray(
                 [0.0] * observation_length + [sample.advantage] * len(sample.tokens),
                 dtype=np.float32,
-            ),
+            )
+            * advantage_scale,
         },
     )
+
+
+def merge_trainer_metrics(results: list[Any]) -> dict[str, float]:
+    """合并多个 micro-batch 的远端指标；预加权 mean loss 相加恢复全局均值。"""
+    values: dict[str, list[float]] = defaultdict(list)
+    for result in results:
+        for key, value in dict(result.metrics).items():
+            if isinstance(value, (int, float, np.number)):
+                values[key].append(float(value))
+    merged: dict[str, float] = {}
+    for key, items in values.items():
+        # 提交前 advantage 已乘以 n_k / N，因此各 micro-batch 返回的
+        # mean loss 相加才是整个 logical batch 的 global mean loss。
+        if key in {"loss_mean", "loss/mean"}:
+            merged[key] = sum(items)
+        else:
+            merged[key] = sum(items) / len(items)
+    return merged
 
 
 def init_swanlab(args: argparse.Namespace, dataset_size: int) -> Any:
@@ -298,6 +334,7 @@ def init_swanlab(args: argparse.Namespace, dataset_size: int) -> Any:
             "max_tokens": args.max_tokens,
             "temperature": args.temperature,
             "learning_rate": args.learning_rate,
+            "micro_batch_size": args.micro_batch_size,
             "save_every": args.save_every,
         },
     )
@@ -358,7 +395,7 @@ async def main(args: argparse.Namespace) -> None:
             sampling_client = (
                 await training_client.save_weights_and_get_sampling_client_async()
             )
-            datums: list[trio.Datum] = []
+            pairs: list[tuple[RolloutGroup, RolloutSample]] = []
             all_samples: list[RolloutSample] = []
             prompt_rewards: list[float] = []
             degenerate_groups = 0
@@ -404,8 +441,8 @@ async def main(args: argparse.Namespace) -> None:
                 if len(set(rewards)) == 1:
                     degenerate_groups += 1
                     continue
-                datums.extend(
-                    build_grpo_datum(group, sample)
+                pairs.extend(
+                    (group, sample)
                     for sample in group.samples
                     if sample.tokens
                 )
@@ -418,17 +455,36 @@ async def main(args: argparse.Namespace) -> None:
             )
 
             trainer_metrics: dict[str, float] = {}
-            if datums:
-                forward_backward = await training_client.forward_backward_async(
-                    datums,
-                    loss_fn="importance_sampling",
-                )
+            if pairs:
+                # 服务端限制单次 forward_backward 请求的图片张数（实测上限
+                # 8 张，每条 Datum 一张图），拆成 micro-batch 累积梯度，
+                # 整个 step 只更新一次。
+                micro_batches = [
+                    pairs[start : start + args.micro_batch_size]
+                    for start in range(0, len(pairs), args.micro_batch_size)
+                ]
+                forward_futures = []
+                for micro_batch in micro_batches:
+                    # 远端对每次请求内的样本取 mean。按 n_k / N 缩放
+                    # advantage，多次累积等价于整批一次提交的梯度。
+                    scale = np.float32(len(micro_batch) / len(pairs))
+                    forward_futures.append(
+                        await training_client.forward_backward_async(
+                            [
+                                build_grpo_datum(
+                                    group,
+                                    sample,
+                                    advantage_scale=scale,
+                                )
+                                for group, sample in micro_batch
+                            ],
+                            loss_fn="importance_sampling",
+                        )
+                    )
                 optim_step = await training_client.optim_step_async(adam_params)
-                result = await forward_backward
+                results = await asyncio.gather(*forward_futures)
                 await optim_step
-                trainer_metrics = {
-                    key: float(value) for key, value in result.metrics.items()
-                }
+                trainer_metrics = merge_trainer_metrics(results)
 
             mean_reward = sum(prompt_rewards) / len(prompt_rewards)
             format_rate = sum(
@@ -439,7 +495,7 @@ async def main(args: argparse.Namespace) -> None:
                 "reward": mean_reward,
                 "format_rate": format_rate,
                 "degenerate_fraction": degenerate_fraction,
-                "train_datums": len(datums),
+                "train_datums": len(pairs),
                 "rollout/completion_tokens_mean": mean_output_tokens,
                 **{f"trainer/{key}": value for key, value in trainer_metrics.items()},
             }
@@ -450,7 +506,7 @@ async def main(args: argparse.Namespace) -> None:
             print(
                 f"Step {step + 1}/{args.steps} | reward={mean_reward:.3f} | "
                 f"format={format_rate:.1%} | degenerate={degenerate_fraction:.1%} | "
-                f"datums={len(datums)} | loss_mean={loss_text}",
+                f"datums={len(pairs)} | loss_mean={loss_text}",
                 flush=True,
             )
 

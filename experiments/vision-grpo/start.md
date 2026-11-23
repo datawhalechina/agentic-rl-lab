@@ -63,6 +63,10 @@ uv run python experiments/vision-grpo/train.py \
 
 这个配置会检查真实图片采样、`input_tokens` 对齐、boxed reward 和 group advantage。单题四条回答可能全部同分，出现这种情况时该组会被跳过，日志中的 `train_datums` 为 0。
 
+> **图片张数上限**
+>
+> 服务端限制单次 `forward_backward` 请求最多携带 8 张图（每条 Datum 一张）。超过上限会报 `InputRejected: batch exceeds image count limit`。`train.py` 已默认按 `--micro-batch-size 8` 拆分提交，梯度远端累积，不影响 batch/group 配置；无需手动干预。
+
 ## 5. 启动 20-step 小规模训练
 
 ```bash
