@@ -226,6 +226,11 @@ def read_sequence(sequence: Any, tokenizer: Any) -> tuple[list[int], list[float]
     text = sequence.text
     if text is None:
         text = tokenizer.decode(tokens, skip_special_tokens=True)
+    # sampler 返回的 text 可能带上命中的停止符（如 <|im_end|>），解析前去掉；
+    # tokens 保持原样，训练使用的 token 与 logprob 不受影响。
+    for stop in stop_sequences(tokenizer):
+        if stop and text.endswith(stop):
+            text = text[: -len(stop)]
     return tokens, logprobs, text
 
 
