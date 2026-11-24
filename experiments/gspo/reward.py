@@ -7,7 +7,15 @@ math_verify 判断答案等价性，并直接映射为 1/0。
 
 from __future__ import annotations
 from dataclasses import dataclass
+import os
 from math_verify import parse, verify
+
+
+# math_verify 的 Windows 超时用 multiprocessing.Process 实现，但它的 target
+# 是嵌套函数，spawn 模式无法 pickle：p.start() 先抛 AttributeError，已创建的
+# 子进程随后因父进程提前关闭管道句柄而报 WinError 6。Windows 上禁用该超时；
+# Linux 上仍保留 math_verify 基于 signal.alarm 的超时。
+MATH_VERIFY_TIMEOUT = None if os.name == "nt" else 5
 
 
 @dataclass(frozen=True)
@@ -51,7 +59,13 @@ def extract_last_boxed(text: str) -> str | None:
 def answers_equivalent(prediction: str, reference: str) -> bool:
     """使用 ``math_verify`` 判断两个数学答案是否等价。"""
     try:
-        return bool(verify(parse(f"${reference}$"), parse(f"${prediction}$")))
+        return bool(
+            verify(
+                parse(f"${reference}$", parsing_timeout=MATH_VERIFY_TIMEOUT),
+                parse(f"${prediction}$", parsing_timeout=MATH_VERIFY_TIMEOUT),
+                timeout_seconds=MATH_VERIFY_TIMEOUT,
+            )
+        )
     except Exception:
         return False
 
