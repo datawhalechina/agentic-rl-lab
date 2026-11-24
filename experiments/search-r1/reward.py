@@ -5,7 +5,7 @@ import unicodedata
 from dataclasses import dataclass
 
 
-ANSWER_PATTERN = re.compile(r"^\s*Answer:\s*(.*?)\s*$", re.IGNORECASE | re.MULTILINE)
+ANSWER_PATTERN = re.compile(r"\s*Answer:(.*)", re.IGNORECASE)
 ARTICLE_PATTERN = re.compile(r"\b(a|an|the)\b", re.IGNORECASE)
 
 
@@ -30,8 +30,12 @@ def normalize_answer(text: str) -> str:
 
 
 def extract_answer(text: str) -> str | None:
-    """只接受恰好一行非空的 Answer: 最终答案。"""
-    matches = ANSWER_PATTERN.findall(text)
+    """提取唯一 Answer: 标签行上的非空答案。"""
+    matches = [
+        match.group(1)
+        for line in text.splitlines()
+        if (match := ANSWER_PATTERN.fullmatch(line))
+    ]
     if len(matches) != 1:
         return None
     answer = matches[0].strip()
