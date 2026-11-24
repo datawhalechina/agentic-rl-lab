@@ -1,4 +1,4 @@
-"""提供 DeepSeek 官方 Search API 和 Wikipedia 两个搜索后端。"""
+"""提供 DeepSeek 官方 Search API、Wikipedia 和 Keenable 三个搜索后端。"""
 
 import gzip
 import json
@@ -17,15 +17,21 @@ import httpx
 from dotenv import load_dotenv
 
 
-SEARCH_BACKENDS = ("deepseek", "wikipedia")
+SEARCH_BACKENDS = ("deepseek", "wikipedia", "keenable")
 DEEPSEEK_SEARCH_ENDPOINT = "https://api.deepseek.com/v1/tools/search"
+KEENABLE_SEARCH_ENDPOINT = "https://api.keenable.ai/v1/search"
+KEENABLE_PUBLIC_SEARCH_ENDPOINT = "https://api.keenable.ai/v1/search/public"
+KEENABLE_APP_TITLE = "agentic-rl-lab"
+KEENABLE_MAX_CONTENT_CHARS = 1200
+# 免密钥接口每个 IP 限 10 次/秒、1000 次/小时；Retry-After 超过该值说明小时额度已用完。
+KEENABLE_MAX_RETRY_AFTER = 30.0
 WIKIPEDIA_SEARCH_ENDPOINT = "https://en.wikipedia.org/w/api.php"
 WIKIPEDIA_USER_AGENT = (
     "agentic-rl-lab/0.1 "
     "(https://github.com/datawhalechina/agentic-rl-lab)"
 )
-DEFAULT_SEARCH_CONCURRENCY = {"deepseek": 16, "wikipedia": 3}
-DEFAULT_SEARCH_TIMEOUT = {"deepseek": 60.0, "wikipedia": 15.0}
+DEFAULT_SEARCH_CONCURRENCY = {"deepseek": 16, "wikipedia": 3, "keenable": 8}
+DEFAULT_SEARCH_TIMEOUT = {"deepseek": 60.0, "wikipedia": 15.0, "keenable": 30.0}
 
 
 @dataclass(frozen=True)
@@ -383,7 +389,170 @@ class WikipediaSearchClient:
         return SearchResult(False, [], latency, status=status, error=message)
 
 
-SearchClient = DeepSeekSearchClient | WikipediaSearchClient
+@dataclass
+class KeenableSearchClient:
+    """调用 Keenable Search API；设置 KEENABLE_API_KEY 时走带 Key 接口，否则走免密钥接口。"""
+
+    api_key: str | None = field(default=None, repr=False)
+    count: int = 3
+    timeout: float = DEFAULT_SEARCH_TIMEOUT["keenable"]
+    max_retries: int = 2
+    retry_delay: float = 1.0
+    min_request_interval: float = 0.11
+    stats: SearchStats = field(
+        default_factory=lambda: SearchStats(backend="keenable")
+    )
+    _rate_lock: threading.Lock = field(
+        default_factory=threading.Lock, init=False, repr=False
+    )
+    _next_request_time: float = field(default=0.0, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        key = self.api_key or os.getenv("KEENABLE_API_KEY")
+        self.api_key = key.strip() if key and key.strip() else None
+        if not 1 <= self.count <= 50:
+            raise ValueError("search_count 必须在 1 到 50 之间")
+
+    @classmethod
+    def from_env(
+        cls, env_path: str | Path | None = None, **kwargs: Any
+    ) -> "KeenableSearchClient":
+        """读取项目 .env；已有的进程环境变量优先。"""
+        if env_path:
+            load_dotenv(env_path)
+        return cls(**kwargs)
+
+    @property
+    def keyless(self) -> bool:
+        """未配置 KEENABLE_API_KEY 时使用免密钥接口。"""
+        return self.api_key is None
+
+    @property
+    def endpoint(self) -> str:
+        """返回本客户端实际请求的接口地址。"""
+        return KEENABLE_PUBLIC_SEARCH_ENDPOINT if self.keyless else KEENABLE_SEARCH_ENDPOINT
+
+    def _headers(self) -> dict[str, str]:
+        headers = {"X-Keenable-Title": KEENABLE_APP_TITLE}
+        if self.api_key:
+            headers["X-API-Key"] = self.api_key
+        return headers
+
+    def _wait_for_rate_slot(self) -> None:
+        """所有并发调用共享约 9 次/秒的启动限速。"""
+        with self._rate_lock:
+            now = time.monotonic()
+            wait = self._next_request_time - now
+            self._next_request_time = max(now, self._next_request_time) + (
+                self.min_request_interval
+            )
+        if wait > 0:
+            time.sleep(wait)
+
+    def search(self, query: str) -> SearchResult:
+        """搜索 Top N 网页；超时、429 和 5xx 有限重试，过长的 Retry-After 直接返回错误。"""
+        started = time.perf_counter()
+        with self.stats._lock:
+            self.stats.requests += 1
+
+        query = query.strip()
+        if not query:
+            return self._error_result(started, "query must not be empty", 400)
+
+        saw_timeout = False
+        saw_rate_limit = False
+        attempt = 0
+        while True:
+            self._wait_for_rate_slot()
+            try:
+                with self.stats._lock:
+                    self.stats.api_requests += 1
+                response = httpx.post(
+                    self.endpoint,
+                    headers=self._headers(),
+                    json={"query": query, "max_results": self.count},
+                    timeout=self.timeout,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                if not isinstance(payload, dict) or not isinstance(
+                    payload.get("results"), list
+                ):
+                    raise ValueError("invalid results")
+                items: list[SearchItem] = []
+                for item in payload["results"][: self.count]:
+                    if not isinstance(item, dict):
+                        raise ValueError("invalid result item")
+                    content = str(item.get("snippet") or "").strip() or str(
+                        item.get("description") or ""
+                    ).strip()
+                    if content:
+                        url = str(item.get("url") or "").strip() or None
+                        items.append(
+                            SearchItem(
+                                title=str(item.get("title") or "Untitled").strip(),
+                                content=content[:KEENABLE_MAX_CONTENT_CHARS],
+                                source=urllib.parse.urlsplit(url).hostname if url else None,
+                                url=url,
+                            )
+                        )
+                latency = time.perf_counter() - started
+                with self.stats._lock:
+                    self.stats.successes += 1
+                    self.stats.latency_total += latency
+                    self.stats.result_count += len(items)
+                return SearchResult(ok=True, items=items, latency=latency, status=200)
+            except httpx.HTTPStatusError as error:
+                status = error.response.status_code
+                if status == 429 and not saw_rate_limit:
+                    with self.stats._lock:
+                        self.stats.rate_limits += 1
+                    saw_rate_limit = True
+                retryable = status in (408, 429) or status >= 500
+                if retryable and attempt < self.max_retries:
+                    delay = self.retry_delay * (2**attempt)
+                    retry_after = error.response.headers.get("Retry-After", "")
+                    if status == 429 and retry_after.strip().isdigit():
+                        delay = float(retry_after.strip())
+                    if delay <= KEENABLE_MAX_RETRY_AFTER:
+                        time.sleep(delay)
+                        attempt += 1
+                        continue
+                return self._error_result(started, f"HTTP {status}", status)
+            except httpx.TimeoutException:
+                if not saw_timeout:
+                    with self.stats._lock:
+                        self.stats.timeouts += 1
+                    saw_timeout = True
+                if attempt < self.max_retries:
+                    time.sleep(self.retry_delay * (2**attempt))
+                    attempt += 1
+                    continue
+                return self._error_result(started, "request timeout")
+            except httpx.HTTPError as error:
+                if attempt < self.max_retries:
+                    time.sleep(self.retry_delay * (2**attempt))
+                    attempt += 1
+                    continue
+                return self._error_result(started, type(error).__name__)
+            except (ValueError, TypeError):
+                return self._error_result(started, "invalid search response", 200)
+
+    def _error_result(
+        self,
+        started: float,
+        message: str,
+        status: int | None = None,
+    ) -> SearchResult:
+        """把请求异常转换为不会泄露密钥的工具结果。"""
+        latency = time.perf_counter() - started
+        with self.stats._lock:
+            self.stats.errors += 1
+            self.stats.latency_total += latency
+        return SearchResult(False, [], latency, status=status, error=message)
+
+
+SearchClient = DeepSeekSearchClient | WikipediaSearchClient | KeenableSearchClient
 
 
 def resolve_search_concurrency(backend: str, value: int | None) -> int:
@@ -413,7 +582,7 @@ def create_search_client(
     count: int = 3,
     timeout: float | None = None,
 ) -> SearchClient:
-    """按名称创建搜索后端；两个后端共用同一套 rollout 接口。"""
+    """按名称创建搜索后端；所有后端共用同一套 rollout 接口。"""
     resolved_timeout = resolve_search_timeout(backend, timeout)
     if backend == "deepseek":
         return DeepSeekSearchClient.from_env(
@@ -423,6 +592,12 @@ def create_search_client(
         )
     if backend == "wikipedia":
         return WikipediaSearchClient(timeout=resolved_timeout)
+    if backend == "keenable":
+        return KeenableSearchClient.from_env(
+            env_path,
+            count=count,
+            timeout=resolved_timeout,
+        )
     raise ValueError(f"不支持的搜索后端: {backend}")
 
 

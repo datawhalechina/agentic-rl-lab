@@ -24,6 +24,12 @@ DEEPSEEK_API_KEY=your_deepseek_api_key
 
 Wikipedia 搜索无需 API Key。客户端会使用英文 Wikimedia Action API，并按其公开限额默认使用 3 个并发。
 
+可选的 Keenable 后端（`--search-backend keenable`）搜索全网，返回 Top N 网页的标题、`snippet` 片段（截断到 1200 字符）、来源域名和 URL。发送的只有搜索 query 和 `X-Keenable-Title: agentic-rl-lab` 请求头。请注意：无论是否设置 Key，请求都会按 Keenable 默认策略记录日志，只有企业版零数据保留（ZDR）不同，详见 [数据隐私说明](https://docs.keenable.ai/data-privacy)。
+
+- 不设置 `KEENABLE_API_KEY` 时走免密钥接口，限额为每个 IP 10 次/秒、1000 次/小时（[限额说明](https://docs.keenable.ai/rate-limits.md)）。固定 70 题评测最多约 280 次搜索，够用；训练每个 step 最多约 256 次搜索，几个 step 就会用完小时额度，`train.py` 会打印警告。
+- 完整训练请在 `experiments/search-r1/.env` 中设置 `KEENABLE_API_KEY`。
+- 客户端把所有并发请求的启动速率限制在约 9 次/秒；429 按 `Retry-After` 退避重试，`Retry-After` 超过 30 秒时直接把错误返回给模型，不卡住 rollout。
+
 ## 2. 启动训练
 
 DeepSeek Search 后端：
@@ -84,4 +90,4 @@ uv run python experiments/search-r1/eval.py \
     --output experiments/search-r1/eval_result/eval_results_rl_step_20_deepseek_api.jsonl
 ```
 
-评测 Wikipedia 后端时，两条命令都改为 `--search-backend wikipedia --search-concurrency 3 --search-timeout 15`。Base 与 checkpoint 必须使用相同的后端、摘要字段和搜索配置。旧 Evidence 后端的历史结果不能与官方 Search API 的新结果混作同一环境比较。
+评测 Wikipedia 后端时，两条命令都改为 `--search-backend wikipedia --search-concurrency 3 --search-timeout 15`；评测 Keenable 后端时改为 `--search-backend keenable --search-concurrency 8 --search-timeout 30`，summary 会记录实际使用的接口（免密钥或带 Key）和 `search_count`。Base 与 checkpoint 必须使用相同的后端、摘要字段和搜索配置。旧 Evidence 后端的历史结果不能与官方 Search API 的新结果混作同一环境比较。
