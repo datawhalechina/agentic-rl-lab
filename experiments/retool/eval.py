@@ -307,6 +307,11 @@ async def evaluate_chunk_retool(
             for trajectory in trajectories
             if trajectory.question_index == question_index
         ]
+        if len(group) != args.val_n:
+            raise RuntimeError(
+                f"AIME25 题目 {examples[question_index].id} 请求 {args.val_n} 条轨迹，"
+                f"实际返回 {len(group)} 条"
+            )
         ground_truth = normalize_aime_answer(str(row["answer"]))
         generations = [
             {
