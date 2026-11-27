@@ -281,3 +281,8 @@ docs/content/en/experiments/*/
 # Local agent instructions
 /AGENTS.md
 /AGENT.md
+experiments/rgsd/datasets/
+experiments/rgsd/eval-results/
+experiments/rgsd/.env
+experiments/rgsd/train-results/
+experiments/rgsd/swanlog/

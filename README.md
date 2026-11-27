@@ -71,6 +71,7 @@
 | [TEMPO](./experiments/tempo/readme.md) | 算法级复现 macro-step 优化与生成式 critic | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tempo/) |
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/spec-o3/) |
 | [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | 让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tournament-grpo/) |
+| [RGSD](./experiments/rgsd/readme.md) | 不调用裁判，让看过评分细则的自己逐 token 蒸馏没看过的自己 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/rgsd/) |
 
 ## 学习建议
 
@@ -141,7 +142,7 @@ uv add --optional alfworld "alfworld==0.4.2" "spacy==3.8.13"
 
 ### 内容贡献者
 
-- [MRLE](https://github.com/mrle0429)（北京交通大学）：[Tournament-GRPO](./experiments/tournament-grpo/readme.md)
+- [MRLE](https://github.com/mrle0429)（北京交通大学）：[Tournament-GRPO](./experiments/tournament-grpo/readme.md)、[RGSD](./experiments/rgsd/readme.md)
 
 &emsp;&emsp;想为这个仓库贡献内容？欢迎！请先阅读 [贡献指南](./CONTRIBUTING.md)：新增算法章节请先开 Issue 提案，修复和文档改进可以直接提 PR。
 
