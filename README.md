@@ -72,6 +72,12 @@
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | 用强化学习找星星：通过 SFT + GRPO，让模型边看光谱、边思考、边调用工具 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/spec-o3/) |
 | [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | 让同题研究报告两两比赛，用淘汰赛胜场构造 GRPO 奖励 | [阅读](https://datawhalechina.github.io/agentic-rl-lab/experiments/tournament-grpo/) |
 
+## 学习建议
+
+&emsp;&emsp;第一次接触 LLM 强化学习，建议按 [环境配置与基础概念](./experiments/getting-started/readme.md) → [Loss Function](./experiments/loss-functions/readme.md) → [GRPO](./experiments/grpo/readme.md) 的顺序走：先把环境装好、看懂 loss，再在 GSM8K 上跑通第一次训练。GRPO 跑通之后按兴趣挑一条线：想接着研究策略更新，看 [DAPO](./experiments/dapo/readme.md) 和 [GSPO](./experiments/gspo/readme.md)；想学蒸馏，按 [General OPD](./experiments/general-opd/readme.md) → [Medical OPD](./experiments/medical-opd/readme.md) → [OPSD](./experiments/opsd/readme.md) 的顺序读；想做多轮工具调用的 Agentic RL，走 [Search-R1](./experiments/search-r1/readme.md) → [ReTool](./experiments/retool/readme.md) → [ALFWorld](./experiments/alfworld/readme.md)。[Vision GRPO](./experiments/vision-grpo/readme.md)、[Spec-o3](./experiments/spec-o3/readme.md)、[TEMPO](./experiments/tempo/readme.md)、[AgentOPSD](./experiments/agentopsd/readme.md)、[Tournament-GRPO](./experiments/tournament-grpo/readme.md) 这几章都建立在前面章节的基础上，放最后看；[PyTrio-Jev](./experiments/pytrio-jev/readme.md) 是独立的一篇，不依赖其他章节。
+
+&emsp;&emsp;已经熟悉 PPO / GRPO 的同学，Loss Function 和 GRPO 两章的正文可以跳过，照着环境配置那章把 PyTRIO 和 SwanLab 配好、跑通第一次训练（跑的就是 GRPO 的 demo），然后直接从 DAPO、General OPD 或 Search-R1 读起，想做 Agentic RL 就选 Search-R1。
+
 ## 快速启动
 
 &emsp;&emsp;第一次接触本项目，建议先读 [环境配置与基础概念](./experiments/getting-started/readme.md)：注册账号、登录、跑通第一次训练按顺序走一遍，全程不需要 GPU。

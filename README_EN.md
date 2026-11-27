@@ -54,6 +54,7 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 
 | Topic | Content | Read online |
 | --- | --- | --- |
+| [Environment Setup and Core Concepts](./experiments/getting-started/readme.md) | From scratch: install dependencies, register PyTRIO and SwanLab, and run your first training | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/getting-started/) |
 | [Loss Function](./experiments/loss-functions/readme.md) | An intuitive explanation of what `importance_sampling`, `ppo`, and `cispo` are each optimizing | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/loss-functions/) |
 | [GRPO](./experiments/grpo/readme.md) | Reproduce GRPO on GSM8K and compare the `importance_sampling` / `ppo` / `cispo` losses | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/grpo/) |
 | [Vision GRPO](./experiments/vision-grpo/readme.md) | Add image inputs on GeoQA and train Qwen3.5-4B to solve geometry multiple-choice questions with rule-based rewards | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/vision-grpo/) |
@@ -71,7 +72,15 @@ This is a lab notebook and tutorial-style repository. I use [PyTRIO](https://pyt
 | [Spec-o3](https://github.com/datawhalechina/agentic-rl-lab/blob/main/experiments/spec-o3/readme.md) | Find stars with reinforcement learning: use SFT + GRPO to interleave spectral inspection, reasoning, and tool use | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/spec-o3/) |
 | [Tournament-GRPO](./experiments/tournament-grpo/readme.md) | Compare research reports for the same query in knockout tournaments and use wins as GRPO rewards | [Read](https://datawhalechina.github.io/agentic-rl-lab/en/experiments/tournament-grpo/) |
 
+## Suggested Learning Path
+
+If you are new to LLM reinforcement learning, follow [Environment Setup and Core Concepts](./experiments/getting-started/readme.md) → [Loss Function](./experiments/loss-functions/readme.md) → [GRPO](./experiments/grpo/readme.md): set up the environment, understand the losses, then run your first training on GSM8K. Once GRPO is running, pick a track by interest: to keep digging into policy updates, read [DAPO](./experiments/dapo/readme.md) and [GSPO](./experiments/gspo/readme.md); to learn distillation, read [General OPD](./experiments/general-opd/readme.md) → [Medical OPD](./experiments/medical-opd/readme.md) → [OPSD](./experiments/opsd/readme.md) in order; for multi-turn tool-use Agentic RL, go [Search-R1](./experiments/search-r1/readme.md) → [ReTool](./experiments/retool/readme.md) → [ALFWorld](./experiments/alfworld/readme.md). [Vision GRPO](./experiments/vision-grpo/readme.md), [Spec-o3](./experiments/spec-o3/readme.md), [TEMPO](./experiments/tempo/readme.md), [AgentOPSD](./experiments/agentopsd/readme.md), and [Tournament-GRPO](./experiments/tournament-grpo/readme.md) all build on the earlier chapters, so save them for last; [PyTrio-Jev](./experiments/pytrio-jev/readme.md) is a standalone chapter that does not depend on any other.
+
+If you already know PPO / GRPO, you can skip the main text of the Loss Function and GRPO chapters: follow the environment setup chapter to configure PyTRIO and SwanLab and run your first training (it is the GRPO demo), then start directly from DAPO, General OPD, or Search-R1 — choose Search-R1 if you want to do Agentic RL.
+
 ## Quick Start
+
+If this is your first time with the project, start with [Environment Setup and Core Concepts](./experiments/getting-started/readme.md): register your accounts, log in, and run your first training step by step — no GPU is needed at any point.
 
 If you want to clone this repository directly:
 
