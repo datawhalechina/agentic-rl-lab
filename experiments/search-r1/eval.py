@@ -25,7 +25,9 @@ from data import SearchExample, load_examples
 from rollout import RolloutConfig, Trajectory, rollout_batch
 from search import (
     DEEPSEEK_SEARCH_ENDPOINT,
+    KEENABLE_SEARCH_ENDPOINT,
     SEARCH_BACKENDS,
+    KeenableSearchClient,
     SearchClient,
     create_search_client,
     resolve_search_concurrency,
@@ -95,6 +97,18 @@ def evaluation_metrics(
     return metrics
 
 
+WEB_SEARCH_BACKENDS = ("deepseek", "keenable")
+
+
+def search_api_endpoint(args: argparse.Namespace) -> str | None:
+    """返回本次评测实际请求的网页搜索接口；keenable 区分免密钥与带 Key 接口。"""
+    if args.search_backend == "deepseek":
+        return DEEPSEEK_SEARCH_ENDPOINT
+    if args.search_backend == "keenable":
+        return getattr(args, "search_api", None) or KEENABLE_SEARCH_ENDPOINT
+    return None
+
+
 def summary_record(
     args: argparse.Namespace,
     trajectories: list[Trajectory],
@@ -108,12 +122,16 @@ def summary_record(
         "search_backend": args.search_backend,
         "search_concurrency": args.search_concurrency,
         "search_timeout": args.search_timeout,
-        "search_api": (
-            DEEPSEEK_SEARCH_ENDPOINT if args.search_backend == "deepseek" else None
+        "search_api": search_api_endpoint(args),
+        "search_count": (
+            args.search_count if args.search_backend in WEB_SEARCH_BACKENDS else None
         ),
-        "search_count": args.search_count if args.search_backend == "deepseek" else None,
-        "search_need_content": False if args.search_backend == "deepseek" else None,
-        "search_text_field": "snippet" if args.search_backend == "deepseek" else None,
+        "search_need_content": (
+            False if args.search_backend in WEB_SEARCH_BACKENDS else None
+        ),
+        "search_text_field": (
+            "snippet" if args.search_backend in WEB_SEARCH_BACKENDS else None
+        ),
         "evaluated_examples": len(trajectories),
         "metrics": metrics,
     }
@@ -159,13 +177,16 @@ def parse_args() -> argparse.Namespace:
         "--search-backend",
         choices=SEARCH_BACKENDS,
         default="deepseek",
-        help="搜索后端：deepseek 官方 Search API，wikipedia 免费免密钥",
+        help=(
+            "搜索后端：deepseek 官方 Search API，wikipedia 免费免密钥，"
+            "keenable 全网搜索（可选 KEENABLE_API_KEY）"
+        ),
     )
     parser.add_argument(
         "--search-concurrency",
         type=int,
         default=None,
-        help="不同轨迹之间的搜索并发；默认 deepseek=16、wikipedia=3",
+        help="不同轨迹之间的搜索并发；默认 deepseek=16、wikipedia=3、keenable=8",
     )
     parser.add_argument(
         "--search-count",
@@ -173,13 +194,13 @@ def parse_args() -> argparse.Namespace:
         choices=range(1, 51),
         default=3,
         metavar="1-50",
-        help="DeepSeek Search 返回的网页条数；wikipedia 后端固定返回 Top 3",
+        help="deepseek / keenable 返回的网页条数；wikipedia 后端固定返回 Top 3",
     )
     parser.add_argument(
         "--search-timeout",
         type=float,
         default=None,
-        help="单次搜索的超时秒数；默认 deepseek=60、wikipedia=15",
+        help="单次搜索的超时秒数；默认 deepseek=60、wikipedia=15、keenable=30",
     )
     parser.add_argument(
         "--max-assistant-turns",
@@ -240,6 +261,8 @@ def main(args: argparse.Namespace) -> None:
         count=args.search_count,
         timeout=args.search_timeout,
     )
+    if isinstance(search_client, KeenableSearchClient):
+        args.search_api = search_client.endpoint
 
     # 先校验磁盘上的固定评测集仍是完整 70 题，再按 limit 截取少量题做试跑。
     examples = load_examples(EVAL_DATA_PATH)

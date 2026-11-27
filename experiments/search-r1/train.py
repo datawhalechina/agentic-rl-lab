@@ -50,6 +50,7 @@ from data import shuffled_examples, take_batch
 from rollout import RolloutConfig, Trajectory, rollout_batch
 from search import (
     SEARCH_BACKENDS,
+    KeenableSearchClient,
     create_search_client,
     resolve_search_concurrency,
     resolve_search_timeout,
@@ -270,13 +271,16 @@ def parse_args() -> argparse.Namespace:
         "--search-backend",
         choices=SEARCH_BACKENDS,
         default="deepseek",
-        help="搜索后端：deepseek 官方 Search API，wikipedia 免费免密钥",
+        help=(
+            "搜索后端：deepseek 官方 Search API，wikipedia 免费免密钥，"
+            "keenable 全网搜索（可选 KEENABLE_API_KEY）"
+        ),
     )
     parser.add_argument(
         "--search-concurrency",
         type=int,
         default=None,
-        help="不同轨迹之间的搜索并发；默认 deepseek=16、wikipedia=3",
+        help="不同轨迹之间的搜索并发；默认 deepseek=16、wikipedia=3、keenable=8",
     )
     parser.add_argument(
         "--search-count",
@@ -284,13 +288,13 @@ def parse_args() -> argparse.Namespace:
         choices=range(1, 51),
         default=3,
         metavar="1-50",
-        help="DeepSeek Search 返回的网页条数；wikipedia 后端固定返回 Top 3",
+        help="deepseek / keenable 返回的网页条数；wikipedia 后端固定返回 Top 3",
     )
     parser.add_argument(
         "--search-timeout",
         type=float,
         default=None,
-        help="单次搜索的超时秒数；默认 deepseek=60、wikipedia=15",
+        help="单次搜索的超时秒数；默认 deepseek=60、wikipedia=15、keenable=30",
     )
     parser.add_argument(
         "--max-assistant-turns",
@@ -394,6 +398,12 @@ def main(args: argparse.Namespace) -> None:
         count=args.search_count,
         timeout=args.search_timeout,
     )
+    if isinstance(search_client, KeenableSearchClient) and search_client.keyless:
+        print(
+            "警告：未设置 KEENABLE_API_KEY，keenable 后端使用免密钥接口"
+            "（每个 IP 10 次/秒、1000 次/小时）。每个 step 最多约 256 次搜索，"
+            "完整训练请设置 KEENABLE_API_KEY。"
+        )
 
     # 先固定打乱训练问题；max_train_samples 只用于限制本次实际参与训练的数据量。
     examples = shuffled_examples(args.data, args.seed)
