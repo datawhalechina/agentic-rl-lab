@@ -243,6 +243,15 @@ def parse_args() -> argparse.Namespace:
         help="从 save_state() 保存的训练状态恢复；设置后不再新建 LoRA 客户端",
     )
     parser.add_argument(
+        "--start-step",
+        type=int,
+        default=0,
+        help=(
+            "Steps already trained in --resume-state (e.g. 20 for a "
+            "*-step-20-state); training continues from there"
+        ),
+    )
+    parser.add_argument(
         "--lora-rank",
         type=int,
         default=32,
@@ -377,7 +386,12 @@ def parse_args() -> argparse.Namespace:
         default="online",
         help="SwanLab 日志模式",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.start_step and not args.resume_state:
+        parser.error("--start-step requires --resume-state")
+    if args.start_step < 0 or (args.start_step and args.start_step >= args.max_steps):
+        parser.error("--start-step must be >= 0 and smaller than --max-steps")
+    return args
 
 
 def main(args: argparse.Namespace) -> None:
@@ -405,7 +419,7 @@ def main(args: argparse.Namespace) -> None:
     # 有 state 就恢复完整训练状态，否则从基础模型新建一个 LoRA 训练客户端。
     service_client = trio.ServiceClient()
     if args.resume_state:
-        training_client = service_client.create_training_client_from_state(
+        training_client = service_client.create_training_client_from_state_with_optimizer(
             args.resume_state
         )
     else:
@@ -451,11 +465,12 @@ def main(args: argparse.Namespace) -> None:
         # 外层进度条统计已完成的训练 step，并自动显示总耗时和预计剩余时间。
         with tqdm(
             total=args.max_steps,
+            initial=args.start_step,
             desc="Training",
             unit="step",
             position=0,
         ) as training_progress:
-            for step in range(args.max_steps):
+            for step in range(args.start_step, args.max_steps):
                 step_started = perf_counter()
 
                 # 按 questions_per_batch 循环取题；超过数据末尾时 take_batch 会回绕。
