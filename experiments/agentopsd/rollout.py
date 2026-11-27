@@ -521,7 +521,7 @@ def rollout_batch(
 ) -> RolloutBatch:
     """Complete grouped Student trajectories without assigning advantages."""
     snapshot_id = str(
-        policy_snapshot_id or getattr(sampling_client, "task_id", "")
+        policy_snapshot_id or getattr(sampling_client, "sampling_run_cuid", "")
     ).strip()
     if not snapshot_id:
         raise ValueError("rollout 需要明确的 policy snapshot ID")

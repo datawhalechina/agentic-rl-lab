@@ -499,7 +499,7 @@ def main(args: argparse.Namespace) -> None:
                     training_client.save_weights_and_get_sampling_client()
                 )
                 snapshot_seconds = perf_counter() - phase_started
-                snapshot_id = str(sampling_client.task_id)
+                snapshot_id = str(sampling_client.sampling_run_cuid)
 
                 progress.set_postfix(phase="student-rollout", refresh=True)
                 phase_started = perf_counter()
